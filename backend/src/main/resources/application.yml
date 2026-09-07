@@ -1,0 +1,22 @@
+spring:
+  application:
+    name: skill-radar-backend
+  datasource:
+    url: jdbc:mysql://localhost:3306/skill_radar?useSSL=false&serverTimezone=Asia/Shanghai&characterEncoding=utf8
+    username: ${DB_USERNAME:root}
+    password: ${DB_PASSWORD:}
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: none   # 表结构由 database/schema.sql 手工维护，不用 Hibernate 自动生成
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+
+server:
+  port: 8080
+
+app:
+  cors:
+    allowed-origins: http://localhost:5173   # Vue (Vite) 本地开发服务器地址

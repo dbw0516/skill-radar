@@ -1,0 +1,32 @@
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Claude Code local settings (per-developer, not shared)
+.claude/settings.local.json
+
+# env / secrets
+.env
+.env.*
+*.local
+
+# Node
+node_modules/
+dist/
+build/
+
+# Java
+target/
+*.class
+.gradle/
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# logs
+*.log
