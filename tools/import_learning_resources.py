@@ -35,9 +35,10 @@ TYPE_MAP = {"文档": "doc", "视频": "video", "课程": "course", "教程": "a
 
 
 def esc(s):
+    """反斜杠转义 + 单引号双写（不用 \\'——mysql 命令行客户端读 .sql 文件时对它有解析歧义）。"""
     if s is None:
         return "NULL"
-    s = str(s).strip().replace("\\", "\\\\").replace("'", "\\'")
+    s = str(s).strip().replace("\\", "\\\\").replace("'", "''")
     return f"'{s}'"
 
 

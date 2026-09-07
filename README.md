@@ -17,12 +17,12 @@
 - [x] 真实岗位数据：天池公开数据集导入，1,202 条、覆盖 13 个岗位类别（`database/seed_real_postings.sql`）
 - [x] 面试题库：193 道（JavaGuide 来源，`database/seed_interview_questions.sql`）
 - [x] 学习资料：14 条已导入，另有 24 条待技能词典扩充后导入（`database/seed_learning_resources.sql`）
-- [x] 后端骨架（跑通 `/api/skills`、`/api/job-categories` 两个最小接口）
-- [x] 前端骨架（四个页面路由 + 已验证能调用后端 API）
+- [x] ①②③④ 四个引擎已实现并跑通完整闭环：岗位推荐、差距分析（集合差+按权重排序）、学习路径（拓扑排序分层）、资料+测评（判分后回写 `user_skills`，下一次差距分析立刻反映变化）
+- [x] 前端四个页面全部接入真实接口（技能差距雷达图、学习路径时间线、在线答题）
+- [x] 本机装了 JDK 17 + Maven + 本地 MySQL，完整跑通一遍：建库 → 导入全部种子数据 → 启动后端 → 前端点击操作 → 提交测评 → 确认画像回写生效
 - [ ] 技能词典扩展到 Java 后端以外的类别（已识别 78 个候选技能名，见开发手册）
-- [ ] 选择题题库（`questions` 表当前仅 3 道示例，驱动④在线测评还需要人工出题）
-- [ ] ①②③④ 四个引擎的真实业务逻辑（当前是 TODO 占位）
-- [ ] 打通 Java 后端工程师方向的完整闭环
+- [ ] 选择题题库（`questions` 表当前仅 3 道示例，覆盖不够，需要人工补齐每个技能 5~10 道）
+- [ ] 登录/注册（现在前端统一用种子数据里的演示账号 id=1）
 
 ## MVP 策略
 
@@ -54,7 +54,7 @@ mysql -u root -p skill_radar < database/seed_learning_resources.sql
 
 ## 后端
 
-需要本机安装 JDK 17+ 和 Maven（本机开发环境暂未装，未能在此验证编译，建议用 IntelliJ IDEA 打开 `backend/` 直接跑，它会自带 JDK 和 Maven）。
+需要本机装 JDK 17+ 和 Maven（IntelliJ IDEA 打开 `backend/` 会自带，比较省事）。已经用 JDK 17 + Maven 3.9 + 本地 MySQL 完整跑通一遍——建库、导入全部种子数据、`mvn spring-boot:run` 启动、前端点击操作到提交测评、确认 `user_skills` 正确回写，没问题。
 
 ```bash
 cd backend
@@ -62,6 +62,20 @@ mvn spring-boot:run
 ```
 
 默认连接 `localhost:3306/skill_radar`，用户名 `root`、空密码；不同可设置环境变量 `DB_USERNAME` / `DB_PASSWORD` 覆盖（见 `application.yml`）。启动后 http://localhost:8080/api/skills 应该能看到种子数据里的技能列表。
+
+接口一览（① ~ ④ 对应设计文档的四个引擎）：
+
+| 接口 | 说明 |
+|---|---|
+| `GET /api/job-categories` | ① 岗位类别列表 |
+| `GET /api/job-categories/{id}/postings` | ① 该类别下的具体招聘信息，分页 |
+| `GET /api/gap-analysis?categoryId=&userId=` | ② 差距分析：目标岗位技能，标注是否已掌握，按权重排序 |
+| `GET /api/learning-path?categoryId=&userId=` | ③ 学习路径：待学技能按拓扑排序分层 |
+| `GET /api/skills/{id}/resources` | ④ 该技能的学习资料 |
+| `GET /api/skills/{id}/questions` | ④ 该技能的测评题（不含正确答案） |
+| `POST /api/quiz-attempts` | ④ 提交作答，判分并在通过时把 `user_skills` 更新为 `quiz_verified` |
+
+`userId` 目前都有默认值 1（种子数据里的演示账号），还没接登录。
 
 ## 前端
 
@@ -71,7 +85,7 @@ npm install
 npm run dev
 ```
 
-打开 http://localhost:5173 ，"岗位推荐"页会请求后端的 `/api/job-categories`——已经本地验证过：后端没启动时会提示"确认后端是否已启动"，接口通了就会显示种子数据里的"Java后端工程师"。其余三个页面（技能差距/学习路径/在线测评）目前是 TODO 占位，对应①②③④引擎还没写真实逻辑。
+打开 http://localhost:5173 ，四个页面都已接入真实接口：岗位推荐（选类别看具体招聘信息）→ 技能差距（雷达图 + 明细）→ 学习路径（按阶段的技能时间线）→ 在线测评（资料 + 答题，提交后回写画像）。后端没启动时会提示"确认后端是否已启动"。
 
 需要自定义后端地址时，复制 `frontend/.env.example` 为 `.env.local` 修改 `VITE_API_BASE_URL`。
 

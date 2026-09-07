@@ -1,6 +1,6 @@
 -- ============================================================
 -- 由 tools/import_tianchi.py 从「天池数据集-计算机相关岗位.xlsx」自动生成
--- 生成日期：2026-09-07
+-- 生成日期：2026-09-08
 -- 数据来源：阿里天池公开数据集，经关键词筛选+每类封顶后的计算机相关岗位子集
 -- 注意：source_url 该数据集未提供，均为 NULL；posted_at 原始只有月-日、无年份，本次导入不填年份猜测值，均为 NULL
 -- ============================================================
@@ -5346,7 +5346,7 @@ Experience with automotive industry as a plus
 B站：B公司正式入驻二次元B站啦！快来关注入华111载的萌新UP主【博世中国人才苑】！来《B公司的云课堂》一起提升职场软技能，和B公司这家物联网公司一起打造物联世界吧！
 领英：领英搜索关注【博世中国】官方账号，这里有最新***的博世动态、招聘信息等资讯。在领英与我们连接无限机会，一起走好职业发展的每一步。
 Welcome to follow our WeChat, bilibili and LinkedIn official account to get more information and interaction with Bosch.
-WeChat: Search for “博世中国人才苑”to get the latest and most comprehensive information on Bosch\'s recruitment, department introduction, company activities, etc. You can also leave a message with us here. Join us in building the future of IoT!
+WeChat: Search for “博世中国人才苑”to get the latest and most comprehensive information on Bosch''s recruitment, department introduction, company activities, etc. You can also leave a message with us here. Join us in building the future of IoT!
 bilibili: Bosch has officially entered bilibili! Follow the newest blogger “博世中国人才苑” ! Come to our cloud classroom to improve yourself and build a connected world with this IoT company!
 LinkedIn: Follow the official account “Bosch china” , where you can find the latest and most complete Bosch news, job information. More opportunities are waiting for you ! Connect with us via LinkedIn, and let’s manager your careers together.', 'open', NULL);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '数据分析师' LIMIT 1), '麦朗（上海）医疗器材贸易有限公司', 'Data Analyst - 质量数据分析师', '上海', NULL, NULL, '1. Responsibility
@@ -5770,11 +5770,11 @@ You will do:
 2. Build and enhance dashboards and reports for different business functions(marketing, sales, services, etc.)
 3. Collaborate with other teams, dig out problems and explore opportunities from business insights using statistic analysis and machine learning, to help boost EF business.
 Qualifications:
-1. Bachelor\'s degree in Computer Science with Mathematics and Statistic or equivalent subject, experience in data analysis is a plus.
+1. Bachelor''s degree in Computer Science with Mathematics and Statistic or equivalent subject, experience in data analysis is a plus.
 2. Familiar with relational database and data process tools/programming languages, like SQL, Python, ETL. Knowledge and experience in machine learning is a plus.
 3. Strong analytical and problem-solving skills paired with the ability to develop creative and efficient solutions.', 'open', NULL);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '数据分析师' LIMIT 1), '苏州维信电子有限公司', '数据分析师（2020应届毕业生）', '苏州-吴中区', '4.5-6千/月', NULL, '1.构建数据产品，负责各类数据报告的开发、应用、监控优化，保证数据产品的实用性及可衡量性，支撑公司业务发展和决策；
-Build data products, responsible for the development, application, monitoring and optimization of various data reports, ensure the practicability and scalability of data products, and support the company\'s business development and decision-making;
+Build data products, responsible for the development, application, monitoring and optimization of various data reports, ensure the practicability and scalability of data products, and support the company''s business development and decision-making;
 2.对用户进行数据工程方面的培训，确保用户能够独立完成需求调查；
 Conduct data engineering training for users to ensure that users can independently complete the demand survey;
 3.帮助数据分析人员准备数据和开发端到端数据管道；
@@ -5955,8 +5955,8 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 7.Will consolidate, validate and investigate big data from multiple sources to find and deliver actionable insights to business partners and to upper management to make informed business decisions.
 8.Create data driven attribution statistical models of Marketing touches and customer responses to measure and maximize ROI
 Requirements:
-1.Bachelor\'s Degree required
-2.More than 3-4 years\' experience in data analysis, familiar with E commerce key channels.
+1.Bachelor''s Degree required
+2.More than 3-4 years'' experience in data analysis, familiar with E commerce key channels.
 3.Attention to detail & excellence-pursuing
 4.Strong analytical skills to analyze and interpret high amount of data and the implications
 5.Proficient in Microsoft Office (Word, Excel, PPT, etc.)
@@ -5983,17 +5983,17 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 3.Excellent computer skills, proficiency in Excel;
 4.Proactive and team spirit.
 Education/Certification Requirements:
-Bachelor\'s degree or above, major in Human Resources, Mathematics & Statistics, Economics is preferred.
+Bachelor''s degree or above, major in Human Resources, Mathematics & Statistics, Economics is preferred.
 Preferred Skills/Qualifications:
 1.Data analysis, C&B or HR consulting firm working experience;
 2.Ability to write Macro in Excel.
 Position details:
 1.Provide functional support for clients in HR system implementation;
-2.Be responsible for customer data\'s preparation, transform and import based upon detailed specifications;
-3.Maintain and update the data in clients\' accounts timely;
+2.Be responsible for customer data''s preparation, transform and import based upon detailed specifications;
+3.Maintain and update the data in clients'' accounts timely;
 4.Support and perform compensation data analysis;
 5.Quickly respond to inquiries from consultants and ensure the data accuracy;
-6. Understand clients\' request, diagnose or test all kinds of data conversions, imports, and interface files.', 'open', NULL);
+6. Understand clients'' request, diagnose or test all kinds of data conversions, imports, and interface files.', 'open', NULL);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '数据分析师' LIMIT 1), '昆山千金电子有限公司', '数据分析师', '昆山', '0.8-1万/月', NULL, '千金电子成立于2007年12月，是一家创新型商贸企业，主营进口品牌连接器的代理销售，是由一群有丰富行业经验的精英创立的供应链公司。现有员工近百人，主营进囗连接器包含了TE、JST、 MOLEX YAZANI矢崎、KET、 SUMITOMO住友等行业知名品牌。
 公司的用户群体集中在电子行业，主要以家电、汽车、电梯、通讯、工控、3C数码、自动化设备为主。在全国设有多个分公司，业务辐射多个国家和地区。自建上万平米智能高效仓储基地，备有现货型号上万款，再配合先进高效的信息化系统，把交期从之前的60天~90天缩短到3天左右，所以千金的特点就是快！
 我们的企业文化：
@@ -8152,7 +8152,7 @@ INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pi
 INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 8, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '测试工程师' LIMIT 1), '成都育碧电脑软件有限公司', 'Development Tester 软件开发测试工程师', '成都-高新区', NULL, NULL, '成都育碧正在招聘软件测试工程师。你将加入的是一个为育碧全球工作室开发游戏数据分析工具产品的团队。他们的产品将帮助育碧AAA游戏团队分析在线游戏大数据，并做出数据驱动的决策。你将和开发、运维团队紧密合作，通过手动及自动测试确保产品质量满足用户需求。
 Ubisoft Chengdu is looking for a development tester to support the internal users of Ubisoft internal data products. The products are helping Ubisoft AAA online game teams analyze their big data and make data driven decisions.
-The Person will work closely with development team and operation team. You will conduct manual and automated tests to ensure the deliverables created by development team fit product design and user\'s requirements. You will also write test report, analysis the product quality and drive the product quality improvement.', 'open', NULL);
+The Person will work closely with development team and operation team. You will conduct manual and automated tests to ensure the deliverables created by development team fit product design and user''s requirements. You will also write test report, analysis the product quality and drive the product quality improvement.', 'open', NULL);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '测试工程师' LIMIT 1), '广州黑格智造信息科技有限公司', '嵌入式软件测试工程师(000582)', '广州', '1.5-2万/月', NULL, '你正在寻找新的挑战？
 你创造力爆表却没有一展风采的平台？
 你渴望学习新技术来突破自我的界限？

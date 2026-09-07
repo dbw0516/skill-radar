@@ -35,10 +35,11 @@ EXISTING_SKILLS = {
 
 
 def esc(s):
-    """MySQL 字符串转义：先转反斜杠，再转单引号。"""
+    """MySQL 字符串转义：反斜杠转义 + 单引号双写（不用 \\' ——
+    mysql 命令行客户端读取 .sql 文件时对 \\' 有解析歧义，实测会报 "Unknown command"）。"""
     if s is None:
         return "NULL"
-    s = str(s).replace("\\", "\\\\").replace("'", "\\'")
+    s = str(s).replace("\\", "\\\\").replace("'", "''")
     return f"'{s}'"
 
 

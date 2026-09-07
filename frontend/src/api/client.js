@@ -14,5 +14,20 @@ async function request(path, options = {}) {
 export const api = {
   listSkills: () => request('/api/skills'),
   listJobCategories: () => request('/api/job-categories'),
-  // 后续按同样的模式补充：差距分析、学习路径、测评提交等接口
+  listPostings: (categoryId, page = 0, size = 20) =>
+    request(`/api/job-categories/${categoryId}/postings?page=${page}&size=${size}`),
+
+  // ②技能差距分析引擎
+  gapAnalysis: (categoryId, userId = 1) =>
+    request(`/api/gap-analysis?categoryId=${categoryId}&userId=${userId}`),
+
+  // ③学习路径规划引擎
+  learningPath: (categoryId, userId = 1) =>
+    request(`/api/learning-path?categoryId=${categoryId}&userId=${userId}`),
+
+  // ④资料与测评匹配引擎
+  skillResources: (skillId) => request(`/api/skills/${skillId}/resources`),
+  skillQuestions: (skillId) => request(`/api/skills/${skillId}/questions`),
+  submitQuiz: (payload) =>
+    request('/api/quiz-attempts', { method: 'POST', body: JSON.stringify(payload) }),
 }

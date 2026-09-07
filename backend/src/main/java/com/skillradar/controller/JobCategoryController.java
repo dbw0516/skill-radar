@@ -1,11 +1,13 @@
 package com.skillradar.controller;
 
 import com.skillradar.entity.JobCategory;
+import com.skillradar.entity.JobPosting;
 import com.skillradar.repository.JobCategoryRepository;
+import com.skillradar.repository.JobPostingRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -15,9 +17,19 @@ import java.util.List;
 public class JobCategoryController {
 
     private final JobCategoryRepository jobCategoryRepository;
+    private final JobPostingRepository jobPostingRepository;
 
     @GetMapping
     public List<JobCategory> listCategories() {
         return jobCategoryRepository.findAll();
+    }
+
+    /** ①岗位推荐引擎的展示层：某个类别下的具体招聘信息，默认只看"在招"的，分页避免一次性把上百条都拖回来。 */
+    @GetMapping("/{id}/postings")
+    public Page<JobPosting> postings(@PathVariable Long id,
+                                      @RequestParam(defaultValue = "0") int page,
+                                      @RequestParam(defaultValue = "20") int size) {
+        return jobPostingRepository.findByCategoryIdAndStatus(
+                id, JobPosting.Status.open, PageRequest.of(page, size));
     }
 }

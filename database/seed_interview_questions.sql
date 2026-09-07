@@ -90,7 +90,7 @@ INSERT INTO interview_questions (skill_id, question_text, key_points, source) VA
 INSERT INTO interview_questions (skill_id, question_text, key_points, source) VALUES ((SELECT id FROM skills WHERE name = 'MySQL' LIMIT 1), 'varchar(100) 和 varchar(10) 的区别？', '存储相同数据时占用空间相同；但 varchar(100) 会消耗更多内存（排序、临时表）', 'JavaGuide');
 INSERT INTO interview_questions (skill_id, question_text, key_points, source) VALUES ((SELECT id FROM skills WHERE name = 'MySQL' LIMIT 1), 'decimal 和 float/double 的区别？', 'decimal 精确（财务）；float/double 近似（科学计算）', 'JavaGuide');
 INSERT INTO interview_questions (skill_id, question_text, key_points, source) VALUES ((SELECT id FROM skills WHERE name = 'MySQL' LIMIT 1), 'datetime 和 timestamp 的区别？如何选择？', 'datetime：8 字节、范围大；timestamp：4 字节、自动更新、受时区影响', 'JavaGuide');
-INSERT INTO interview_questions (skill_id, question_text, key_points, source) VALUES ((SELECT id FROM skills WHERE name = 'MySQL' LIMIT 1), 'NULL 和 \'\' 的区别？', 'NULL 表示未知；\'\' 是空字符串（确定的值）', 'JavaGuide');
+INSERT INTO interview_questions (skill_id, question_text, key_points, source) VALUES ((SELECT id FROM skills WHERE name = 'MySQL' LIMIT 1), 'NULL 和 '''' 的区别？', 'NULL 表示未知；'''' 是空字符串（确定的值）', 'JavaGuide');
 INSERT INTO interview_questions (skill_id, question_text, key_points, source) VALUES ((SELECT id FROM skills WHERE name = 'MySQL' LIMIT 1), 'MySQL 支持哪些存储引擎？默认使用哪个？', 'InnoDB（默认）、MyISAM、Memory、Archive 等', 'JavaGuide');
 INSERT INTO interview_questions (skill_id, question_text, key_points, source) VALUES ((SELECT id FROM skills WHERE name = 'MySQL' LIMIT 1), 'MyISAM 和 InnoDB 有什么区别？', 'InnoDB：事务、行锁、外键、聚簇索引；MyISAM：表锁、全文索引、不支持事务', 'JavaGuide');
 INSERT INTO interview_questions (skill_id, question_text, key_points, source) VALUES ((SELECT id FROM skills WHERE name = 'MySQL' LIMIT 1), '索引是什么？', '数据结构；加快查询；类似书的目录', 'JavaGuide');
@@ -102,7 +102,7 @@ INSERT INTO interview_questions (skill_id, question_text, key_points, source) VA
 INSERT INTO interview_questions (skill_id, question_text, key_points, source) VALUES ((SELECT id FROM skills WHERE name = 'MySQL' LIMIT 1), '联合索引及其最左前缀原则？', '查询条件必须从索引最左列开始匹配', 'JavaGuide');
 INSERT INTO interview_questions (skill_id, question_text, key_points, source) VALUES ((SELECT id FROM skills WHERE name = 'MySQL' LIMIT 1), 'SELECT * 会导致索引失效吗？', '可能；覆盖索引时不会；否则需要回表', 'JavaGuide');
 INSERT INTO interview_questions (skill_id, question_text, key_points, source) VALUES ((SELECT id FROM skills WHERE name = 'MySQL' LIMIT 1), '哪些字段适合创建索引？', 'WHERE/JOIN/ORDER BY/GROUP BY 的列；高选择性', 'JavaGuide');
-INSERT INTO interview_questions (skill_id, question_text, key_points, source) VALUES ((SELECT id FROM skills WHERE name = 'MySQL' LIMIT 1), '索引失效的原因有哪些？', '函数/运算操作列、LIKE \'%xx\'、OR 条件、类型隐式转换', 'JavaGuide');
+INSERT INTO interview_questions (skill_id, question_text, key_points, source) VALUES ((SELECT id FROM skills WHERE name = 'MySQL' LIMIT 1), '索引失效的原因有哪些？', '函数/运算操作列、LIKE ''%xx''、OR 条件、类型隐式转换', 'JavaGuide');
 INSERT INTO interview_questions (skill_id, question_text, key_points, source) VALUES ((SELECT id FROM skills WHERE name = 'MySQL' LIMIT 1), '什么是事务？', '一组操作，要么全成功，要么全失败', 'JavaGuide');
 INSERT INTO interview_questions (skill_id, question_text, key_points, source) VALUES ((SELECT id FROM skills WHERE name = 'MySQL' LIMIT 1), '并发事务带来哪些问题？', '脏读、丢失修改、不可重复读、幻读', 'JavaGuide');
 INSERT INTO interview_questions (skill_id, question_text, key_points, source) VALUES ((SELECT id FROM skills WHERE name = 'MySQL' LIMIT 1), 'SQL 标准定义了哪些事务隔离级别？', '读未提交→读已提交→可重复读→串行化', 'JavaGuide');
