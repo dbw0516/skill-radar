@@ -97,13 +97,9 @@ npm run dev
 
 团队不在同一个局域网，没法直接用内网 IP 互相访问，所以架构是：**一台电脑（"主机"）跑 MySQL + 后端，其他人只在自己电脑上跑前端**，把前端的接口地址指向主机开出来的公网地址。这样谁注册的账号，数据都落在主机那台电脑的数据库里，不会散成四份互相看不见的数据。
 
-主机（存数据库的这台电脑）操作：
+主机（存数据库的这台电脑）操作：**双击 `tools\start-server.bat`**（别直接双击 `.ps1`，Windows 默认不会真的执行它，双击了没反应就是这个原因）。
 
-```powershell
-powershell -ExecutionPolicy Bypass -File tools\start-server.ps1
-```
-
-会依次拉起本地 MySQL、后端，再用 [Cloudflare Tunnel](https://github.com/cloudflare/cloudflared)（`winget install Cloudflare.cloudflared`，免注册账号）把 `localhost:8080` 开成一个 `https://xxx.trycloudflare.com` 的公网地址，跑完会打印出来。
+会依次拉起本地 MySQL、后端，再用 [Cloudflare Tunnel](https://github.com/cloudflare/cloudflared)（`winget install Cloudflare.cloudflared`，免注册账号）把 `localhost:8080` 开成一个 `https://xxx.trycloudflare.com` 的公网地址，跑完会打印出来，窗口不会自动关，方便你看地址、复制。
 
 其他团队成员操作：把这个地址填进自己的 `frontend/.env.local`：
 
