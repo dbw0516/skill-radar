@@ -82,9 +82,9 @@ INSERT INTO questions (skill_id, question_text, options, correct_index, difficul
   (5, 'MySQL 中，为提升查询速度，通常会为频繁查询的列添加什么？',
      JSON_ARRAY('触发器', '视图', '索引', '存储过程'), 2, 2);
 
--- 示例账号，仅供本地联调使用（密码占位，正式接入注册接口后删除本行）
+-- 示例账号，仅供本地联调使用：demo@example.com / demo1234（BCrypt 哈希，和 /api/auth/login 兼容）
 INSERT INTO users (id, email, password_hash, nickname, major_id, target_category_id) VALUES
-  (1, 'demo@example.com', '__replace_with_real_hash__', '演示账号', 1, 1);
+  (1, 'demo@example.com', '$2b$10$oJzChRVWOq3eDd1Wt0I/veKZrDxtyXFS2hvowi.saWzVkDKTiukoK', '演示账号', 1, 1);
 
 -- 该用户已掌握 HTML/CSS（与目标岗位无关，用于演示"差距=目标−已掌握"只算相关技能）
 INSERT INTO user_skills (user_id, skill_id, status) VALUES

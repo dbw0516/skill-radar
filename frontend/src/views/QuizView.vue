@@ -3,12 +3,14 @@ import { ref, reactive, computed, onMounted, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { api } from '@/api/client'
 import { useUserProfileStore } from '@/stores/userProfile'
+import { useAuthStore } from '@/stores/auth'
 
 // 对应④资料与测评匹配引擎：学习资料 + 在线测评答题。
 // 提交后端会判分，通过时把 user_skills.status 改成 quiz_verified——
 // 这就是设计文档里反复提到的"回写技能画像"闭环，回②差距分析页刷新一下就能看到变化。
 const route = useRoute()
 const profile = useUserProfileStore()
+const auth = useAuthStore()
 
 const skillId = computed(() => Number(route.query.skillId))
 const skillName = computed(() => route.query.name || '')
@@ -60,7 +62,7 @@ async function submit() {
   error.value = ''
   try {
     result.value = await api.submitQuiz({
-      userId: 1,
+      userId: auth.userId,
       skillId: skillId.value,
       answers: questions.value.map((q) => ({ questionId: q.id, selectedIndex: answers[q.id] })),
     })

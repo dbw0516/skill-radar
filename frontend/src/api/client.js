@@ -6,7 +6,14 @@ async function request(path, options = {}) {
     ...options,
   })
   if (!res.ok) {
-    throw new Error(`请求失败：${path} (${res.status})`)
+    let message = `请求失败 (${res.status})`
+    try {
+      const body = await res.json()
+      if (body?.message) message = body.message
+    } catch {
+      // 响应体不是 JSON（比如后端没启动时网关/浏览器给的错误页），用上面的默认提示
+    }
+    throw new Error(message)
   }
   return res.status === 204 ? null : res.json()
 }
@@ -17,12 +24,21 @@ export const api = {
   listPostings: (categoryId, page = 0, size = 20) =>
     request(`/api/job-categories/${categoryId}/postings?page=${page}&size=${size}`),
 
+  // 登录注册
+  register: (payload) => request('/api/auth/register', { method: 'POST', body: JSON.stringify(payload) }),
+  login: (payload) => request('/api/auth/login', { method: 'POST', body: JSON.stringify(payload) }),
+  setTargetCategory: (userId, categoryId) =>
+    request(`/api/auth/users/${userId}/target-category`, {
+      method: 'PUT',
+      body: JSON.stringify({ categoryId }),
+    }),
+
   // ②技能差距分析引擎
-  gapAnalysis: (categoryId, userId = 1) =>
+  gapAnalysis: (categoryId, userId) =>
     request(`/api/gap-analysis?categoryId=${categoryId}&userId=${userId}`),
 
   // ③学习路径规划引擎
-  learningPath: (categoryId, userId = 1) =>
+  learningPath: (categoryId, userId) =>
     request(`/api/learning-path?categoryId=${categoryId}&userId=${userId}`),
 
   // ④资料与测评匹配引擎

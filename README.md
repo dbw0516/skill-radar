@@ -20,9 +20,10 @@
 - [x] ①②③④ 四个引擎已实现并跑通完整闭环：岗位推荐、差距分析（集合差+按权重排序）、学习路径（拓扑排序分层）、资料+测评（判分后回写 `user_skills`，下一次差距分析立刻反映变化）
 - [x] 前端四个页面全部接入真实接口（技能差距雷达图、学习路径时间线、在线答题）
 - [x] 本机装了 JDK 17 + Maven + 本地 MySQL，完整跑通一遍：建库 → 导入全部种子数据 → 启动后端 → 前端点击操作 → 提交测评 → 确认画像回写生效
+- [x] 登录 / 注册：`/api/auth/register`、`/api/auth/login`，密码 BCrypt 哈希存储，前端有对应页面，`user_skills`/`target_category` 都挂在真实用户上而不是写死的演示账号
+- [x] 团队共享数据库：主机用 Cloudflare Tunnel 把本地后端开一个公网地址，其他人本地跑前端、把接口指向这个地址，注册的数据统一落在主机这台电脑的 MySQL 里，见下方「团队共享」
 - [ ] 技能词典扩展到 Java 后端以外的类别（已识别 78 个候选技能名，见开发手册）
 - [ ] 选择题题库（`questions` 表当前仅 3 道示例，覆盖不够，需要人工补齐每个技能 5~10 道）
-- [ ] 登录/注册（现在前端统一用种子数据里的演示账号 id=1）
 
 ## MVP 策略
 
@@ -67,6 +68,9 @@ mvn spring-boot:run
 
 | 接口 | 说明 |
 |---|---|
+| `POST /api/auth/register` | 注册：email/password/nickname，密码 BCrypt 哈希后存 |
+| `POST /api/auth/login` | 登录，成功返回用户信息（没有真正的会话令牌，见下方说明） |
+| `PUT /api/auth/users/{id}/target-category` | 把"当前目标岗位"持久化到这个用户身上 |
 | `GET /api/job-categories` | ① 岗位类别列表 |
 | `GET /api/job-categories/{id}/postings` | ① 该类别下的具体招聘信息，分页 |
 | `GET /api/gap-analysis?categoryId=&userId=` | ② 差距分析：目标岗位技能，标注是否已掌握，按权重排序 |
@@ -75,7 +79,7 @@ mvn spring-boot:run
 | `GET /api/skills/{id}/questions` | ④ 该技能的测评题（不含正确答案） |
 | `POST /api/quiz-attempts` | ④ 提交作答，判分并在通过时把 `user_skills` 更新为 `quiz_verified` |
 
-`userId` 目前都有默认值 1（种子数据里的演示账号），还没接登录。
+**登录状态目前是简化版**：登录成功后端只是把用户信息返回给前端，前端存进 `localStorage` 当"已登录"标记，之后请求把 `userId` 带上——没有真正的会话令牌/过期机制，谁都能编个 userId 冒充别人。这个阶段先解决"能注册登录、数据能落库"，要真正防伪造再升级成 JWT。
 
 ## 前端
 
@@ -88,6 +92,33 @@ npm run dev
 打开 http://localhost:5173 ，四个页面都已接入真实接口：岗位推荐（选类别看具体招聘信息）→ 技能差距（雷达图 + 明细）→ 学习路径（按阶段的技能时间线）→ 在线测评（资料 + 答题，提交后回写画像）。后端没启动时会提示"确认后端是否已启动"。
 
 需要自定义后端地址时，复制 `frontend/.env.example` 为 `.env.local` 修改 `VITE_API_BASE_URL`。
+
+## 团队共享数据库
+
+团队不在同一个局域网，没法直接用内网 IP 互相访问，所以架构是：**一台电脑（"主机"）跑 MySQL + 后端，其他人只在自己电脑上跑前端**，把前端的接口地址指向主机开出来的公网地址。这样谁注册的账号，数据都落在主机那台电脑的数据库里，不会散成四份互相看不见的数据。
+
+主机（存数据库的这台电脑）操作：
+
+```powershell
+powershell -ExecutionPolicy Bypass -File tools\start-server.ps1
+```
+
+会依次拉起本地 MySQL、后端，再用 [Cloudflare Tunnel](https://github.com/cloudflare/cloudflared)（`winget install Cloudflare.cloudflared`，免注册账号）把 `localhost:8080` 开成一个 `https://xxx.trycloudflare.com` 的公网地址，跑完会打印出来。
+
+其他团队成员操作：把这个地址填进自己的 `frontend/.env.local`：
+
+```
+VITE_API_BASE_URL=https://xxx.trycloudflare.com
+```
+
+然后正常 `npm run dev`，注册/登录/答题都会请求到主机那边，数据落在主机的 MySQL 里。
+
+**这不是永久部署，是"先能跑起来"的临时方案**，有这几个限制，用之前要清楚：
+
+- 隧道地址每次重跑 `start-server.ps1` 都会换一个新的（免费不记名隧道的限制），换了要重新发到群里、大家改一下 `.env.local`。
+- 主机电脑必须开着、MySQL/后端/隧道三个进程不能被关掉，团队才连得上；电脑一关，所有人都用不了。
+- 这个地址只在知道的人手里，但本质是公网可访问，没有额外的访问控制/限流。对内部测试够用，但别把它当成正式发布。
+- 后续真要稳定、随时能用，需要部署到云服务器或 PaaS（比如 Railway、阿里云/腾讯云学生机）——那个需要团队自己开云账号（可能涉及付费，我这边没法替你们开户），等确实需要了再做。
 
 ## 数据收集
 

@@ -16,7 +16,13 @@ spring:
 
 server:
   port: 8080
+  error:
+    include-message: always      # 不然 ResponseStatusException 里写的具体原因（"邮箱已注册"等）不会出现在响应体里
+    include-stacktrace: never    # 别把 Java 堆栈跟着错误信息一起发给前端
 
 app:
   cors:
-    allowed-origins: http://localhost:5173   # Vue (Vite) 本地开发服务器地址
+    # 每个人的前端都在各自电脑本地跑 npm run dev，浏览器发出的 Origin 头始终是 http://localhost:5173，
+    # 跟后端部署在哪、通过什么地址被访问到没关系——所以这里不用跟着改。
+    # 如果以后前端也整体部署上线了，把那个地址加进来（逗号分隔）。
+    allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:5173}

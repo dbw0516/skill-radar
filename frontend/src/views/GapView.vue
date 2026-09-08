@@ -2,11 +2,13 @@
 import { ref, computed, onMounted, watch } from 'vue'
 import { api } from '@/api/client'
 import { useUserProfileStore } from '@/stores/userProfile'
+import { useAuthStore } from '@/stores/auth'
 
 // 对应②技能差距分析引擎的展示层：技能差距雷达图 + 明细列表。
 // 雷达图按「用户画像怎么建」一节的思路，把细粒度技能按 domain 聚合成几个维度再画，
 // 不直接画几十个技能点。
 const profile = useUserProfileStore()
+const auth = useAuthStore()
 const items = ref([])
 const loading = ref(false)
 const error = ref('')
@@ -16,7 +18,7 @@ async function load() {
   loading.value = true
   error.value = ''
   try {
-    items.value = await api.gapAnalysis(profile.targetCategoryId)
+    items.value = await api.gapAnalysis(profile.targetCategoryId, auth.userId)
   } catch (e) {
     error.value = e.message
   } finally {

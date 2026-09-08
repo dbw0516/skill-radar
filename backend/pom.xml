@@ -41,6 +41,12 @@
       <scope>runtime</scope>
     </dependency>
 
+    <!-- 只要 BCrypt 密码哈希，不引入完整 Spring Security（会自动给所有接口加登录墙，MVP 阶段没必要）-->
+    <dependency>
+      <groupId>org.springframework.security</groupId>
+      <artifactId>spring-security-crypto</artifactId>
+    </dependency>
+
     <dependency>
       <groupId>org.projectlombok</groupId>
       <artifactId>lombok</artifactId>

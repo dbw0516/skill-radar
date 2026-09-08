@@ -2,10 +2,12 @@
 import { ref, onMounted, watch } from 'vue'
 import { api } from '@/api/client'
 import { useUserProfileStore } from '@/stores/userProfile'
+import { useAuthStore } from '@/stores/auth'
 
 // 对应③学习路径规划引擎的展示层：按阶段（拓扑排序分层）展示，
 // 每个技能点击进去是对应的资料 + 测评（④引擎），不在这一页展开。
 const profile = useUserProfileStore()
+const auth = useAuthStore()
 const stages = ref([])
 const loading = ref(false)
 const error = ref('')
@@ -15,7 +17,7 @@ async function load() {
   loading.value = true
   error.value = ''
   try {
-    stages.value = await api.learningPath(profile.targetCategoryId)
+    stages.value = await api.learningPath(profile.targetCategoryId, auth.userId)
   } catch (e) {
     error.value = e.message
   } finally {
