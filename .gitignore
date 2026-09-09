@@ -30,3 +30,6 @@ venv/
 
 # logs
 *.log
+
+# local dev scratch (start-server.ps1)
+tools/.springboot-tmp/

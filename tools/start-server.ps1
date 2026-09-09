@@ -31,19 +31,34 @@ if (Test-Port 3306) {
 }
 
 Write-Host "2/3 后端（Spring Boot）..." -ForegroundColor Cyan
+$backendLog = "$root\tools\backend.log"
 if (Test-Port 8080) {
     Write-Host "   已经在跑了，跳过。"
 } else {
-    Start-Process -FilePath "mvn" -ArgumentList "spring-boot:run" -WorkingDirectory "$root\backend" -WindowStyle Minimized
+    if (Test-Path $backendLog) { Remove-Item $backendLog -Force }
+    # 两个坑：
+    # 1) mvn 在 Windows 上是 mvn.cmd，Start-Process -FilePath "mvn" 经常悄悄启动失败（不报错，
+    #    进程也不起来），得包一层 cmd.exe /c 才可靠。
+    # 2) Spring Boot 会在系统临时目录下建一个按路径算哈希命名的工作目录，并检查它的属主必须是
+    #    BUILTIN\Administrators——如果这个目录之前被"以不同权限上下文跑的进程"（比如换了个终端/
+    #    换了种启动方式）创建过，属主对不上，直接报 IllegalStateException 启动失败。把临时目录
+    #    指到项目自己的 tools\.springboot-tmp 下，脱离系统共享临时目录，就不会再撞见这个问题。
+    #    用环境变量传给子进程，不走命令行拼接——三层 shell（PowerShell -> cmd.exe -> mvn 的 -D
+    #    参数）嵌套转义引号极其容易出错，环境变量能绕开这整个问题。
+    $bootTmp = "$root\tools\.springboot-tmp"
+    New-Item -ItemType Directory -Force -Path $bootTmp | Out-Null
+    $env:JAVA_TOOL_OPTIONS = "-Djava.io.tmpdir=$bootTmp"
+    Start-Process -FilePath "cmd.exe" -ArgumentList "/c", "mvn spring-boot:run > `"$backendLog`" 2>&1" `
+        -WorkingDirectory "$root\backend" -WindowStyle Minimized
     Write-Host "   等后端启动，大概几秒钟..."
     $ready = $false
-    for ($i = 0; $i -lt 30; $i++) {
+    for ($i = 0; $i -lt 40; $i++) {
         Start-Sleep -Seconds 1
         if (Test-Port 8080) { $ready = $true; break }
     }
     if (-not $ready) {
-        Write-Host "后端好像没起来。常见原因：没装 JDK17/Maven，或者 mvn 不在 PATH 里——" -ForegroundColor Red
-        Write-Host "打开一个新的 PowerShell 窗口敲 mvn -v 看看有没有反应，装好了重开一个终端再跑这个脚本。" -ForegroundColor Red
+        Write-Host "后端好像没起来，看日志：$backendLog" -ForegroundColor Red
+        Write-Host "常见原因：没装 JDK17/Maven（新开个终端敲 mvn -v 看看），或者日志里能看到具体报错。" -ForegroundColor Red
         exit 1
     }
 }
