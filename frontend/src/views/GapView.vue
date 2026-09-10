@@ -3,12 +3,14 @@ import { ref, computed, onMounted, watch } from 'vue'
 import { api } from '@/api/client'
 import { useUserProfileStore } from '@/stores/userProfile'
 import { useAuthStore } from '@/stores/auth'
+import TabBar from '@/components/TabBar.vue'
 
-// 对应②技能差距分析引擎的展示层：技能差距雷达图 + 明细列表。
+// 对应②技能差距分析引擎的展示层：技能差距雷达图 + 明细列表，分两个 tab 展示。
 // 雷达图按「用户画像怎么建」一节的思路，把细粒度技能按 domain 聚合成几个维度再画，
 // 不直接画几十个技能点。
 const profile = useUserProfileStore()
 const auth = useAuthStore()
+const activeTab = ref('radar')
 const items = ref([])
 const loading = ref(false)
 const error = ref('')
@@ -44,8 +46,8 @@ const gapList = computed(() => items.value.filter((i) => !i.mastered))
 const masteredList = computed(() => items.value.filter((i) => i.mastered))
 
 // --- 雷达图几何：N 个维度均分圆周，半径按 score(0~100) 映射 ---
-const RADIUS = 100
-const CENTER = 130
+const RADIUS = 110
+const CENTER = 140
 function axisPoint(i, n, r) {
   const angle = (Math.PI * 2 * i) / n - Math.PI / 2
   return [CENTER + r * Math.cos(angle), CENTER + r * Math.sin(angle)]
@@ -79,38 +81,44 @@ const gridRings = [0.25, 0.5, 0.75, 1].map((f) => {
       <p v-if="loading">加载中…</p>
       <p v-else-if="error" class="error">{{ error }}</p>
       <template v-else-if="items.length">
-        <div class="radar-wrap">
-          <svg viewBox="0 0 260 260" width="260" height="260" v-if="domains.length >= 3">
+        <TabBar
+          :tabs="[{ key: 'radar', label: '技能雷达图' }, { key: 'list', label: '技能明细' }]"
+          v-model="activeTab"
+        />
+
+        <div v-if="activeTab === 'radar'" class="radar-wrap">
+          <svg viewBox="0 0 280 280" width="280" height="280" v-if="domains.length >= 3">
             <polygon v-for="(ring, i) in gridRings" :key="i" :points="ring" class="grid-ring" />
-            <line v-for="(a, i) in axisLines" :key="'ax' + i" x1="130" y1="130" :x2="a.x" :y2="a.y" class="axis-line" />
+            <line v-for="(a, i) in axisLines" :key="'ax' + i" x1="140" y1="140" :x2="a.x" :y2="a.y" class="axis-line" />
             <polygon :points="polygonPoints" class="score-polygon" />
             <text v-for="(a, i) in axisLines" :key="'lbl' + i" :x="a.lx" :y="a.ly" class="axis-label" text-anchor="middle">
               {{ a.label }}（{{ a.score }}%）
             </text>
           </svg>
-          <p v-else class="hint">维度不足 3 个，暂不画雷达图，看下面的明细列表就行。</p>
+          <p v-else class="hint">维度不足 3 个，暂不画雷达图，看"技能明细" tab 就行。</p>
+        </div>
 
-          <div class="lists">
-            <div>
-              <h3>待学（{{ gapList.length }}）</h3>
-              <ul>
-                <li v-for="g in gapList" :key="g.skillId">
-                  <span class="name">{{ g.name }}</span>
-                  <span class="weight">权重 {{ Math.round(g.weight * 100) }}%</span>
-                </li>
-              </ul>
-            </div>
-            <div>
-              <h3>已掌握（{{ masteredList.length }}）</h3>
-              <ul>
-                <li v-for="g in masteredList" :key="g.skillId">
-                  <span class="name">{{ g.name }}</span>
-                  <span class="badge" :class="g.masteredSource">{{ g.masteredSource === 'quiz_verified' ? '已认证' : '自评' }}</span>
-                </li>
-              </ul>
-            </div>
+        <div v-else class="lists">
+          <div>
+            <h3>待学（{{ gapList.length }}）</h3>
+            <ul>
+              <li v-for="g in gapList" :key="g.skillId">
+                <span class="name">{{ g.name }}</span>
+                <span class="weight">权重 {{ Math.round(g.weight * 100) }}%</span>
+              </li>
+            </ul>
+          </div>
+          <div>
+            <h3>已掌握（{{ masteredList.length }}）</h3>
+            <ul>
+              <li v-for="g in masteredList" :key="g.skillId">
+                <span class="name">{{ g.name }}</span>
+                <span class="badge" :class="g.masteredSource">{{ g.masteredSource === 'quiz_verified' ? '已认证' : '自评' }}</span>
+              </li>
+            </ul>
           </div>
         </div>
+
         <RouterLink to="/path" class="cta">去看学习路径 →</RouterLink>
       </template>
       <p v-else>这个岗位类别还没有技能数据。</p>
@@ -120,7 +128,7 @@ const gridRings = [0.25, 0.5, 0.75, 1].map((f) => {
 
 <style scoped>
 h1 { margin-bottom: 0.5rem; }
-.radar-wrap { display: flex; gap: 2rem; flex-wrap: wrap; align-items: flex-start; }
+.radar-wrap { display: flex; justify-content: center; }
 .grid-ring { fill: none; stroke: #e0e0e0; stroke-width: 1; }
 .axis-line { stroke: #e0e0e0; stroke-width: 1; }
 .score-polygon { fill: rgba(43, 110, 92, 0.25); stroke: #2b6e5c; stroke-width: 2; }

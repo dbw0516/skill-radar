@@ -29,6 +29,12 @@ export const api = {
   },
   postingDetail: (id) => request(`/api/postings/${id}`),
 
+  // 收藏
+  listFavorites: (userId) => request(`/api/users/${userId}/favorites`),
+  checkFavorite: (userId, postingId) => request(`/api/users/${userId}/favorites/${postingId}`),
+  addFavorite: (userId, postingId) => request(`/api/users/${userId}/favorites/${postingId}`, { method: 'PUT' }),
+  removeFavorite: (userId, postingId) => request(`/api/users/${userId}/favorites/${postingId}`, { method: 'DELETE' }),
+
   // 登录注册
   register: (payload) => request('/api/auth/register', { method: 'POST', body: JSON.stringify(payload) }),
   login: (payload) => request('/api/auth/login', { method: 'POST', body: JSON.stringify(payload) }),

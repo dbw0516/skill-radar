@@ -2,10 +2,13 @@
 import { ref, reactive, computed, onMounted } from 'vue'
 import { api } from '@/api/client'
 import { useAuthStore } from '@/stores/auth'
+import TabBar from '@/components/TabBar.vue'
 
 // 个人中心：基本资料（含所在地区/意向就业地区，供①岗位推荐做地点排序）+ 技能自评清单
 // （设计文档「用户画像怎么建」一节说的"初始化来自专业选择 + 自评清单"，这里就是那个入口）。
+// 两块内容分开放在 tab 里，不用一次性把整页拉得很长。
 const auth = useAuthStore()
+const activeTab = ref('basic')
 
 const majors = ref([])
 const form = reactive({ nickname: '', majorId: null, location: '', targetLocation: '' })
@@ -102,28 +105,28 @@ async function saveSkills() {
 <template>
   <section>
     <h1>个人中心</h1>
+    <TabBar
+      :tabs="[{ key: 'basic', label: '基本资料' }, { key: 'skills', label: '技能自评' }]"
+      v-model="activeTab"
+    />
 
-    <div class="card">
-      <h2>基本资料</h2>
-      <form @submit.prevent="saveProfile">
-        <label>昵称<input v-model="form.nickname" type="text" /></label>
-        <label>专业
-          <select v-model="form.majorId">
-            <option :value="null">未选择</option>
-            <option v-for="m in majors" :key="m.id" :value="m.id">{{ m.name }}</option>
-          </select>
-        </label>
-        <label>所在地区<input v-model="form.location" type="text" placeholder="例如：北京-朝阳区" /></label>
-        <label>意向就业地区<input v-model="form.targetLocation" type="text" placeholder="例如：北京，不填表示不限" /></label>
-        <p class="hint">意向就业地区会让"岗位推荐"页里地点匹配的招聘信息排在前面。</p>
-        <p v-if="profileError" class="error">{{ profileError }}</p>
-        <p v-if="profileSaved" class="ok">已保存。</p>
-        <button type="submit" :disabled="savingProfile">{{ savingProfile ? '保存中…' : '保存资料' }}</button>
-      </form>
-    </div>
+    <form v-if="activeTab === 'basic'" @submit.prevent="saveProfile">
+      <label>昵称<input v-model="form.nickname" type="text" /></label>
+      <label>专业
+        <select v-model="form.majorId">
+          <option :value="null">未选择</option>
+          <option v-for="m in majors" :key="m.id" :value="m.id">{{ m.name }}</option>
+        </select>
+      </label>
+      <label>所在地区<input v-model="form.location" type="text" placeholder="例如：北京-朝阳区" /></label>
+      <label>意向就业地区<input v-model="form.targetLocation" type="text" placeholder="例如：北京，不填表示不限" /></label>
+      <p class="hint">意向就业地区会让"岗位推荐"页里地点匹配的招聘信息排在前面。</p>
+      <p v-if="profileError" class="error">{{ profileError }}</p>
+      <p v-if="profileSaved" class="ok">已保存。</p>
+      <button type="submit" :disabled="savingProfile">{{ savingProfile ? '保存中…' : '保存资料' }}</button>
+    </form>
 
-    <div class="card">
-      <h2>技能自评</h2>
+    <div v-else>
       <p class="hint">勾选你已经掌握的技能——这是自评，会标"自评"角标；橙色"已认证"的是测评通过的，没法在这里取消，只能靠测评本身的表现改变。</p>
       <p v-if="skillsLoading">加载中…</p>
       <p v-else-if="skillsError" class="error">{{ skillsError }}</p>
@@ -151,8 +154,6 @@ async function saveSkills() {
 
 <style scoped>
 h1 { margin-bottom: 1rem; }
-.card { background: #fff; border: 1px solid #dbdee4; border-radius: 8px; padding: 1.2rem 1.4rem; margin-bottom: 1.2rem; }
-.card h2 { margin: 0 0 0.9rem; font-size: 1.05rem; }
 form { display: flex; flex-direction: column; gap: 0.8rem; max-width: 360px; }
 label { display: flex; flex-direction: column; gap: 0.3rem; font-size: 0.9rem; color: #5b6472; }
 input[type='text'], select { padding: 0.45rem 0.6rem; border: 1px solid #dbdee4; border-radius: 6px; font-size: 0.92rem; }

@@ -196,3 +196,15 @@ CREATE TABLE quiz_attempts (
   FOREIGN KEY (user_id) REFERENCES users(id),
   FOREIGN KEY (skill_id) REFERENCES skills(id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- ---------------------------------------------------------
+-- 收藏：用户在①岗位详情页收藏的具体招聘信息
+-- ---------------------------------------------------------
+CREATE TABLE favorites (
+  user_id     BIGINT UNSIGNED NOT NULL,
+  posting_id  BIGINT UNSIGNED NOT NULL,
+  created_at  DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (user_id, posting_id),
+  FOREIGN KEY (user_id) REFERENCES users(id),
+  FOREIGN KEY (posting_id) REFERENCES job_postings(id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
