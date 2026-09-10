@@ -13,7 +13,7 @@
 ## 当前进度
 
 - [x] 技术方案设计（数据流、学习路径算法、用户画像、岗位技能提取、数据维护策略）
-- [x] 数据库结构 `database/schema.sql`（13 张表）+ 试点种子数据 `database/seed.sql`
+- [x] 数据库结构 `database/schema.sql`（14 张表）+ 试点种子数据 `database/seed.sql`
 - [x] 真实岗位数据：天池公开数据集导入，1,202 条、覆盖 13 个岗位类别（`database/seed_real_postings.sql`）
 - [x] 面试题库：193 道（JavaGuide 来源，`database/seed_interview_questions.sql`）
 - [x] 学习资料：14 条已导入，另有 24 条待技能词典扩充后导入（`database/seed_learning_resources.sql`）
@@ -21,7 +21,7 @@
 - [x] 前端四个页面全部接入真实接口（技能差距雷达图、学习路径时间线、在线答题）
 - [x] 本机装了 JDK 17 + Maven + 本地 MySQL，完整跑通一遍：建库 → 导入全部种子数据 → 启动后端 → 前端点击操作 → 提交测评 → 确认画像回写生效
 - [x] 登录 / 注册：`/api/auth/register`、`/api/auth/login`，密码 BCrypt 哈希存储，前端有对应页面，`user_skills`/`target_category` 都挂在真实用户上而不是写死的演示账号
-- [x] 团队共享数据库：主机用 Cloudflare Tunnel 把本地后端开一个公网地址，其他人本地跑前端、把接口指向这个地址，注册的数据统一落在主机这台电脑的 MySQL 里，见下方「团队共享」
+- [x] 团队共享 + 零配置访问：主机跑一个脚本，Cloudflare Tunnel 同时把后端**和前端**开成公网地址，队友什么都不用装、不用 clone 代码，浏览器打开前端地址就能用；注册数据统一落在主机这台电脑的 MySQL 里，见下方「团队共享」
 - [ ] 技能词典扩展到 Java 后端以外的类别（已识别 78 个候选技能名，见开发手册）
 - [ ] 选择题题库（`questions` 表当前仅 3 道示例，覆盖不够，需要人工补齐每个技能 5~10 道）
 
@@ -51,7 +51,7 @@ mysql -u root -p skill_radar < database/seed_learning_resources.sql
 
 **顺序不能乱**：后三个 `seed_*.sql` 靠 `WHERE name = ...` 反查 id，得先有 `seed.sql` 建好的技能/类别才查得到。这三个都是脚本自动生成的（见 `tools/import_*.py`），改了数据源文件后重新跑脚本即可重新生成，不用手改 SQL；`job_categories.name`、`learning_resources(skill_id,url)` 都加了唯一约束，脚本用 `INSERT IGNORE`，重复执行是安全的。
 
-13 张表对应设计文档里的模块：`job_categories`/`job_postings`（岗位库，类别与具体招聘信息分层）、`skills`/`skill_prereq`（技能图谱）、`user_skills`（用户技能画像）、`posting_skills`/`job_skills`（JD 技能抽取与权重）、`learning_resources`/`questions`/`interview_questions`/`quiz_attempts`（学习资料与测评，`interview_questions` 是开放式面试题，和能自动判分的 `questions` 是两回事）。字段含义见 `schema.sql` 内注释，完整参考表见[开发手册](https://claude.ai/code/artifact/b1edeb33-f97e-44f1-9945-284ca4866116)。
+14 张表对应设计文档里的模块：`job_categories`/`job_postings`（岗位库，类别与具体招聘信息分层）、`skills`/`skill_prereq`（技能图谱）、`user_skills`（用户技能画像）、`posting_skills`/`job_skills`（JD 技能抽取与权重）、`learning_resources`/`questions`/`interview_questions`/`quiz_attempts`（学习资料与测评，`interview_questions` 是开放式面试题，和能自动判分的 `questions` 是两回事）、`favorites`（用户收藏的招聘信息）。字段含义见 `schema.sql` 内注释，完整参考表见[开发手册](https://claude.ai/code/artifact/b1edeb33-f97e-44f1-9945-284ca4866116)。
 
 ## 后端
 
@@ -91,30 +91,41 @@ npm run dev
 
 打开 http://localhost:5173 ，四个页面都已接入真实接口：岗位推荐（选类别看具体招聘信息）→ 技能差距（雷达图 + 明细）→ 学习路径（按阶段的技能时间线）→ 在线测评（资料 + 答题，提交后回写画像）。后端没启动时会提示"确认后端是否已启动"。
 
+以上是**改前端代码时**的本地开发方式。只是想**用**这个系统的队友不用走这套，见下方「团队共享数据库」——主机跑一个脚本，队友浏览器开个地址就行。
+
 需要自定义后端地址时，复制 `frontend/.env.example` 为 `.env.local` 修改 `VITE_API_BASE_URL`。
 
 ## 团队共享数据库
 
-团队不在同一个局域网，没法直接用内网 IP 互相访问，所以架构是：**一台电脑（"主机"）跑 MySQL + 后端，其他人只在自己电脑上跑前端**，把前端的接口地址指向主机开出来的公网地址。这样谁注册的账号，数据都落在主机那台电脑的数据库里，不会散成四份互相看不见的数据。
+团队不在同一个局域网，没法直接用内网 IP 互相访问，所以架构是：**一台电脑（"主机"）跑 MySQL + 后端 + 前端，其他人什么都不装、什么都不跑，浏览器打开一个地址就能用**。谁注册的账号，数据都落在主机那台电脑的数据库里，不会散成四份互相看不见的数据。
 
-主机（存数据库的这台电脑）操作：**双击 `tools\start-server.bat`**（别直接双击 `.ps1`，Windows 默认不会真的执行它，双击了没反应就是这个原因）。
+### 主机（存数据库的这台电脑）操作
 
-会依次拉起本地 MySQL、后端，再用 [Cloudflare Tunnel](https://github.com/cloudflare/cloudflared)（`winget install Cloudflare.cloudflared`，免注册账号）把 `localhost:8080` 开成一个 `https://xxx.trycloudflare.com` 的公网地址，跑完会打印出来，窗口不会自动关，方便你看地址、复制。
+前提：装好 JDK 17+、Maven、MySQL、[cloudflared](https://github.com/cloudflare/cloudflared)（`winget install Cloudflare.cloudflared`，免注册账号），并且 `frontend/` 目录 `npm install` 过一次。
 
-其他团队成员操作：把这个地址填进自己的 `frontend/.env.local`：
+**双击 `tools\start-server.bat`**（别直接双击 `.ps1`，Windows 默认不会真的执行它，双击了没反应就是这个原因）。
 
-```
-VITE_API_BASE_URL=https://xxx.trycloudflare.com
-```
+脚本按 5 步依次拉起，已经在跑的部分会自动跳过（重复运行安全）：
 
-然后正常 `npm run dev`，注册/登录/答题都会请求到主机那边，数据落在主机的 MySQL 里。
+1. 本地 MySQL
+2. 后端 Spring Boot（`localhost:8080`）
+3. 后端的 Cloudflare Tunnel → `https://xxx.trycloudflare.com`
+4. 前端 Vite dev server（`localhost:5173`）——脚本自动把上一步的后端隧道地址写进 `frontend/.env.local`，不用手改
+5. 前端的 Cloudflare Tunnel → `https://yyy.trycloudflare.com`
 
-**这不是永久部署，是"先能跑起来"的临时方案**，有这几个限制，用之前要清楚：
+跑完会把 **前端地址** 醒目地打印出来，窗口不自动关。
 
-- 隧道地址每次重跑 `start-server.ps1` 都会换一个新的（免费不记名隧道的限制），换了要重新发到群里、大家改一下 `.env.local`。
-- 主机电脑必须开着、MySQL/后端/隧道三个进程不能被关掉，团队才连得上；电脑一关，所有人都用不了。
-- 这个地址只在知道的人手里，但本质是公网可访问，没有额外的访问控制/限流。对内部测试够用，但别把它当成正式发布。
-- 后续真要稳定、随时能用，需要部署到云服务器或 PaaS（比如 Railway、阿里云/腾讯云学生机）——那个需要团队自己开云账号（可能涉及付费，我这边没法替你们开户），等确实需要了再做。
+### 其他团队成员操作
+
+**把主机打印出来的前端地址发到群里，浏览器直接打开就行。** 不用 clone 代码、不用装 Node、不用配 `.env`。注册 / 登录 / 答题都会经前端自动转到主机的后端，数据落在主机的 MySQL 里。
+
+### 限制（这不是永久部署，是"先能跑起来"的临时方案）
+
+- 两个隧道地址在**真正重开隧道时**（比如主机重启过）会各换一个新的（免费不记名隧道的限制）。只要主机不关机、进程不杀，重复跑脚本会沿用旧地址。地址变了就把新的**前端地址**重新发一遍群里。
+- 主机电脑必须开着、不能休眠，MySQL / 后端 / 前端 / 两个隧道这几个进程都不能关，团队才连得上。
+- 这个地址只在知道的人手里，但本质是公网可访问，没有额外的访问控制 / 限流。对内部测试够用，别当成正式发布。
+- 后端 CORS 已放行 `https://*.trycloudflare.com`（见 `application.yml`），所以隧道域名换了也不用改后端。
+- 后续真要稳定、随时能用，需要部署到云服务器或 PaaS（比如 Railway、阿里云 / 腾讯云学生机）——那个需要团队自己开云账号（可能涉及付费，我这边没法替你们开户），等确实需要了再做。
 
 ## 数据收集
 

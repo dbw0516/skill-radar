@@ -33,3 +33,5 @@ venv/
 
 # local dev scratch (start-server.ps1)
 tools/.springboot-tmp/
+tools/.tunnel-*.pid
+tools/.backend-url

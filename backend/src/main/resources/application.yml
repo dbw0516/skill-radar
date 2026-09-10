@@ -22,7 +22,9 @@ server:
 
 app:
   cors:
-    # 每个人的前端都在各自电脑本地跑 npm run dev，浏览器发出的 Origin 头始终是 http://localhost:5173，
-    # 跟后端部署在哪、通过什么地址被访问到没关系——所以这里不用跟着改。
-    # 如果以后前端也整体部署上线了，把那个地址加进来（逗号分隔）。
-    allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:5173}
+    # 两种访问方式都要放行：
+    #  1) http://localhost:5173  —— 本机开发时直接开 dev server
+    #  2) https://*.trycloudflare.com —— start-server.ps1 把前端也通过 Cloudflare Tunnel 暴露给队友，
+    #     此时浏览器发出的 Origin 是那个随机的 trycloudflare 域名（每次重开隧道会变，所以用通配符）。
+    # 这里是「模式」不是「精确 origin」，CorsConfig 用的是 allowedOriginPatterns。
+    allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:5173,https://*.trycloudflare.com}

@@ -13,8 +13,10 @@ public class CorsConfig implements WebMvcConfigurer {
 
     @Override
     public void addCorsMappings(CorsRegistry registry) {
+        // allowedOriginPatterns（不是 allowedOrigins）：支持 https://*.trycloudflare.com 这种通配，
+        // 前端通过 Cloudflare Tunnel 暴露时 Origin 是随机子域名，必须用模式匹配。精确 origin 也照常匹配。
         registry.addMapping("/api/**")
-                .allowedOrigins(allowedOrigins.split("\\s*,\\s*"))
+                .allowedOriginPatterns(allowedOrigins.split("\\s*,\\s*"))
                 .allowedMethods("GET", "POST", "PUT", "DELETE")
                 .allowedHeaders("*");
     }
