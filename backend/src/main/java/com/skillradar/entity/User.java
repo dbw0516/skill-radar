@@ -4,9 +4,6 @@ import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-/**
- * 还没接登录/注册，MVP 阶段前端统一用种子数据里的演示账号（id=1）调用接口。
- */
 @Entity
 @Table(name = "users")
 @Data
@@ -31,4 +28,10 @@ public class User {
 
     @Column(name = "target_category_id")
     private Long targetCategoryId;
+
+    @Column(length = 64)
+    private String location;
+
+    @Column(name = "target_location", length = 64)
+    private String targetLocation;
 }

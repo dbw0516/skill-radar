@@ -18,4 +18,6 @@ public class RegisterRequest {
 
     private String nickname;
     private Long majorId;
+    private String location;
+    private String targetLocation;
 }

@@ -20,9 +20,14 @@ async function request(path, options = {}) {
 
 export const api = {
   listSkills: () => request('/api/skills'),
+  listMajors: () => request('/api/majors'),
   listJobCategories: () => request('/api/job-categories'),
-  listPostings: (categoryId, page = 0, size = 20) =>
-    request(`/api/job-categories/${categoryId}/postings?page=${page}&size=${size}`),
+  listPostings: (categoryId, { preferLocation, page = 0, size = 20 } = {}) => {
+    const params = new URLSearchParams({ page, size })
+    if (preferLocation) params.set('preferLocation', preferLocation)
+    return request(`/api/job-categories/${categoryId}/postings?${params}`)
+  },
+  postingDetail: (id) => request(`/api/postings/${id}`),
 
   // 登录注册
   register: (payload) => request('/api/auth/register', { method: 'POST', body: JSON.stringify(payload) }),
@@ -32,6 +37,13 @@ export const api = {
       method: 'PUT',
       body: JSON.stringify({ categoryId }),
     }),
+  updateProfile: (userId, payload) =>
+    request(`/api/auth/users/${userId}/profile`, { method: 'PUT', body: JSON.stringify(payload) }),
+
+  // 技能自评清单（个人中心）
+  listUserSkills: (userId) => request(`/api/users/${userId}/skills`),
+  setUserSkills: (userId, skillIds) =>
+    request(`/api/users/${userId}/skills`, { method: 'PUT', body: JSON.stringify({ skillIds }) }),
 
   // ②技能差距分析引擎
   gapAnalysis: (categoryId, userId) =>

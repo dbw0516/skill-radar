@@ -1,0 +1,171 @@
+<script setup>
+import { ref, reactive, computed, onMounted } from 'vue'
+import { api } from '@/api/client'
+import { useAuthStore } from '@/stores/auth'
+
+// 个人中心：基本资料（含所在地区/意向就业地区，供①岗位推荐做地点排序）+ 技能自评清单
+// （设计文档「用户画像怎么建」一节说的"初始化来自专业选择 + 自评清单"，这里就是那个入口）。
+const auth = useAuthStore()
+
+const majors = ref([])
+const form = reactive({ nickname: '', majorId: null, location: '', targetLocation: '' })
+const savingProfile = ref(false)
+const profileSaved = ref(false)
+const profileError = ref('')
+
+const skills = ref([])
+const skillsLoading = ref(true)
+const savingSkills = ref(false)
+const skillsSaved = ref(false)
+const skillsError = ref('')
+const checked = reactive(new Set())
+
+function fillFormFromUser() {
+  const u = auth.user
+  if (!u) return
+  form.nickname = u.nickname || ''
+  form.majorId = u.majorId || null
+  form.location = u.location || ''
+  form.targetLocation = u.targetLocation || ''
+}
+
+const skillsByDomain = computed(() => {
+  const map = new Map()
+  for (const s of skills.value) {
+    if (!map.has(s.domain)) map.set(s.domain, [])
+    map.get(s.domain).push(s)
+  }
+  return [...map.entries()]
+})
+
+async function loadSkills() {
+  skillsLoading.value = true
+  try {
+    skills.value = await api.listUserSkills(auth.userId)
+    checked.clear()
+    for (const s of skills.value) {
+      if (s.status) checked.add(s.skillId)
+    }
+  } catch (e) {
+    skillsError.value = e.message
+  } finally {
+    skillsLoading.value = false
+  }
+}
+
+onMounted(async () => {
+  fillFormFromUser()
+  try {
+    majors.value = await api.listMajors()
+  } catch {
+    // 专业列表拿不到就先留空，不影响其他资料照常填
+  }
+  await loadSkills()
+})
+
+async function saveProfile() {
+  savingProfile.value = true
+  profileError.value = ''
+  profileSaved.value = false
+  try {
+    const updated = await api.updateProfile(auth.userId, { ...form })
+    auth.setUser(updated)
+    profileSaved.value = true
+  } catch (e) {
+    profileError.value = e.message
+  } finally {
+    savingProfile.value = false
+  }
+}
+
+function toggle(skillId, isVerified) {
+  if (isVerified) return // 测评认证过的不让在这里取消
+  if (checked.has(skillId)) checked.delete(skillId)
+  else checked.add(skillId)
+}
+
+async function saveSkills() {
+  savingSkills.value = true
+  skillsError.value = ''
+  skillsSaved.value = false
+  try {
+    skills.value = await api.setUserSkills(auth.userId, [...checked])
+    skillsSaved.value = true
+  } catch (e) {
+    skillsError.value = e.message
+  } finally {
+    savingSkills.value = false
+  }
+}
+</script>
+
+<template>
+  <section>
+    <h1>个人中心</h1>
+
+    <div class="card">
+      <h2>基本资料</h2>
+      <form @submit.prevent="saveProfile">
+        <label>昵称<input v-model="form.nickname" type="text" /></label>
+        <label>专业
+          <select v-model="form.majorId">
+            <option :value="null">未选择</option>
+            <option v-for="m in majors" :key="m.id" :value="m.id">{{ m.name }}</option>
+          </select>
+        </label>
+        <label>所在地区<input v-model="form.location" type="text" placeholder="例如：北京-朝阳区" /></label>
+        <label>意向就业地区<input v-model="form.targetLocation" type="text" placeholder="例如：北京，不填表示不限" /></label>
+        <p class="hint">意向就业地区会让"岗位推荐"页里地点匹配的招聘信息排在前面。</p>
+        <p v-if="profileError" class="error">{{ profileError }}</p>
+        <p v-if="profileSaved" class="ok">已保存。</p>
+        <button type="submit" :disabled="savingProfile">{{ savingProfile ? '保存中…' : '保存资料' }}</button>
+      </form>
+    </div>
+
+    <div class="card">
+      <h2>技能自评</h2>
+      <p class="hint">勾选你已经掌握的技能——这是自评，会标"自评"角标；橙色"已认证"的是测评通过的，没法在这里取消，只能靠测评本身的表现改变。</p>
+      <p v-if="skillsLoading">加载中…</p>
+      <p v-else-if="skillsError" class="error">{{ skillsError }}</p>
+      <template v-else>
+        <div v-for="[domain, list] in skillsByDomain" :key="domain" class="domain-group">
+          <h3>{{ domain }}</h3>
+          <label v-for="s in list" :key="s.skillId" class="skill-row" :class="{ locked: s.status === 'quiz_verified' }">
+            <input
+              type="checkbox"
+              :checked="checked.has(s.skillId)"
+              :disabled="s.status === 'quiz_verified'"
+              @change="toggle(s.skillId, s.status === 'quiz_verified')"
+            />
+            {{ s.name }}
+            <span v-if="s.status === 'quiz_verified'" class="badge verified">已认证</span>
+            <span v-else-if="checked.has(s.skillId)" class="badge self">自评</span>
+          </label>
+        </div>
+        <p v-if="skillsSaved" class="ok">已保存。</p>
+        <button @click="saveSkills" :disabled="savingSkills">{{ savingSkills ? '保存中…' : '保存技能自评' }}</button>
+      </template>
+    </div>
+  </section>
+</template>
+
+<style scoped>
+h1 { margin-bottom: 1rem; }
+.card { background: #fff; border: 1px solid #dbdee4; border-radius: 8px; padding: 1.2rem 1.4rem; margin-bottom: 1.2rem; }
+.card h2 { margin: 0 0 0.9rem; font-size: 1.05rem; }
+form { display: flex; flex-direction: column; gap: 0.8rem; max-width: 360px; }
+label { display: flex; flex-direction: column; gap: 0.3rem; font-size: 0.9rem; color: #5b6472; }
+input[type='text'], select { padding: 0.45rem 0.6rem; border: 1px solid #dbdee4; border-radius: 6px; font-size: 0.92rem; }
+.hint { color: #8891a0; font-size: 0.85rem; margin: 0 0 0.8rem; }
+.error { color: #b3261e; font-size: 0.88rem; margin: 0; }
+.ok { color: #2b6e5c; font-size: 0.88rem; margin: 0; }
+button { align-self: flex-start; margin-top: 0.2rem; padding: 0.5rem 1.1rem; background: #2b6e5c; color: #fff; border: none; border-radius: 6px; cursor: pointer; font-size: 0.92rem; }
+button:disabled { background: #b7c4bf; cursor: not-allowed; }
+.domain-group { margin-bottom: 0.9rem; }
+.domain-group h3 { font-size: 0.85rem; color: #8891a0; margin: 0 0 0.4rem; font-weight: 600; }
+.skill-row { display: flex; align-items: center; gap: 0.5rem; padding: 0.25rem 0; font-size: 0.92rem; cursor: pointer; }
+.skill-row.locked { cursor: default; }
+.badge { font-size: 0.72rem; padding: 1px 7px; border-radius: 999px; }
+.badge.verified { background: #e3f0eb; color: #2b6e5c; }
+.badge.self { background: #f6e8da; color: #ae5f1c; }
+</style>

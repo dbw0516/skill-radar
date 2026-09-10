@@ -1,6 +1,6 @@
 <script setup>
 import { ref, reactive, computed, onMounted, watch } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { api } from '@/api/client'
 import { useUserProfileStore } from '@/stores/userProfile'
 import { useAuthStore } from '@/stores/auth'
@@ -8,13 +8,47 @@ import { useAuthStore } from '@/stores/auth'
 // 对应④资料与测评匹配引擎：学习资料 + 在线测评答题。
 // 提交后端会判分，通过时把 user_skills.status 改成 quiz_verified——
 // 这就是设计文档里反复提到的"回写技能画像"闭环，回②差距分析页刷新一下就能看到变化。
+//
+// 没带 skillId 直接进来这页（比如点导航栏的"在线测评"）时，显示一个技能选择器，
+// 不能就晾着用户不知道该干嘛。
 const route = useRoute()
+const router = useRouter()
 const profile = useUserProfileStore()
 const auth = useAuthStore()
 
-const skillId = computed(() => Number(route.query.skillId))
+const skillId = computed(() => (route.query.skillId ? Number(route.query.skillId) : null))
 const skillName = computed(() => route.query.name || '')
 
+// --- 技能选择器（没有 skillId 时用） ---
+const pickerSkills = ref([])
+const pickerLoading = ref(false)
+const pickerError = ref('')
+
+async function loadPicker() {
+  pickerLoading.value = true
+  pickerError.value = ''
+  try {
+    if (profile.targetCategoryId) {
+      // 有目标岗位：只列还没掌握的，最实用
+      const gap = await api.gapAnalysis(profile.targetCategoryId, auth.userId)
+      pickerSkills.value = gap.filter((g) => !g.mastered)
+    } else {
+      // 没选目标岗位：列全部技能，一样能测
+      const all = await api.listSkills()
+      pickerSkills.value = all.map((s) => ({ skillId: s.id, name: s.name, domain: s.domain }))
+    }
+  } catch (e) {
+    pickerError.value = e.message
+  } finally {
+    pickerLoading.value = false
+  }
+}
+
+function pick(s) {
+  router.push({ path: '/quiz', query: { skillId: s.skillId, name: s.name } })
+}
+
+// --- 具体某个技能的测评 ---
 const resources = ref([])
 const questions = ref([])
 const answers = reactive({}) // questionId -> selectedIndex
@@ -32,7 +66,10 @@ function parseOptions(raw) {
 }
 
 async function load() {
-  if (!skillId.value) return
+  if (!skillId.value) {
+    loadPicker()
+    return
+  }
   loading.value = true
   error.value = ''
   result.value = null
@@ -80,8 +117,21 @@ async function submit() {
 <template>
   <section>
     <h1>在线测评</h1>
-    <p v-if="!skillId">从"学习路径"页点一个技能进来，这里会显示对应的学习资料和测评题。</p>
+
+    <template v-if="!skillId">
+      <p class="hint">选一个技能开始测评{{ profile.targetCategoryId ? '（下面是你目标岗位里还没掌握的）' : '' }}：</p>
+      <p v-if="pickerLoading">加载中…</p>
+      <p v-else-if="pickerError" class="error">{{ pickerError }}</p>
+      <p v-else-if="!pickerSkills.length" class="hint">
+        {{ profile.targetCategoryId ? '这个岗位方向的技能你都掌握啦 🎉' : '还没有技能数据。' }}
+      </p>
+      <div v-else class="chip-row">
+        <button v-for="s in pickerSkills" :key="s.skillId" class="skill-chip" @click="pick(s)">{{ s.name }}</button>
+      </div>
+    </template>
+
     <template v-else>
+      <RouterLink to="/quiz" class="back">← 换一个技能</RouterLink>
       <h2 class="skill-title">{{ skillName || ('技能 #' + skillId) }}</h2>
       <p v-if="loading">加载中…</p>
       <p v-else-if="error" class="error">{{ error }}</p>
@@ -123,7 +173,11 @@ async function submit() {
 </template>
 
 <style scoped>
+.back { display: inline-block; margin-bottom: 0.6rem; color: #5b6472; text-decoration: none; font-size: 0.9rem; }
 .skill-title { margin: 0.25rem 0 1rem; color: #2b6e5c; }
+.chip-row { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+.skill-chip { padding: 0.4rem 0.9rem; border-radius: 999px; border: 1px solid #dbdee4; background: #fff; cursor: pointer; font-size: 0.9rem; }
+.skill-chip:hover { border-color: #2b6e5c; color: #2b6e5c; }
 .resources ul, .quiz { margin-top: 0.5rem; }
 .resources ul { list-style: none; padding: 0; }
 .resources li { display: flex; gap: 0.6rem; align-items: baseline; padding: 0.25rem 0; }

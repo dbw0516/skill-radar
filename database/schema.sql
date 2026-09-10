@@ -117,6 +117,8 @@ CREATE TABLE users (
   nickname            VARCHAR(64),
   major_id            BIGINT UNSIGNED,
   target_category_id  BIGINT UNSIGNED COMMENT '当前目标岗位类别，驱动②差距分析引擎',
+  location             VARCHAR(64) COMMENT '所在地区，如"北京-朝阳区"，格式与 job_postings.location 对齐方便匹配',
+  target_location      VARCHAR(64) COMMENT '意向就业地区，为空表示不限；①岗位推荐引擎按它排序/过滤',
   created_at          DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (major_id) REFERENCES majors(id),
   FOREIGN KEY (target_category_id) REFERENCES job_categories(id)

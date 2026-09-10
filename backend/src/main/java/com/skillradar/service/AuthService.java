@@ -28,6 +28,8 @@ public class AuthService {
         user.setPasswordHash(passwordEncoder.encode(req.getPassword()));
         user.setNickname(req.getNickname());
         user.setMajorId(req.getMajorId());
+        user.setLocation(req.getLocation());
+        user.setTargetLocation(req.getTargetLocation());
         try {
             user = userRepository.save(user);
         } catch (DataIntegrityViolationException e) {
@@ -46,7 +48,8 @@ public class AuthService {
         return toAuthUser(user);
     }
 
-    private AuthUser toAuthUser(User u) {
-        return new AuthUser(u.getId(), u.getEmail(), u.getNickname(), u.getMajorId(), u.getTargetCategoryId());
+    public AuthUser toAuthUser(User u) {
+        return new AuthUser(u.getId(), u.getEmail(), u.getNickname(), u.getMajorId(), u.getTargetCategoryId(),
+                u.getLocation(), u.getTargetLocation());
     }
 }

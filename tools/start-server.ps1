@@ -39,13 +39,15 @@ if (Test-Port 8080) {
     # 两个坑：
     # 1) mvn 在 Windows 上是 mvn.cmd，Start-Process -FilePath "mvn" 经常悄悄启动失败（不报错，
     #    进程也不起来），得包一层 cmd.exe /c 才可靠。
-    # 2) Spring Boot 会在系统临时目录下建一个按路径算哈希命名的工作目录，并检查它的属主必须是
-    #    BUILTIN\Administrators——如果这个目录之前被"以不同权限上下文跑的进程"（比如换了个终端/
-    #    换了种启动方式）创建过，属主对不上，直接报 IllegalStateException 启动失败。把临时目录
-    #    指到项目自己的 tools\.springboot-tmp 下，脱离系统共享临时目录，就不会再撞见这个问题。
-    #    用环境变量传给子进程，不走命令行拼接——三层 shell（PowerShell -> cmd.exe -> mvn 的 -D
-    #    参数）嵌套转义引号极其容易出错，环境变量能绕开这整个问题。
+    # 2) Spring Boot 会在临时目录下建一个按路径算哈希命名的工作目录，并检查它的属主是否和当前
+    #    进程一致——但"一致"的判定很敏感，同一个 Administrator 账号，从 PowerShell / cmd.exe /
+    #    bash 这几种不同方式启动，被记录下来的属主 SID 可能对不上，导致这个目录一旦被"某一种
+    #    启动方式"创建过，换"另一种方式"再启动就会直接 IllegalStateException 报错退出。实测过
+    #    好几次，光换个不共享的临时目录不够，得每次启动前直接删掉重建，才是真正稳的做法。
+    #    java.io.tmpdir 用环境变量传给子进程，不走命令行拼接——三层 shell（PowerShell -> cmd.exe
+    #    -> mvn 的 -D 参数）嵌套转义引号极其容易出错，环境变量能绕开这整个问题。
     $bootTmp = "$root\tools\.springboot-tmp"
+    if (Test-Path $bootTmp) { Remove-Item -Recurse -Force $bootTmp }
     New-Item -ItemType Directory -Force -Path $bootTmp | Out-Null
     $env:JAVA_TOOL_OPTIONS = "-Djava.io.tmpdir=$bootTmp"
     Start-Process -FilePath "cmd.exe" -ArgumentList "/c", "mvn spring-boot:run > `"$backendLog`" 2>&1" `

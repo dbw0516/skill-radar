@@ -24,7 +24,7 @@ function logout() {
     </div>
     <div class="account">
       <template v-if="auth.isLoggedIn">
-        <span class="who">{{ auth.user.nickname || auth.user.email }}</span>
+        <RouterLink to="/profile" class="who">{{ auth.user.nickname || auth.user.email }}</RouterLink>
         <button class="logout" @click="logout">退出登录</button>
       </template>
       <template v-else>

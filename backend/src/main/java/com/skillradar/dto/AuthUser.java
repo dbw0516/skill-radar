@@ -19,4 +19,6 @@ public class AuthUser {
     private String nickname;
     private Long majorId;
     private Long targetCategoryId;
+    private String location;
+    private String targetLocation;
 }
