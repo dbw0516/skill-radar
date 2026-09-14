@@ -16,7 +16,9 @@
 - [x] 数据库结构 `database/schema.sql`（14 张表）+ 试点种子数据 `database/seed.sql`
 - [x] 真实岗位数据：天池公开数据集导入，1,202 条、覆盖 13 个岗位类别（`database/seed_real_postings.sql`）——这部分是**招聘信息**，跟下面"技能词典扩展"是两回事，4 个新岗位类别暂时还没有对应的招聘信息
 - [x] 面试题库：542 道（193 道 JavaGuide 来源的 Java 后端面试题 + 349 道团队收集的其他方向面试题，`database/seed_interview_questions.sql` + `database/seed_expanded_skills_and_questions.sql`）
-- [x] 技能词典扩展：从 11 个（全是 Java 后端）扩到 73 个，新增覆盖 Go/Python/前端/大数据/Android/iOS/测试/运维/网络安全/数据分析/数据库/游戏开发，顺带新建了 4 个原来没有的岗位类别（Go后端/全栈/嵌入式开发/游戏开发工程师）——**这只是技能节点和面试题**，这些新技能还没有对应的 `job_skills`（岗位所需技能权重）和 `skill_prereq`（依赖图谱），所以暂时不会出现在这些岗位的差距分析/学习路径里，见 `tools/import_expanded_interview_questions.py`
+- [x] 技能词典扩展：从 11 个（全是 Java 后端）扩到 73 个，新增覆盖 Go/Python/前端/大数据/Android/iOS/测试/运维/网络安全/数据分析/数据库/游戏开发，顺带新建了 4 个原来没有的岗位类别（Go后端/全栈/嵌入式开发/游戏开发工程师），见 `tools/import_expanded_interview_questions.py`
+- [x] 除 Java 后端外的 15 个岗位类别都补上了 `job_skills`（岗位需要哪些技能、权重多少），实测②差距分析、③学习路径接口对这些新类别都能正常返回——`database/seed_job_skills_expanded.sql`（`tools/import_job_skills_expanded.py` 生成，权重是核心/次要/边缘的人工判断值，跟 seed.sql 里 Java 后端那 9 行一个性质，不是真实统计出来的）。**产品经理**这次没有任何相关技能数据，跳过了；**全栈工程师/嵌入式开发工程师/算法-机器学习工程师**这三个方向的原始面试题文档没有可提炼的技术内容，权重是按"这个方向通常需要什么"的通用判断给的，覆盖度和可信度都不如其他类别，需要团队后续找真实技术资料补充
+- [ ] `skill_prereq`（技能依赖图谱）还没给新增的 62 个技能连边，所以这些类别的③学习路径目前是"一个大阶段"（没有先后顺序），不是真正分层——差距分析不受影响，只是学习路径展示得不够精细
 - [x] 学习资料：14 条已导入，另有 24 条待技能词典扩充后导入（`database/seed_learning_resources.sql`）
 - [x] ①②③④ 四个引擎已实现并跑通完整闭环：岗位推荐、差距分析（集合差+按权重排序）、学习路径（拓扑排序分层）、资料+测评（判分后回写 `user_skills`，下一次差距分析立刻反映变化）
 - [x] 前端四个页面全部接入真实接口（技能差距雷达图、学习路径时间线、在线答题）
