@@ -48,12 +48,11 @@ async function submit() {
 </template>
 
 <style scoped>
-.auth { max-width: 340px; }
-form { display: flex; flex-direction: column; gap: 0.9rem; margin-top: 1rem; }
-label { display: flex; flex-direction: column; gap: 0.3rem; font-size: 0.9rem; color: #5b6472; }
-input { padding: 0.5rem 0.6rem; border: 1px solid #dbdee4; border-radius: 6px; font-size: 0.95rem; }
-button { margin-top: 0.3rem; padding: 0.55rem; background: #2b6e5c; color: #fff; border: none; border-radius: 6px; cursor: pointer; font-size: 0.95rem; }
-button:disabled { background: #b7c4bf; cursor: not-allowed; }
-.error { color: #b3261e; font-size: 0.88rem; margin: 0; }
-.hint { margin-top: 1.2rem; font-size: 0.85rem; color: #8891a0; line-height: 1.6; }
+.auth { max-width: 460px; }
+.auth::before { content: 'SKILL RADAR / ACCOUNT'; display: block; margin-bottom: 12px; color: var(--color-primary); font-size: 0.72rem; font-weight: 800; letter-spacing: 0.12em; }
+form { display: flex; flex-direction: column; gap: 16px; max-width: 380px; margin-top: 24px; }
+label { display: flex; flex-direction: column; gap: 6px; color: var(--color-heading); font-size: 0.9rem; font-weight: 650; }
+button { width: 100%; margin-top: 4px; }
+.error { margin: 0; padding: 10px 12px; border-radius: var(--radius-sm); background: color-mix(in srgb, var(--color-danger) 9%, var(--color-surface)); font-size: 0.88rem; }
+.hint { max-width: 380px; margin-top: 20px; color: var(--color-muted); font-size: 0.85rem; line-height: 1.6; }
 </style>

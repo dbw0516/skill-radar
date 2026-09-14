@@ -7,11 +7,14 @@ defineEmits(['update:modelValue'])
 </script>
 
 <template>
-  <div class="tab-bar">
+  <div class="tab-bar" role="tablist" aria-label="页面分区">
     <button
       v-for="t in tabs" :key="t.key"
       type="button"
       class="tab" :class="{ active: modelValue === t.key }"
+      role="tab"
+      :aria-selected="modelValue === t.key"
+      :tabindex="modelValue === t.key ? 0 : -1"
       @click="$emit('update:modelValue', t.key)"
     >
       {{ t.label }}
@@ -20,17 +23,18 @@ defineEmits(['update:modelValue'])
 </template>
 
 <style scoped>
-.tab-bar { display: flex; gap: 0.25rem; border-bottom: 1px solid #dbdee4; margin-bottom: 1.2rem; }
+.tab-bar { display: inline-flex; flex-wrap: wrap; gap: 4px; padding: 4px; border: 1px solid var(--color-border); border-radius: var(--radius-md); background: var(--color-surface-raised); margin: 18px 0 22px; }
 .tab {
+  min-height: 40px;
   padding: 0.55rem 1rem;
-  border: none;
-  background: none;
+  border: 1px solid transparent;
+  border-radius: calc(var(--radius-md) - 2px);
+  background: transparent;
   cursor: pointer;
   font-size: 0.92rem;
-  color: #5b6472;
-  border-bottom: 2px solid transparent;
-  margin-bottom: -1px;
+  color: var(--color-muted);
+  font-weight: 650;
 }
-.tab:hover { color: #1c232e; }
-.tab.active { color: #2b6e5c; border-bottom-color: #2b6e5c; font-weight: 600; }
+.tab:hover { color: var(--color-heading); background: var(--color-soft); box-shadow: none; }
+.tab.active { color: var(--color-on-primary); border-color: var(--color-primary); background: var(--color-primary); box-shadow: 0 3px 8px color-mix(in srgb, var(--color-primary) 18%, transparent); }
 </style>

@@ -107,7 +107,7 @@ function isLocationMatch(loc) {
         <div v-if="profile.targetCategoryId" class="postings">
           <p v-if="postingsLoading">加载岗位信息中…</p>
           <p v-else-if="!postings.length">这个类别暂时没有招聘信息。</p>
-          <ul v-else>
+          <TransitionGroup v-else tag="ul" name="stagger">
             <li v-for="p in postings" :key="p.id" class="posting">
               <RouterLink :to="`/postings/${p.id}`" class="posting-link">
                 <div class="posting-head">
@@ -120,7 +120,7 @@ function isLocationMatch(loc) {
                 </div>
               </RouterLink>
             </li>
-          </ul>
+          </TransitionGroup>
           <RouterLink to="/gap" class="cta">看这个岗位的技能差距 →</RouterLink>
         </div>
       </template>
@@ -131,7 +131,7 @@ function isLocationMatch(loc) {
       <p v-else-if="favoritesLoading">加载中…</p>
       <p v-else-if="favoritesError" class="error">{{ favoritesError }}</p>
       <p v-else-if="!favorites.length" class="hint">还没有收藏的岗位——去岗位详情页点"收藏"试试。</p>
-      <ul v-else>
+      <TransitionGroup v-else tag="ul" name="stagger">
         <li v-for="p in favorites" :key="p.id" class="posting">
           <RouterLink :to="`/postings/${p.id}`" class="posting-link">
             <div class="posting-head">
@@ -141,24 +141,25 @@ function isLocationMatch(loc) {
             <div class="posting-meta">{{ p.companyName }} · {{ p.location || '地点未标注' }}</div>
           </RouterLink>
         </li>
-      </ul>
+      </TransitionGroup>
     </template>
   </section>
 </template>
 
 <style scoped>
-.chip-row { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1rem; }
-.cat-chip { padding: 0.4rem 0.9rem; border-radius: 999px; border: 1px solid #dbdee4; background: #fff; cursor: pointer; font-size: 0.88rem; }
-.cat-chip.active { background: #2b6e5c; border-color: #2b6e5c; color: #fff; }
-.hint { color: #8891a0; font-size: 0.85rem; margin-bottom: 1rem; }
-.postings ul, ul { list-style: none; padding: 0; }
-.posting { border-bottom: 1px solid #eee; }
-.posting-link { display: block; padding: 0.7rem 0; text-decoration: none; color: inherit; }
-.posting-link:hover .posting-head strong { color: #2b6e5c; }
-.posting-head { display: flex; justify-content: space-between; gap: 1rem; }
-.salary { color: #ae5f1c; font-size: 0.9rem; white-space: nowrap; }
-.posting-meta { color: #666; font-size: 0.85rem; margin-top: 0.15rem; display: flex; align-items: center; gap: 0.5rem; }
-.match { font-size: 0.72rem; padding: 1px 7px; border-radius: 999px; background: #e3f0eb; color: #2b6e5c; }
-.cta { display: inline-block; margin-top: 1rem; color: #2b6e5c; font-weight: 600; text-decoration: none; }
-.error { color: #b3261e; }
+.chip-row { margin: 20px 0; }
+.cat-chip { font-size: 0.88rem; }
+.hint { padding: 12px 14px; border-left: 3px solid var(--color-primary); border-radius: 0 var(--radius-sm) var(--radius-sm) 0; background: var(--color-soft); font-size: 0.88rem; margin-bottom: 18px; }
+.postings ul, ul { list-style: none; padding: 0; margin: 0; }
+.posting { transition: border-color 180ms ease, background-color 180ms ease, transform 180ms ease; }
+.posting:hover { transform: translateY(-1px); }
+.posting-link:hover .posting-head strong { color: var(--color-primary); }
+.posting-head { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; }
+.posting-head strong { color: var(--color-heading); font-size: 1rem; font-weight: 720; }
+.salary { color: var(--color-warning); font-size: 0.88rem; font-weight: 700; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.posting-meta { color: var(--color-muted); font-size: 0.86rem; margin-top: 4px; display: flex; align-items: center; flex-wrap: wrap; gap: 8px; }
+.match { padding: 2px 8px; border: 1px solid color-mix(in srgb, var(--color-success) 32%, transparent); border-radius: var(--radius-sm); background: color-mix(in srgb, var(--color-success) 10%, var(--color-surface)); color: var(--color-success); font-size: 0.72rem; font-weight: 700; }
+.cta { color: var(--color-primary); }
+.error { padding: 12px 14px; border-radius: var(--radius-md); background: color-mix(in srgb, var(--color-danger) 9%, var(--color-surface)); }
+@media (max-width: 560px) { .posting-head { align-items: flex-start; flex-direction: column; gap: 3px; } }
 </style>

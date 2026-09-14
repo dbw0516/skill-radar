@@ -35,8 +35,8 @@ watch(() => profile.targetCategoryId, load)
     <template v-else>
       <p v-if="loading">加载中…</p>
       <p v-else-if="error" class="error">{{ error }}</p>
-      <p v-else-if="!stages.length" class="done">技能都已掌握，暂时没有待学的了 🎉</p>
-      <ol v-else class="timeline">
+      <p v-else-if="!stages.length" class="done">技能都已掌握，暂时没有待学内容。</p>
+      <TransitionGroup v-else tag="ol" name="stage" class="timeline">
         <li v-for="s in stages" :key="s.stage" class="stage">
           <div class="stage-head">
             <span class="stage-num">阶段 {{ s.stage }}</span>
@@ -49,20 +49,24 @@ watch(() => profile.targetCategoryId, load)
             </RouterLink>
           </div>
         </li>
-      </ol>
+      </TransitionGroup>
     </template>
   </section>
 </template>
 
 <style scoped>
-.timeline { list-style: none; padding: 0; margin: 1rem 0 0; display: flex; flex-direction: column; gap: 1.25rem; }
-.stage { border-left: 3px solid #2b6e5c; padding-left: 1rem; }
-.stage-head { display: flex; align-items: baseline; gap: 0.6rem; margin-bottom: 0.5rem; }
-.stage-num { font-weight: 700; color: #1c232e; }
-.stage-hint { font-size: 0.8rem; color: #8891a0; }
-.skill-row { display: flex; flex-wrap: wrap; gap: 0.5rem; }
-.skill-chip { display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.35rem 0.75rem; border-radius: 999px; background: #e3f0eb; color: #2b6e5c; text-decoration: none; font-size: 0.9rem; font-weight: 500; }
-.skill-chip .w { font-size: 0.75rem; color: #5b8c7c; font-variant-numeric: tabular-nums; }
-.error { color: #b3261e; }
-.done { color: #2b6e5c; }
+.timeline { list-style: none; padding: 0; margin: 24px 0 0; display: grid; gap: 16px; counter-reset: stage; }
+.stage { position: relative; padding: 20px 20px 20px 74px; border: 1px solid var(--color-border); border-radius: var(--radius-md); background: var(--color-surface-raised); }
+.stage::before { content: counter(stage); counter-increment: stage; position: absolute; top: 20px; left: 20px; display: grid; place-items: center; width: 36px; height: 36px; border-radius: var(--radius-sm); color: var(--color-on-primary); background: var(--color-primary); font-weight: 760; }
+.stage-head { display: flex; align-items: baseline; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
+.stage-num { font-weight: 750; color: var(--color-heading); }
+.stage-hint { font-size: 0.82rem; color: var(--color-muted); }
+.skill-row { display: flex; flex-wrap: wrap; gap: 8px; }
+.skill-chip { display: inline-flex; align-items: center; gap: 8px; min-height: 40px; padding: 0 12px; border: 1px solid var(--color-border); border-radius: var(--radius-sm); background: var(--color-surface); color: var(--color-primary); font-size: 0.9rem; font-weight: 650; }
+.skill-chip:hover { border-color: var(--color-primary); background: var(--color-soft); }
+.skill-chip .w { padding-left: 8px; border-left: 1px solid var(--color-border); font-size: 0.75rem; color: var(--color-muted); font-variant-numeric: tabular-nums; }
+.error, .done { margin-top: 20px; padding: 14px 16px; border-radius: var(--radius-md); }
+.error { background: color-mix(in srgb, var(--color-danger) 9%, var(--color-surface)); }
+.done { color: var(--color-success); background: color-mix(in srgb, var(--color-success) 10%, var(--color-surface)); font-weight: 650; }
+@media (max-width: 560px) { .stage { padding: 68px 16px 16px; } .stage::before { top: 16px; left: 16px; } }
 </style>

@@ -146,7 +146,7 @@ async function submit() {
           </ul>
         </div>
 
-        <div v-if="result" class="result" :class="{ pass: result.passed, fail: !result.passed }">
+        <div v-if="result" class="result feedback-focus" :class="{ pass: result.passed, fail: !result.passed }">
           <strong>{{ result.passed ? '通过 ✓' : '未通过' }}</strong>
           答对 {{ result.correctCount }} / {{ result.totalCount }} 题
           <span v-if="result.passed">——已回写到你的技能画像，去<RouterLink to="/gap">技能差距</RouterLink>页能看到更新。</span>
@@ -162,7 +162,7 @@ async function submit() {
               {{ opt }}
             </label>
           </div>
-          <button :disabled="!allAnswered || submitting" @click="submit">
+          <button class="submit-button" :disabled="!allAnswered || submitting" @click="submit">
             {{ submitting ? '提交中…' : '提交测评' }}
           </button>
         </div>
@@ -173,23 +173,26 @@ async function submit() {
 </template>
 
 <style scoped>
-.back { display: inline-block; margin-bottom: 0.6rem; color: #5b6472; text-decoration: none; font-size: 0.9rem; }
-.skill-title { margin: 0.25rem 0 1rem; color: #2b6e5c; }
-.chip-row { display: flex; flex-wrap: wrap; gap: 0.5rem; }
-.skill-chip { padding: 0.4rem 0.9rem; border-radius: 999px; border: 1px solid #dbdee4; background: #fff; cursor: pointer; font-size: 0.9rem; }
-.skill-chip:hover { border-color: #2b6e5c; color: #2b6e5c; }
-.resources ul, .quiz { margin-top: 0.5rem; }
-.resources ul { list-style: none; padding: 0; }
-.resources li { display: flex; gap: 0.6rem; align-items: baseline; padding: 0.25rem 0; }
-.resources .type { font-size: 0.75rem; color: #8891a0; }
-.question { margin: 1rem 0; }
-.qtext { font-weight: 600; margin-bottom: 0.4rem; }
-.option { display: block; padding: 0.2rem 0; cursor: pointer; }
-button { margin-top: 1rem; padding: 0.5rem 1.25rem; background: #2b6e5c; color: #fff; border: none; border-radius: 6px; cursor: pointer; font-size: 0.95rem; }
-button:disabled { background: #b7c4bf; cursor: not-allowed; }
-.result { margin: 1rem 0; padding: 0.75rem 1rem; border-radius: 8px; font-size: 0.9rem; }
-.result.pass { background: #e3f0eb; color: #2b6e5c; }
-.result.fail { background: #f6e8da; color: #ae5f1c; }
-.error { color: #b3261e; }
-.hint { color: #8891a0; }
+.back { margin-bottom: 4px; }
+.skill-title { margin: 4px 0 20px; color: var(--color-heading); }
+.chip-row { margin-top: 18px; }
+.resources { margin-top: 20px; padding: 18px; }
+.resources h3, .quiz h3 { margin-bottom: 8px; color: var(--color-heading); font-size: 1rem; }
+.resources ul { list-style: none; padding: 0; margin: 0; }
+.resources li { display: flex; justify-content: space-between; gap: 12px; align-items: baseline; padding: 10px 0; border-top: 1px solid var(--color-border); }
+.resources li:first-child { border-top: 0; }
+.resources .type { color: var(--color-muted); font-size: 0.75rem; }
+.quiz { margin-top: 20px; padding: 18px; }
+.question { margin: 14px 0; padding: 16px; }
+.qtext { color: var(--color-heading); font-weight: 700; margin-bottom: 10px; }
+.option { display: flex; align-items: flex-start; gap: 8px; min-height: 44px; padding: 9px 0; cursor: pointer; }
+.option input { width: 18px; min-height: 18px; margin-top: 3px; }
+.submit-button { margin-top: 4px; }
+.result { margin: 20px 0; padding: 16px 18px; border: 1px solid var(--color-border); border-radius: var(--radius-md); font-size: 0.92rem; }
+.feedback-focus { animation: feedback-focus-in 360ms cubic-bezier(.22, 1, .36, 1) both; }
+.result.pass { border-color: color-mix(in srgb, var(--color-success) 35%, var(--color-border)); background: color-mix(in srgb, var(--color-success) 10%, var(--color-surface)); color: var(--color-success); }
+.result.fail { border-color: color-mix(in srgb, var(--color-warning) 35%, var(--color-border)); background: color-mix(in srgb, var(--color-warning) 12%, var(--color-surface)); color: var(--color-warning); }
+.error { margin-top: 20px; padding: 12px 14px; border-radius: var(--radius-md); background: color-mix(in srgb, var(--color-danger) 9%, var(--color-surface)); }
+.hint { color: var(--color-muted); }
+@keyframes feedback-focus-in { from { opacity: 0; transform: translateY(10px) scale(.985); box-shadow: 0 0 0 0 color-mix(in srgb, var(--color-primary) 0%, transparent); } to { opacity: 1; transform: translateY(0) scale(1); box-shadow: 0 0 0 5px color-mix(in srgb, var(--color-primary) 12%, transparent); } }
 </style>
