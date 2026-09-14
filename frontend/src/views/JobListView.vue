@@ -31,8 +31,12 @@ onMounted(async () => {
   }
 })
 
-async function selectCategory(id) {
-  profile.setTargetCategory(id)
+// 坑：这里以前是一个函数同时做两件事（设置目标类别 + 拉岗位列表），点击分类 chip
+// 时直接调用它，而下面的 watch 又在监听 targetCategoryId 变化——setTargetCategory
+// 同步改了 store 里的值，watch 马上也跟着触发，同一次点击实际上发了两次一模一样的
+// /postings 请求（用 fetch 打日志实测过）。现在拆开：点击只管"选中哪个类别"，
+// 拉数据只归 watch 一处管，不会重复触发。
+async function loadPostings(id) {
   postingsLoading.value = true
   try {
     const page = await api.listPostings(id, { preferLocation: auth.user?.targetLocation, size: 10 })
@@ -44,9 +48,13 @@ async function selectCategory(id) {
   }
 }
 
+function selectCategory(id) {
+  profile.setTargetCategory(id)
+}
+
 watch(
   () => profile.targetCategoryId,
-  (id) => { if (id) selectCategory(id) },
+  (id) => { if (id) loadPostings(id) },
   { immediate: true }
 )
 

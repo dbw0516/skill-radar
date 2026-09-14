@@ -46,11 +46,24 @@ const gapList = computed(() => items.value.filter((i) => !i.mastered))
 const masteredList = computed(() => items.value.filter((i) => i.mastered))
 
 // --- 雷达图几何：N 个维度均分圆周，半径按 score(0~100) 映射 ---
-const RADIUS = 110
-const CENTER = 140
+// 坑：CENTER 到 viewBox 边缘的留白得够放下一整条轴标签文字，不然长一点的 domain 名字
+//（比如"Python语言"这种中英文混排的，比原来纯中文的"后端框架"宽不少）会被 SVG 默认
+// 裁掉一截，比如"Python语言（0%）"显示成"Python语言（0%"——踩过这个坑，所以：
+//  1) 半径到边缘留 60px 空当（不是刚好贴着标签点）；
+//  2) 标签不再一律 text-anchor="middle"，偏水平（左右两侧）的轴改成往外锚定
+//     （靠右的轴左对齐、靠左的轴右对齐），这样文字往外长而不是从中点向两边裂开。
+const RADIUS = 100
+const CENTER = 170
+const LABEL_R = RADIUS + 20
 function axisPoint(i, n, r) {
   const angle = (Math.PI * 2 * i) / n - Math.PI / 2
   return [CENTER + r * Math.cos(angle), CENTER + r * Math.sin(angle)]
+}
+function labelAnchor(x) {
+  const dx = x - CENTER
+  if (dx > 15) return 'start'
+  if (dx < -15) return 'end'
+  return 'middle'
 }
 const polygonPoints = computed(() => {
   const n = domains.value.length
@@ -63,8 +76,8 @@ const axisLines = computed(() => {
   const n = domains.value.length
   return domains.value.map((d, i) => {
     const [x, y] = axisPoint(i, n, RADIUS)
-    const [lx, ly] = axisPoint(i, n, RADIUS + 22)
-    return { x, y, lx, ly, label: d.name, score: d.score }
+    const [lx, ly] = axisPoint(i, n, LABEL_R)
+    return { x, y, lx, ly, label: d.name, score: d.score, anchor: labelAnchor(lx) }
   })
 })
 const gridRings = [0.25, 0.5, 0.75, 1].map((f) => {
@@ -87,11 +100,11 @@ const gridRings = [0.25, 0.5, 0.75, 1].map((f) => {
         />
 
         <div v-if="activeTab === 'radar'" class="radar-wrap">
-          <svg viewBox="0 0 280 280" width="280" height="280" v-if="domains.length >= 3">
+          <svg viewBox="0 0 340 340" width="340" height="340" v-if="domains.length >= 3">
             <polygon v-for="(ring, i) in gridRings" :key="i" :points="ring" class="grid-ring" />
-            <line v-for="(a, i) in axisLines" :key="'ax' + i" x1="140" y1="140" :x2="a.x" :y2="a.y" class="axis-line" />
+            <line v-for="(a, i) in axisLines" :key="'ax' + i" x1="170" y1="170" :x2="a.x" :y2="a.y" class="axis-line" />
             <polygon :points="polygonPoints" class="score-polygon" />
-            <text v-for="(a, i) in axisLines" :key="'lbl' + i" :x="a.lx" :y="a.ly" class="axis-label" text-anchor="middle">
+            <text v-for="(a, i) in axisLines" :key="'lbl' + i" :x="a.lx" :y="a.ly" class="axis-label" :text-anchor="a.anchor">
               {{ a.label }}（{{ a.score }}%）
             </text>
           </svg>
@@ -129,6 +142,7 @@ const gridRings = [0.25, 0.5, 0.75, 1].map((f) => {
 <style scoped>
 h1 { margin-bottom: 0.5rem; }
 .radar-wrap { display: flex; justify-content: center; }
+.radar-wrap svg { overflow: visible; max-width: 100%; height: auto; }
 .grid-ring { fill: none; stroke: #e0e0e0; stroke-width: 1; }
 .axis-line { stroke: #e0e0e0; stroke-width: 1; }
 .score-polygon { fill: rgba(43, 110, 92, 0.25); stroke: #2b6e5c; stroke-width: 2; }
