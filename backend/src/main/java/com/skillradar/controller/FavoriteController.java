@@ -6,6 +6,7 @@ import com.skillradar.entity.JobPosting;
 import com.skillradar.repository.FavoriteRepository;
 import com.skillradar.repository.JobPostingRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -32,7 +33,11 @@ public class FavoriteController {
         return Map.of("favorited", favoriteRepository.existsByUserIdAndPostingId(userId, postingId));
     }
 
+    // @ResponseStatus(NO_CONTENT)：void 方法不加这个默认是 200 + 空响应体，前端 client.js 的
+    // request() 只对 204 才跳过 res.json()，200 空 body 会让 JSON 解析炸掉，收藏按钮点了没反应
+    // 就是这么来的（异常被 toggleFavorite 的 catch 静默吞了）。
     @PutMapping("/{postingId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public void add(@PathVariable Long userId, @PathVariable Long postingId) {
         if (!favoriteRepository.existsByUserIdAndPostingId(userId, postingId)) {
             favoriteRepository.save(new Favorite(userId, postingId));
@@ -40,6 +45,7 @@ public class FavoriteController {
     }
 
     @DeleteMapping("/{postingId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public void remove(@PathVariable Long userId, @PathVariable Long postingId) {
         // deleteById 在记录不存在时会抛异常，先查一下再删，保证重复调用/取消已经取消过的收藏不会报错
         if (favoriteRepository.existsByUserIdAndPostingId(userId, postingId)) {

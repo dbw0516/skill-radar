@@ -15,7 +15,11 @@ async function request(path, options = {}) {
     }
     throw new Error(message)
   }
-  return res.status === 204 ? null : res.json()
+  if (res.status === 204) return null
+  // 不只判 204——某些接口是 void 方法，Spring Boot 默认给 200 + 空 body（不是 204），
+  // 这种情况 res.json() 拿空字符串解析会直接抛异常，调用方大多不会预料到，容易被静默吞掉。
+  const text = await res.text()
+  return text ? JSON.parse(text) : null
 }
 
 export const api = {
