@@ -14,15 +14,16 @@
 
 - [x] 技术方案设计（数据流、学习路径算法、用户画像、岗位技能提取、数据维护策略）
 - [x] 数据库结构 `database/schema.sql`（14 张表）+ 试点种子数据 `database/seed.sql`
-- [x] 真实岗位数据：天池公开数据集导入，1,202 条、覆盖 13 个岗位类别（`database/seed_real_postings.sql`）
-- [x] 面试题库：193 道（JavaGuide 来源，`database/seed_interview_questions.sql`）
+- [x] 真实岗位数据：天池公开数据集导入，1,202 条、覆盖 13 个岗位类别（`database/seed_real_postings.sql`）——这部分是**招聘信息**，跟下面"技能词典扩展"是两回事，4 个新岗位类别暂时还没有对应的招聘信息
+- [x] 面试题库：542 道（193 道 JavaGuide 来源的 Java 后端面试题 + 349 道团队收集的其他方向面试题，`database/seed_interview_questions.sql` + `database/seed_expanded_skills_and_questions.sql`）
+- [x] 技能词典扩展：从 11 个（全是 Java 后端）扩到 73 个，新增覆盖 Go/Python/前端/大数据/Android/iOS/测试/运维/网络安全/数据分析/数据库/游戏开发，顺带新建了 4 个原来没有的岗位类别（Go后端/全栈/嵌入式开发/游戏开发工程师）——**这只是技能节点和面试题**，这些新技能还没有对应的 `job_skills`（岗位所需技能权重）和 `skill_prereq`（依赖图谱），所以暂时不会出现在这些岗位的差距分析/学习路径里，见 `tools/import_expanded_interview_questions.py`
 - [x] 学习资料：14 条已导入，另有 24 条待技能词典扩充后导入（`database/seed_learning_resources.sql`）
 - [x] ①②③④ 四个引擎已实现并跑通完整闭环：岗位推荐、差距分析（集合差+按权重排序）、学习路径（拓扑排序分层）、资料+测评（判分后回写 `user_skills`，下一次差距分析立刻反映变化）
 - [x] 前端四个页面全部接入真实接口（技能差距雷达图、学习路径时间线、在线答题）
 - [x] 本机装了 JDK 17 + Maven + 本地 MySQL，完整跑通一遍：建库 → 导入全部种子数据 → 启动后端 → 前端点击操作 → 提交测评 → 确认画像回写生效
 - [x] 登录 / 注册：`/api/auth/register`、`/api/auth/login`，密码 BCrypt 哈希存储，前端有对应页面，`user_skills`/`target_category` 都挂在真实用户上而不是写死的演示账号
 - [x] 团队共享 + 零配置访问：主机跑一个脚本，Cloudflare Tunnel 同时把后端**和前端**开成公网地址，队友什么都不用装、不用 clone 代码，浏览器打开前端地址就能用；注册数据统一落在主机这台电脑的 MySQL 里，见下方「团队共享」
-- [ ] 技能词典扩展到 Java 后端以外的类别（已识别 78 个候选技能名，见开发手册）
+- [ ] 给新扩展的 62 个技能补 `job_skills`（岗位所需技能权重）和 `skill_prereq`（依赖图谱），这样才能接入差距分析/学习路径——目前只是"有技能节点和面试题"，还没接进①②③引擎
 - [ ] 选择题题库（`questions` 表当前仅 3 道示例，覆盖不够，需要人工补齐每个技能 5~10 道）
 
 ## MVP 策略
@@ -146,3 +147,5 @@ python tools/jd_intake.py
 ```
 
 不要直接写爬虫抓拉勾/BOSS直聘/猎聘等平台的数据——这几家都明确禁止自动化抓取，国内已有多起相关民事甚至刑事案例，风险远大于"违反用户协议"。
+
+面试题/学习资料这类内容型数据走的是另一套路子：团队自己整理成文档（`面试题/*.docx`、`database/*面试题集.md` 等）放进仓库，再写个一次性脚本解析成 SQL——`tools/import_interview_questions.py`（JavaGuide 那批）和 `tools/import_expanded_interview_questions.py`（这批覆盖 Go/Python/前端/大数据/移动端/测试/运维/网络安全/数据分析/数据库/游戏开发方向）是同一个模式。后者的脚本文件头注释里写了取舍：`key_points` 是提炼过的要点提示、不是原文逐字转录，行为面试题统一挂到共享的"职业素养与求职技巧"技能，没有技术内容可提炼的岗位方向（全栈/嵌入式开发）目前只有职业素养题。
