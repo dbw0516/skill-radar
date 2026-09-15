@@ -69,4 +69,17 @@ public class UserSkillService {
             }
         }
     }
+
+    /**
+     * 取消一个技能的已掌握状态——不管是自评还是测评认证过的，直接删记录，打回"未掌握"。
+     * 和 setSelfReported 不同：那个只处理批量自评表单，特意保护 quiz_verified 不被覆盖；
+     * 这里是用户自己主动点的"取消"，quiz_verified 也允许撤销。
+     */
+    @Transactional
+    public void remove(Long userId, Long skillId) {
+        UserSkillId id = new UserSkillId(userId, skillId);
+        if (userSkillRepository.existsById(id)) {
+            userSkillRepository.deleteById(id);
+        }
+    }
 }

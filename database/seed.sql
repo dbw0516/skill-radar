@@ -73,14 +73,24 @@ INSERT INTO learning_resources (skill_id, title, url, type) VALUES
   (6, 'Spring Boot 官方指南', 'https://spring.io/guides', 'doc'),
   (5, 'MySQL 官方文档', 'https://dev.mysql.com/doc/', 'doc');
 
--- 题库示例（团队后续按此格式补齐每个技能 5~10 道）
-INSERT INTO questions (skill_id, question_text, options, correct_index, difficulty) VALUES
-  (2, 'Java 中，以下哪个关键字用于定义常量？',
+-- 题库示例（团队后续按此格式补齐每个技能 5~10 道）：三种题型各给一个例子
+INSERT INTO questions (skill_id, type, question_text, options, correct_index, difficulty) VALUES
+  (2, 'single_choice', 'Java 中，以下哪个关键字用于定义常量？',
      JSON_ARRAY('final', 'const', 'static', 'immutable'), 0, 1),
-  (6, 'Spring Boot 中，用于标注一个类为 REST 控制器的注解是？',
+  (6, 'single_choice', 'Spring Boot 中，用于标注一个类为 REST 控制器的注解是？',
      JSON_ARRAY('@Service', '@RestController', '@Repository', '@Configuration'), 1, 2),
-  (5, 'MySQL 中，为提升查询速度，通常会为频繁查询的列添加什么？',
+  (5, 'single_choice', 'MySQL 中，为提升查询速度，通常会为频繁查询的列添加什么？',
      JSON_ARRAY('触发器', '视图', '索引', '存储过程'), 2, 2);
+
+-- 填空题：服务端把提交的文本去空格+转小写后，和 accepted_answers 里任一候选精确匹配
+INSERT INTO questions (skill_id, type, question_text, accepted_answers, difficulty) VALUES
+  (5, 'fill_blank', 'MySQL 默认的存储引擎是 ______（英文）。',
+     JSON_ARRAY('InnoDB', 'innodb'), 1);
+
+-- 简答题：开放式问答，服务端不判分，前端展示 reference_answer 后由用户自评"答对了/没答对"
+INSERT INTO questions (skill_id, type, question_text, reference_answer, difficulty) VALUES
+  (6, 'short_answer', '简述 Spring Boot 自动配置（Auto Configuration）的大致原理。',
+     '要点：@EnableAutoConfiguration 触发扫描；根据 classpath 里的依赖和已存在的 Bean，通过 @ConditionalOnClass/@ConditionalOnMissingBean 等条件注解决定是否装配某个默认配置类；候选配置类清单在 spring-boot-autoconfigure 包内注册；用户自定义的 Bean 优先于自动配置提供的默认 Bean。', 3);
 
 -- 示例账号，仅供本地联调使用：demo@example.com / demo1234（BCrypt 哈希，和 /api/auth/login 兼容）
 INSERT INTO users (id, email, password_hash, nickname, major_id, target_category_id) VALUES

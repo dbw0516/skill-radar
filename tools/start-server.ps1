@@ -7,6 +7,9 @@
 #
 # 这个脚本重复运行是安全的——已经在跑的部分会跳过，隧道地址只要进程还活着就沿用旧的、不会变。
 #
+# Ollama（简答题 AI 判分）是软依赖：没装、起不来、模型没拉全，都只打印警告然后继续——
+# 选择题/填空题/其他功能不受影响，只有提交带简答题的测评会报错，等 Ollama 好了重新提交即可。
+#
 # 说明：
 #  - 免费不记名隧道地址（xxx.trycloudflare.com）在真正重新开隧道时会换一个新的（比如这台电脑重启过）。
 #    换了就得把新地址重新发一遍群里。想要永久固定地址，得注册 Cloudflare 账号配命名隧道，或者把整套
@@ -18,6 +21,8 @@ $root = Split-Path -Parent $PSScriptRoot
 $mysqlBin = "C:\Program Files\MySQL\MySQL Server 8.4\bin"
 $mysqlData = "D:\tools\mysql-data"
 $cloudflared = "C:\Program Files (x86)\cloudflared\cloudflared.exe"
+$ollama = "$env:LOCALAPPDATA\Programs\Ollama\ollama.exe"
+$ollamaModel = "qwen3:8b"
 
 function Test-Port($port) {
     Test-NetConnection -ComputerName localhost -Port $port -InformationLevel Quiet -WarningAction SilentlyContinue
@@ -62,7 +67,7 @@ function Stop-PortProcess($port) {
 }
 
 # ---------- 1) MySQL ----------
-Write-Host "1/5 本地 MySQL..." -ForegroundColor Cyan
+Write-Host "1/6 本地 MySQL..." -ForegroundColor Cyan
 if (Test-Port 3306) {
     Write-Host "   已经在跑了，跳过。"
 } else {
@@ -70,8 +75,37 @@ if (Test-Port 3306) {
     Start-Sleep -Seconds 4
 }
 
-# ---------- 2) 后端 ----------
-Write-Host "2/5 后端（Spring Boot）..." -ForegroundColor Cyan
+# ---------- 2) Ollama（简答题 AI 判分，软依赖） ----------
+Write-Host "2/6 本地 Ollama（简答题 AI 判分）..." -ForegroundColor Cyan
+if (Test-Port 11434) {
+    Write-Host "   已经在跑了，跳过。"
+} elseif (-not (Test-Path $ollama)) {
+    Write-Host "   没装 Ollama（$ollama 不存在），简答题判分会不可用，其他功能不受影响。" -ForegroundColor Yellow
+    Write-Host "   要用就去 https://ollama.com/download 装一下，重新跑这个脚本。" -ForegroundColor Yellow
+} else {
+    # -e 传 serve：不走 "ollama app.exe" 那个会弹 GUI 欢迎窗口的托盘程序，直接起纯后台服务。
+    Start-Process -FilePath $ollama -ArgumentList "serve" -WindowStyle Hidden
+    $ready = $false
+    for ($i = 0; $i -lt 20; $i++) {
+        Start-Sleep -Seconds 1
+        if (Test-Port 11434) { $ready = $true; break }
+    }
+    if (-not $ready) {
+        Write-Host "   Ollama 没起来，简答题判分会不可用，其他功能不受影响。" -ForegroundColor Yellow
+    }
+}
+if (Test-Port 11434) {
+    $tags = $null
+    try { $tags = Invoke-RestMethod -Uri "http://localhost:11434/api/tags" -TimeoutSec 5 } catch {}
+    $hasModel = $tags -and ($tags.models | Where-Object { $_.model -eq $ollamaModel -or $_.name -eq $ollamaModel })
+    if (-not $hasModel) {
+        Write-Host "   还没有 $ollamaModel，拉取中（第一次比较慢，几分钟起步，看网速）..." -ForegroundColor Cyan
+        & $ollama pull $ollamaModel
+    }
+}
+
+# ---------- 3) 后端 ----------
+Write-Host "3/6 后端（Spring Boot）..." -ForegroundColor Cyan
 $backendLog = "$root\tools\backend.log"
 if (Test-Port 8080) {
     Write-Host "   已经在跑了，跳过。"
@@ -101,8 +135,8 @@ if (Test-Port 8080) {
     }
 }
 
-# ---------- 3) 后端隧道 ----------
-Write-Host "3/5 后端公网隧道..." -ForegroundColor Cyan
+# ---------- 4) 后端隧道 ----------
+Write-Host "4/6 后端公网隧道..." -ForegroundColor Cyan
 $backendUrl = Ensure-Tunnel 8080 "backend"
 if (-not $backendUrl) {
     Write-Host "后端隧道地址没读到，看 tools\tunnel-backend.log" -ForegroundColor Red
@@ -110,8 +144,8 @@ if (-not $backendUrl) {
 }
 Write-Host "   $backendUrl"
 
-# ---------- 4) 前端 dev server ----------
-Write-Host "4/5 前端（Vite）..." -ForegroundColor Cyan
+# ---------- 5) 前端 dev server ----------
+Write-Host "5/6 前端（Vite）..." -ForegroundColor Cyan
 $envFile = "$root\frontend\.env.local"
 $urlMarker = "$root\tools\.backend-url"
 $oldUrl = (Get-Content $urlMarker -ErrorAction SilentlyContinue | Select-Object -First 1)
@@ -145,8 +179,8 @@ if ((Test-Port 5173) -and ($oldUrl -eq $backendUrl)) {
     }
 }
 
-# ---------- 5) 前端隧道 ----------
-Write-Host "5/5 前端公网隧道..." -ForegroundColor Cyan
+# ---------- 6) 前端隧道 ----------
+Write-Host "6/6 前端公网隧道..." -ForegroundColor Cyan
 $frontendUrl = Ensure-Tunnel 5173 "frontend"
 if (-not $frontendUrl) {
     Write-Host "前端隧道地址没读到，看 tools\tunnel-frontend.log" -ForegroundColor Red

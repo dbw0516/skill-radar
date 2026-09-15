@@ -154,17 +154,29 @@ CREATE TABLE learning_resources (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- ---------------------------------------------------------
--- 题库：每个技能 5~10 道，人工编写
+-- 题库：目标每个技能 5~10 道。三种题型共用一张表，各自只填自己用得到的列，其余留空：
+--   single_choice 选择题：options + correct_index，服务端精确判分
+--   fill_blank    填空题：accepted_answers，服务端归一化（去空格+小写）后
+--                 精确匹配任一候选答案即算对
+--   short_answer  简答题：reference_answer，开放式答案没法用字符串匹配，
+--                 交给 ShortAnswerGradingService 调用本地 AI 判分
+-- 单个技能题量差异很大（人工编写的少，从 interview_questions 批量转来的多），
+-- 一次测评显示多少道由 QuizService 抽样封顶，不是这张表的问题。
+-- uk_skill_question_text：同一技能下同一题目只留一条，批量导入脚本用 INSERT IGNORE 天然去重。
 -- ---------------------------------------------------------
 CREATE TABLE questions (
-  id              BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-  skill_id        BIGINT UNSIGNED NOT NULL,
-  question_text   TEXT NOT NULL,
-  options         JSON NOT NULL COMMENT '如 ["选项A","选项B","选项C","选项D"]',
-  correct_index   TINYINT UNSIGNED NOT NULL COMMENT '正确选项在 options 中的下标',
-  difficulty      TINYINT UNSIGNED DEFAULT 2,
-  created_at      DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  FOREIGN KEY (skill_id) REFERENCES skills(id)
+  id                BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  skill_id          BIGINT UNSIGNED NOT NULL,
+  type              ENUM('single_choice','fill_blank','short_answer') NOT NULL DEFAULT 'single_choice',
+  question_text     TEXT NOT NULL,
+  options           JSON COMMENT '仅 single_choice，如 ["选项A","选项B","选项C","选项D"]',
+  correct_index     TINYINT UNSIGNED COMMENT '仅 single_choice，正确选项在 options 中的下标',
+  accepted_answers  JSON COMMENT '仅 fill_blank，可接受答案数组，如 ["索引","index"]',
+  reference_answer  TEXT COMMENT '仅 short_answer，参考答案/要点，不参与服务端判分',
+  difficulty        TINYINT UNSIGNED DEFAULT 2,
+  created_at        DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (skill_id) REFERENCES skills(id),
+  UNIQUE KEY uk_skill_question_text (skill_id, question_text(255))
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- ---------------------------------------------------------
@@ -195,6 +207,22 @@ CREATE TABLE quiz_attempts (
   attempted_at  DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (user_id) REFERENCES users(id),
   FOREIGN KEY (skill_id) REFERENCES skills(id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- ---------------------------------------------------------
+-- 错题本：某个用户当前还没订正的题，答对一次就从这张表里删掉——
+-- 表里"存在的行"就代表"现在还错着"，不需要额外的 status 字段。
+-- ---------------------------------------------------------
+CREATE TABLE wrong_questions (
+  user_id            BIGINT UNSIGNED NOT NULL,
+  question_id        BIGINT UNSIGNED NOT NULL,
+  last_wrong_answer  TEXT COMMENT '最近一次答错时提交的内容，选择题存选项文字、填空/简答存原文，供回顾对照',
+  wrong_count        INT UNSIGNED NOT NULL DEFAULT 1 COMMENT '累计答错次数（含中间答对又答错的反复）',
+  first_wrong_at     DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  last_wrong_at      DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (user_id, question_id),
+  FOREIGN KEY (user_id) REFERENCES users(id),
+  FOREIGN KEY (question_id) REFERENCES questions(id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- ---------------------------------------------------------

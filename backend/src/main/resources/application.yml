@@ -21,6 +21,11 @@ server:
     include-stacktrace: never    # 别把 Java 堆栈跟着错误信息一起发给前端
 
 app:
+  ollama:
+    # 简答题 AI 判分用，见 ShortAnswerGradingService。需要本机装好 Ollama 并 `ollama pull` 这个模型，
+    # 换一台机器当共享主机时也要重新装一遍——本地推理换来的是零成本、不用管密钥。
+    base-url: ${OLLAMA_BASE_URL:http://localhost:11434}
+    model: ${OLLAMA_MODEL:qwen3:8b}
   cors:
     # 两种访问方式都要放行：
     #  1) http://localhost:5173  —— 本机开发时直接开 dev server

@@ -13,6 +13,7 @@ public class QuizSubmitRequest {
     @Data
     public static class Answer {
         private Long questionId;
-        private Integer selectedIndex;
+        private Integer selectedIndex; // single_choice
+        private String answerText;     // fill_blank / short_answer
     }
 }

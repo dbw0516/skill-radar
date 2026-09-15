@@ -26,4 +26,11 @@ public class UserSkillController {
         userSkillService.setSelfReported(userId, req.getSkillIds());
         return userSkillService.listForUser(userId);
     }
+
+    /** 取消某个技能的已掌握状态——自评、测评认证过的都能取消，跟 PUT 的批量自评表单是两回事。 */
+    @DeleteMapping("/{skillId}")
+    public List<SkillStatus> remove(@PathVariable Long userId, @PathVariable Long skillId) {
+        userSkillService.remove(userId, skillId);
+        return userSkillService.listForUser(userId);
+    }
 }
