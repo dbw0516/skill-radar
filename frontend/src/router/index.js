@@ -10,6 +10,7 @@ const router = createRouter({
     { path: '/gap', name: 'gap', component: () => import('../views/GapView.vue'), meta: { requiresAuth: true } },
     { path: '/path', name: 'path', component: () => import('../views/PathView.vue'), meta: { requiresAuth: true } },
     { path: '/quiz', name: 'quiz', component: () => import('../views/QuizView.vue'), meta: { requiresAuth: true } },
+    { path: '/mistakes', name: 'mistakes', component: () => import('../views/WrongQuestionsView.vue'), meta: { requiresAuth: true } },
     { path: '/profile', name: 'profile', component: () => import('../views/ProfileView.vue'), meta: { requiresAuth: true } },
     { path: '/login', name: 'login', component: () => import('../views/LoginView.vue') },
     { path: '/register', name: 'register', component: () => import('../views/RegisterView.vue') },

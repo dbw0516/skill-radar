@@ -51,7 +51,8 @@ function pick(s) {
 // --- 具体某个技能的测评 ---
 const resources = ref([])
 const questions = ref([])
-const answers = reactive({}) // questionId -> selectedIndex
+// questionId -> 选择题存 selectedIndex(Number)，填空题/简答题存答案文本(String)
+const answers = reactive({})
 const result = ref(null)
 const loading = ref(false)
 const submitting = ref(false)
@@ -63,6 +64,10 @@ function parseOptions(raw) {
   } catch {
     return []
   }
+}
+
+function typeLabel(type) {
+  return { single_choice: '选择题', fill_blank: '填空题', short_answer: '简答题' }[type] || ''
 }
 
 async function load() {
@@ -91,8 +96,17 @@ onMounted(load)
 watch(skillId, load)
 
 const allAnswered = computed(() =>
-  questions.value.length > 0 && questions.value.every((q) => answers[q.id] !== undefined)
+  questions.value.length > 0 && questions.value.every((q) => {
+    const v = answers[q.id]
+    if (q.type === 'fill_blank' || q.type === 'short_answer') return typeof v === 'string' && v.trim().length > 0
+    return v !== undefined
+  })
 )
+
+function answerPayload(q) {
+  if (q.type === 'fill_blank' || q.type === 'short_answer') return { questionId: q.id, answerText: answers[q.id] }
+  return { questionId: q.id, selectedIndex: answers[q.id] }
+}
 
 async function submit() {
   submitting.value = true
@@ -101,7 +115,7 @@ async function submit() {
     result.value = await api.submitQuiz({
       userId: auth.userId,
       skillId: skillId.value,
-      answers: questions.value.map((q) => ({ questionId: q.id, selectedIndex: answers[q.id] })),
+      answers: questions.value.map(answerPayload),
     })
     if (result.value.passed) {
       profile.markMastered(skillId.value)
@@ -156,11 +170,31 @@ async function submit() {
         <div v-if="questions.length" class="quiz">
           <h3>测评题（{{ questions.length }} 题）</h3>
           <div v-for="(q, qi) in questions" :key="q.id" class="question">
-            <p class="qtext">{{ qi + 1 }}. {{ q.questionText }}</p>
-            <label v-for="(opt, oi) in parseOptions(q.options)" :key="oi" class="option">
-              <input type="radio" :name="'q' + q.id" :value="oi" v-model="answers[q.id]" />
-              {{ opt }}
-            </label>
+            <p class="qtext">{{ qi + 1 }}. {{ q.questionText }} <span class="qtype">{{ typeLabel(q.type) }}</span></p>
+
+            <template v-if="q.type === 'single_choice'">
+              <label v-for="(opt, oi) in parseOptions(q.options)" :key="oi" class="option">
+                <input type="radio" :name="'q' + q.id" :value="oi" v-model="answers[q.id]" />
+                {{ opt }}
+              </label>
+            </template>
+
+            <template v-else-if="q.type === 'fill_blank'">
+              <input type="text" class="fill-input" placeholder="填入你的答案" v-model="answers[q.id]" />
+            </template>
+
+            <template v-else-if="q.type === 'short_answer'">
+              <textarea
+                class="short-input"
+                rows="3"
+                placeholder="填入你的答案，提交后由 AI 对照参考答案要点判分"
+                v-model="answers[q.id]"
+              ></textarea>
+              <div v-if="result" class="reference">
+                <p class="reference-label">参考答案／要点</p>
+                <p class="reference-text">{{ q.referenceAnswer || '（暂无参考答案）' }}</p>
+              </div>
+            </template>
           </div>
           <button class="submit-button" :disabled="!allAnswered || submitting" @click="submit">
             {{ submitting ? '提交中…' : '提交测评' }}
@@ -185,8 +219,14 @@ async function submit() {
 .quiz { margin-top: 20px; padding: 18px; }
 .question { margin: 14px 0; padding: 16px; }
 .qtext { color: var(--color-heading); font-weight: 700; margin-bottom: 10px; }
+.qtype { color: var(--color-muted); font-weight: 400; font-size: 0.75rem; }
 .option { display: flex; align-items: flex-start; gap: 8px; min-height: 44px; padding: 9px 0; cursor: pointer; }
 .option input { width: 18px; min-height: 18px; margin-top: 3px; }
+.fill-input, .short-input { width: 100%; box-sizing: border-box; padding: 10px 12px; border: 1px solid var(--color-border); border-radius: var(--radius-md); background: var(--color-surface); color: inherit; font: inherit; }
+.short-input { resize: vertical; }
+.reference { margin-top: 12px; padding: 12px 14px; border: 1px solid var(--color-border); border-radius: var(--radius-md); background: color-mix(in srgb, var(--color-primary) 6%, var(--color-surface)); }
+.reference-label { margin: 0 0 6px; font-weight: 700; color: var(--color-heading); font-size: 0.85rem; }
+.reference-text { margin: 0; white-space: pre-wrap; color: var(--color-text); }
 .submit-button { margin-top: 4px; }
 .result { margin: 20px 0; padding: 16px 18px; border: 1px solid var(--color-border); border-radius: var(--radius-md); font-size: 0.92rem; }
 .feedback-focus { animation: feedback-focus-in 360ms cubic-bezier(.22, 1, .36, 1) both; }

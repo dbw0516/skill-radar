@@ -54,6 +54,11 @@ export const api = {
   listUserSkills: (userId) => request(`/api/users/${userId}/skills`),
   setUserSkills: (userId, skillIds) =>
     request(`/api/users/${userId}/skills`, { method: 'PUT', body: JSON.stringify({ skillIds }) }),
+  removeUserSkill: (userId, skillId) =>
+    request(`/api/users/${userId}/skills/${skillId}`, { method: 'DELETE' }),
+
+  // 错题本
+  listWrongQuestions: (userId) => request(`/api/users/${userId}/wrong-questions`),
 
   // ②技能差距分析引擎
   gapAnalysis: (categoryId, userId) =>

@@ -49,6 +49,7 @@ function logout() {
       <RouterLink to="/gap">技能差距</RouterLink>
       <RouterLink to="/path">学习路径</RouterLink>
       <RouterLink to="/quiz">在线测评</RouterLink>
+      <RouterLink to="/mistakes">错题本</RouterLink>
     </div>
     <div class="account">
       <div class="theme-picker">

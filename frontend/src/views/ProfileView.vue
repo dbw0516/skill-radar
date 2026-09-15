@@ -22,6 +22,7 @@ const savingSkills = ref(false)
 const skillsSaved = ref(false)
 const skillsError = ref('')
 const checked = reactive(new Set())
+const removingSkillId = ref(null)
 
 function fillFormFromUser() {
   const u = auth.user
@@ -82,9 +83,24 @@ async function saveProfile() {
 }
 
 function toggle(skillId, isVerified) {
-  if (isVerified) return // 测评认证过的不让在这里取消
+  if (isVerified) return // 测评认证过的不让在这里勾/取消勾，走下面单独的"取消"按钮
   if (checked.has(skillId)) checked.delete(skillId)
   else checked.add(skillId)
+}
+
+// 已认证的技能没法靠取消勾选来撤销（那个表单只管自评），单独给一个"取消"按钮，
+// 点了直接调 DELETE 把 user_skills 那一行删掉，打回"未掌握"。
+async function removeMastered(skillId) {
+  removingSkillId.value = skillId
+  skillsError.value = ''
+  try {
+    skills.value = await api.removeUserSkill(auth.userId, skillId)
+    checked.delete(skillId)
+  } catch (e) {
+    skillsError.value = e.message
+  } finally {
+    removingSkillId.value = null
+  }
 }
 
 async function saveSkills() {
@@ -127,23 +143,34 @@ async function saveSkills() {
     </form>
 
     <div v-else>
-      <p class="hint">勾选你已经掌握的技能——这是自评，会标"自评"角标；橙色"已认证"的是测评通过的，没法在这里取消，只能靠测评本身的表现改变。</p>
+      <p class="hint">勾选你已经掌握的技能——这是自评，会标"自评"角标；橙色"已认证"的是测评通过的，勾选框锁住改不了，但可以点右边的"取消"直接撤销认证。</p>
       <p v-if="skillsLoading">加载中…</p>
       <p v-else-if="skillsError" class="error">{{ skillsError }}</p>
       <template v-else>
         <div v-for="[domain, list] in skillsByDomain" :key="domain" class="domain-group">
           <h3>{{ domain }}</h3>
-          <label v-for="s in list" :key="s.skillId" class="skill-row" :class="{ locked: s.status === 'quiz_verified' }">
-            <input
-              type="checkbox"
-              :checked="checked.has(s.skillId)"
-              :disabled="s.status === 'quiz_verified'"
-              @change="toggle(s.skillId, s.status === 'quiz_verified')"
-            />
-            {{ s.name }}
-            <span v-if="s.status === 'quiz_verified'" class="badge verified">已认证</span>
-            <span v-else-if="checked.has(s.skillId)" class="badge self">自评</span>
-          </label>
+          <div v-for="s in list" :key="s.skillId" class="skill-row" :class="{ locked: s.status === 'quiz_verified' }">
+            <label class="skill-label">
+              <input
+                type="checkbox"
+                :checked="checked.has(s.skillId)"
+                :disabled="s.status === 'quiz_verified'"
+                @change="toggle(s.skillId, s.status === 'quiz_verified')"
+              />
+              {{ s.name }}
+              <span v-if="s.status === 'quiz_verified'" class="badge verified">已认证</span>
+              <span v-else-if="checked.has(s.skillId)" class="badge self">自评</span>
+            </label>
+            <button
+              v-if="s.status === 'quiz_verified'"
+              type="button"
+              class="cancel-mastered"
+              :disabled="removingSkillId === s.skillId"
+              @click="removeMastered(s.skillId)"
+            >
+              {{ removingSkillId === s.skillId ? '取消中…' : '取消' }}
+            </button>
+          </div>
         </div>
         <p v-if="skillsSaved" class="ok">已保存。</p>
         <button @click="saveSkills" :disabled="savingSkills">{{ savingSkills ? '保存中…' : '保存技能自评' }}</button>
@@ -162,10 +189,13 @@ label { display: flex; flex-direction: column; gap: 6px; color: var(--color-head
 button { align-self: flex-start; margin-top: 4px; }
 .domain-group { max-width: 640px; margin-bottom: 18px; padding: 18px; border: 1px solid var(--color-border); border-radius: var(--radius-md); background: var(--color-surface-raised); }
 .domain-group h3 { margin: 0 0 10px; color: var(--color-heading); font-size: 0.9rem; font-weight: 750; }
-.skill-row { display: flex; align-items: center; gap: 10px; min-height: 44px; padding: 8px 0; border-top: 1px solid var(--color-border); font-size: 0.92rem; cursor: pointer; }
+.skill-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; min-height: 44px; padding: 8px 0; border-top: 1px solid var(--color-border); font-size: 0.92rem; }
 .skill-row:first-of-type { border-top: 0; }
-.skill-row.locked { cursor: default; }
+.skill-label { display: flex; flex-direction: row; align-items: center; gap: 10px; font-size: inherit; font-weight: inherit; color: inherit; cursor: pointer; white-space: nowrap; }
+.skill-row.locked .skill-label { cursor: default; }
 .badge { padding: 3px 8px; border: 1px solid var(--color-border); border-radius: var(--radius-sm); font-size: 0.72rem; font-weight: 700; }
 .badge.verified { border-color: color-mix(in srgb, var(--color-success) 30%, transparent); background: color-mix(in srgb, var(--color-success) 10%, var(--color-surface)); color: var(--color-success); }
 .badge.self { border-color: color-mix(in srgb, var(--color-warning) 30%, transparent); background: color-mix(in srgb, var(--color-warning) 12%, var(--color-surface)); color: var(--color-warning); }
+.cancel-mastered { align-self: center; margin: 0; min-height: 32px; padding: 0 12px; border: 1px solid var(--color-border); border-radius: var(--radius-sm); background: transparent; color: var(--color-muted); font-size: 0.78rem; font-weight: 650; }
+.cancel-mastered:hover { border-color: color-mix(in srgb, var(--color-danger) 40%, var(--color-border)); color: var(--color-danger); background: color-mix(in srgb, var(--color-danger) 6%, var(--color-surface)); }
 </style>
