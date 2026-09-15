@@ -9,6 +9,7 @@
 - 后端：Spring Boot 4.1（Java 17）+ Spring Data JPA + MySQL
 - 前端：Vue 3 + Vite + Vue Router + Pinia
 - 数据库：MySQL 8
+- AI 判分：本地 [Ollama](https://ollama.com/) + Qwen2.5，简答题用（详见「后端」一节）
 
 ## 当前进度
 
@@ -16,7 +17,7 @@
 - [x] 数据库结构 `database/schema.sql`（14 张表）+ 试点种子数据 `database/seed.sql`
 - [x] 真实岗位数据：天池公开数据集导入，1,202 条、覆盖 13 个岗位类别（`database/seed_real_postings.sql`）——这部分是**招聘信息**，跟下面"技能词典扩展"是两回事，4 个新岗位类别暂时还没有对应的招聘信息
 - [x] 面试题库：542 道（193 道 JavaGuide 来源的 Java 后端面试题 + 349 道团队收集的其他方向面试题，`database/seed_interview_questions.sql` + `database/seed_expanded_skills_and_questions.sql`）
-- [x] 技能词典扩展：从 11 个（全是 Java 后端）扩到 73 个，新增覆盖 Go/Python/前端/大数据/Android/iOS/测试/运维/网络安全/数据分析/数据库/游戏开发，顺带新建了 4 个原来没有的岗位类别（Go后端/全栈/嵌入式开发/游戏开发工程师），见 `tools/import_expanded_interview_questions.py`
+- [x] 技能词典扩展：从 11 个（全是 Java 后端）扩到 73 个，新增覆盖 Go/Python/前端/大数据/Android/iOS/测试/运维/网络安全/数据分析/数据库/游戏开发，顺带新建了 4 个原来没有的岗位类别（Go后端/全栈/嵌入式开发/游戏开发工程师，这 4 个类别后来因为一直没有真实招聘信息被删掉了，见下面进度里那条 `[x]` 记录），见 `tools/import_expanded_interview_questions.py`
 - [x] 除 Java 后端外的 15 个岗位类别都补上了 `job_skills`（岗位需要哪些技能、权重多少），实测②差距分析、③学习路径接口对这些新类别都能正常返回——`database/seed_job_skills_expanded.sql`（`tools/import_job_skills_expanded.py` 生成，权重是核心/次要/边缘的人工判断值，跟 seed.sql 里 Java 后端那 9 行一个性质，不是真实统计出来的）。**产品经理**这次没有任何相关技能数据，跳过了；**全栈工程师/嵌入式开发工程师/算法-机器学习工程师**这三个方向的原始面试题文档没有可提炼的技术内容，权重是按"这个方向通常需要什么"的通用判断给的，覆盖度和可信度都不如其他类别，需要团队后续找真实技术资料补充
 - [x] `skill_prereq`（技能依赖图谱）给新增的 62 个技能连了 56 条边（`database/seed_skill_prereq_expanded.sql`），③学习路径对新覆盖的类别现在能真正分层——实测数据库管理员 6 个阶段、Python 开发 3 个阶段，不再是"一个大阶段"
 - [x] 学习资料：14 条已导入，另有 24 条待技能词典扩充后导入（`database/seed_learning_resources.sql`）
@@ -25,7 +26,13 @@
 - [x] 本机装了 JDK 17 + Maven + 本地 MySQL，完整跑通一遍：建库 → 导入全部种子数据 → 启动后端 → 前端点击操作 → 提交测评 → 确认画像回写生效
 - [x] 登录 / 注册：`/api/auth/register`、`/api/auth/login`，密码 BCrypt 哈希存储，前端有对应页面，`user_skills`/`target_category` 都挂在真实用户上而不是写死的演示账号
 - [x] 团队共享 + 零配置访问：主机跑一个脚本，Cloudflare Tunnel 同时把后端**和前端**开成公网地址，队友什么都不用装、不用 clone 代码，浏览器打开前端地址就能用；注册数据统一落在主机这台电脑的 MySQL 里，见下方「团队共享」
-- [ ] 选择题题库（`questions` 表当前仅 3 道示例，覆盖不够，需要人工补齐每个技能 5~10 道）
+- [x] 测评题支持三种题型：选择题（`single_choice`，服务端精确判分）、填空题（`fill_blank`，服务端归一化后精确匹配 `accepted_answers` 任一候选）、简答题（`short_answer`，开放式问答没法用字符串匹配，交给本地 Ollama AI 判断作答是否覆盖 `reference_answer` 要点）——`database/schema.sql` 新增 `type`/`accepted_answers`/`reference_answer` 三列，已有数据库（比如团队共享主机上那份）需要额外跑一次 `database/migrate_add_question_types.sql` 才能用上新字段
+- [x] 简答题参考答案改成答题后才展示（提交前只看得到题目，答完提交才看到参考答案，跟选择题/填空题不泄题一个道理）
+- [x] 错题本：测评时答错的题自动记进 `wrong_questions`，后来同一道题答对了自动从表里删掉——新页面「错题本」按技能分组回顾，选择题标出"你的选择/正确答案"，填空/简答题摊开对照文本，附"重新测评"跳转。新表见 `database/schema.sql`，已有数据库跑 `database/migrate_add_wrong_questions.sql`
+- [x] 个人中心的技能自评清单，"已认证"（`quiz_verified`）的技能现在也能点"取消"直接撤销——之前只有自评的能取消，认证过的锁死；新增 `DELETE /api/users/{userId}/skills/{skillId}`，跟批量自评表单（`PUT`，会保护 `quiz_verified` 不被覆盖）是两条不同的路
+- [x] 题库覆盖率从 3/73 个技能提到 71/73：把 `interview_questions`（542 道面试题，`key_points` 本来就是"参考要点不是标准答案"）批量转成 `questions` 里的 `short_answer` 题，靠本地 AI 判分——`database/migrate_seed_short_answer_from_interview_questions.sql`，`INSERT IGNORE` + 新唯一键 `uk_skill_question_text` 保证重复跑安全。这是"有什么就先用什么"的过渡方案，面试题的措辞/难度不是照着"考核掌握程度"设计的，跟人工专门编写的测评题不是一回事，后续要精编题库时可以逐步替换；`数据结构`、`Git` 这两个技能连面试题都没有，仍然是 0 道。单个技能题量差异很大（少的 1 道，多的 137 道），`QuizService` 现在会对超过 10 道的技能随机抽 10 道，不然一次测评没法答完
+- [x] `Go后端工程师`/`全栈工程师`/`嵌入式开发工程师`/`游戏开发工程师`这 4 个岗位类别已删除——天池数据集不覆盖这几个方向，一直是 0 条真实招聘信息，与其留着一个点进去空空如也的类别，不如先删掉；`job_categories`/`job_skills` 里对应的行清掉了，唯一一个把 Go后端工程师 设成目标岗位的用户，`target_category_id` 改回了 NULL（需要重新选一个）。**技能本身没有删**：Go 相关 6 个、游戏开发相关 5 个技能连同它们的面试题/测评题都还在，只是不再挂在任何岗位类别下——差距分析/学习路径找不到它们了，但"在线测评"页不选目标岗位时的"全部技能"列表里还能直接测。全栈/嵌入式的技能本来就和其他保留的类别共用，不受影响。想恢复就是反过来重新插入 `job_categories`/`job_skills` 那几行，没做正式的 down 脚本
+- [ ] 题库内容仍然偏薄、来源单一（几乎全是面试题转来的 `short_answer`），需要团队后续人工补充更多选择题/填空题
 
 ## MVP 策略
 
@@ -53,7 +60,7 @@ mysql -u root -p skill_radar < database/seed_learning_resources.sql
 
 **顺序不能乱**：后三个 `seed_*.sql` 靠 `WHERE name = ...` 反查 id，得先有 `seed.sql` 建好的技能/类别才查得到。这三个都是脚本自动生成的（见 `tools/import_*.py`），改了数据源文件后重新跑脚本即可重新生成，不用手改 SQL；`job_categories.name`、`learning_resources(skill_id,url)` 都加了唯一约束，脚本用 `INSERT IGNORE`，重复执行是安全的。
 
-14 张表对应设计文档里的模块：`job_categories`/`job_postings`（岗位库，类别与具体招聘信息分层）、`skills`/`skill_prereq`（技能图谱）、`user_skills`（用户技能画像）、`posting_skills`/`job_skills`（JD 技能抽取与权重）、`learning_resources`/`questions`/`interview_questions`/`quiz_attempts`（学习资料与测评，`interview_questions` 是开放式面试题，和能自动判分的 `questions` 是两回事）、`favorites`（用户收藏的招聘信息）。字段含义见 `schema.sql` 内注释，完整参考表见[开发手册](https://claude.ai/code/artifact/b1edeb33-f97e-44f1-9945-284ca4866116)。
+15 张表对应设计文档里的模块：`job_categories`/`job_postings`（岗位库，类别与具体招聘信息分层）、`skills`/`skill_prereq`（技能图谱）、`user_skills`（用户技能画像）、`posting_skills`/`job_skills`（JD 技能抽取与权重）、`learning_resources`/`questions`/`interview_questions`/`quiz_attempts`（学习资料与测评，`interview_questions` 是开放式面试题库，纯阅读用，不挂在测评闭环里；`questions` 驱动在线测评，选择题/填空题服务端精确判分，简答题走本地 Ollama AI 判分）、`wrong_questions`（错题本，答错自动记、答对自动清）、`favorites`（用户收藏的招聘信息）。字段含义见 `schema.sql` 内注释，完整参考表见[开发手册](https://claude.ai/code/artifact/b1edeb33-f97e-44f1-9945-284ca4866116)。
 
 ## 后端
 
@@ -65,6 +72,14 @@ mvn spring-boot:run
 ```
 
 默认连接 `localhost:3306/skill_radar`，用户名 `root`、空密码；不同可设置环境变量 `DB_USERNAME` / `DB_PASSWORD` 覆盖（见 `application.yml`）。启动后 http://localhost:8080/api/skills 应该能看到种子数据里的技能列表。
+
+**简答题判分还需要本机装 [Ollama](https://ollama.com/) 并拉取模型**（[ShortAnswerGradingService](backend/src/main/java/com/skillradar/service/ShortAnswerGradingService.java)），否则提交带简答题的测评会报错：
+
+```bash
+ollama pull qwen3:8b
+```
+
+默认接 `http://localhost:11434`、用 `qwen3:8b`；可设置环境变量 `OLLAMA_BASE_URL` / `OLLAMA_MODEL` 覆盖（见 `application.yml`）。选择题/填空题不受影响，不用装 Ollama 也能测。这台共享主机有独显（4090），换成 `qwen3:14b`/`32b` 判分质量会更好，显存够用。`tools/start-server.bat` 已经把 Ollama 拉起 + 按需拉模型这一步接进去了（软依赖，装不了/起不来只警告不阻塞其他步骤），团队共享主机不用再手动 `ollama serve`。
 
 接口一览（① ~ ④ 对应设计文档的四个引擎）：
 
@@ -78,8 +93,10 @@ mvn spring-boot:run
 | `GET /api/gap-analysis?categoryId=&userId=` | ② 差距分析：目标岗位技能，标注是否已掌握，按权重排序 |
 | `GET /api/learning-path?categoryId=&userId=` | ③ 学习路径：待学技能按拓扑排序分层 |
 | `GET /api/skills/{id}/resources` | ④ 该技能的学习资料 |
-| `GET /api/skills/{id}/questions` | ④ 该技能的测评题（不含正确答案） |
-| `POST /api/quiz-attempts` | ④ 提交作答，判分并在通过时把 `user_skills` 更新为 `quiz_verified` |
+| `GET /api/skills/{id}/questions` | ④ 该技能的测评题（选择题/填空题/简答题，不含选择题正确答案与填空题候选答案；简答题的参考答案会返回，答完提交后前端才展示）。题量超过 10 道会随机抽 10 道，不会一次性全列出来 |
+| `POST /api/quiz-attempts` | ④ 提交作答并判分：选择题精确比对、填空题归一化字符串匹配、简答题调用本地 Ollama AI 判分（`ShortAnswerGradingService`），通过时把 `user_skills` 更新为 `quiz_verified`；同时把每道题的对错写进错题本（答对了顺带把之前的错题记录清掉） |
+| `GET /api/users/{userId}/wrong-questions` | ④ 错题本：这个用户当前还没订正的题，附你当时的作答和正确答案，供回顾 |
+| `DELETE /api/users/{userId}/skills/{skillId}` | 取消一个技能的已掌握状态——自评、测评认证过的都能取消（`PUT` 那个批量自评表单会保护 `quiz_verified` 不被覆盖，这个不会） |
 
 **登录状态目前是简化版**：登录成功后端只是把用户信息返回给前端，前端存进 `localStorage` 当"已登录"标记，之后请求把 `userId` 带上——没有真正的会话令牌/过期机制，谁都能编个 userId 冒充别人。这个阶段先解决"能注册登录、数据能落库"，要真正防伪造再升级成 JWT。
 
@@ -107,13 +124,14 @@ npm run dev
 
 **双击 `tools\start-server.bat`**（别直接双击 `.ps1`，Windows 默认不会真的执行它，双击了没反应就是这个原因）。
 
-脚本按 5 步依次拉起，已经在跑的部分会自动跳过（重复运行安全）：
+脚本按 6 步依次拉起，已经在跑的部分会自动跳过（重复运行安全）：
 
 1. 本地 MySQL
-2. 后端 Spring Boot（`localhost:8080`）
-3. 后端的 Cloudflare Tunnel → `https://xxx.trycloudflare.com`
-4. 前端 Vite dev server（`localhost:5173`）——脚本自动把上一步的后端隧道地址写进 `frontend/.env.local`，不用手改
-5. 前端的 Cloudflare Tunnel → `https://yyy.trycloudflare.com`
+2. 本地 Ollama（简答题 AI 判分，`localhost:11434`）+ 按需拉取 `qwen3:8b`——这一步是软依赖，没装 Ollama 只会打印警告，不影响其他 5 步照常启动
+3. 后端 Spring Boot（`localhost:8080`）
+4. 后端的 Cloudflare Tunnel → `https://xxx.trycloudflare.com`
+5. 前端 Vite dev server（`localhost:5173`）——脚本自动把上一步的后端隧道地址写进 `frontend/.env.local`，不用手改
+6. 前端的 Cloudflare Tunnel → `https://yyy.trycloudflare.com`
 
 跑完会把 **前端地址** 醒目地打印出来，窗口不自动关。
 
