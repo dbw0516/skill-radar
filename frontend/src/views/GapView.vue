@@ -42,6 +42,15 @@ const domains = computed(() => {
   return [...map.values()].map((r) => ({ ...r, score: r.total ? Math.round((r.mastered / r.total) * 100) : 0 }))
 })
 
+// 雷达图至少要 3 个维度才画得出来。有些岗位技能方向本来就窄（比如移动开发只分
+// Android/iOS 两个 domain），按 domain 聚合凑不够 3 个，但技能本身可能有十几个——
+// 这种情况退化成按单个技能画（每个技能算一维，掌握=100/未掌握=0），照样能画雷达图；
+// 只有技能总数本身也不够 3 个（比如产品经理这种数据本来就很薄的类别）才真的没法画。
+const radarAxes = computed(() => {
+  if (domains.value.length >= 3) return domains.value
+  return items.value.map((it) => ({ name: it.name, score: it.mastered ? 100 : 0 }))
+})
+
 const gapList = computed(() => items.value.filter((i) => !i.mastered))
 const masteredList = computed(() => items.value.filter((i) => i.mastered))
 
@@ -66,23 +75,28 @@ function labelAnchor(x) {
   return 'middle'
 }
 const polygonPoints = computed(() => {
-  const n = domains.value.length
+  const n = radarAxes.value.length
   if (n < 3) return ''
-  return domains.value
+  return radarAxes.value
     .map((d, i) => axisPoint(i, n, (d.score / 100) * RADIUS).join(','))
     .join(' ')
 })
 const axisLines = computed(() => {
-  const n = domains.value.length
-  return domains.value.map((d, i) => {
+  const n = radarAxes.value.length
+  return radarAxes.value.map((d, i) => {
     const [x, y] = axisPoint(i, n, RADIUS)
     const [lx, ly] = axisPoint(i, n, LABEL_R)
     return { x, y, lx, ly, label: d.name, score: d.score, anchor: labelAnchor(lx) }
   })
 })
-const gridRings = [0.25, 0.5, 0.75, 1].map((f) => {
-  const n = domains.value.length
-  return Array.from({ length: n }, (_, i) => axisPoint(i, n, f * RADIUS).join(',')).join(' ')
+// 之前这里没包 computed()，n 在 <script setup> 执行那一刻（数据还没异步加载回来）
+// 就定死了，网格环永远按 n=0 画——等于白纸一张。包上 computed 才会跟着数据更新。
+const gridRings = computed(() => {
+  const n = radarAxes.value.length
+  if (n < 3) return []
+  return [0.25, 0.5, 0.75, 1].map((f) =>
+    Array.from({ length: n }, (_, i) => axisPoint(i, n, f * RADIUS).join(',')).join(' ')
+  )
 })
 </script>
 
@@ -100,7 +114,7 @@ const gridRings = [0.25, 0.5, 0.75, 1].map((f) => {
         />
 
         <div v-if="activeTab === 'radar'" class="radar-wrap">
-          <svg viewBox="0 0 340 340" width="340" height="340" v-if="domains.length >= 3">
+          <svg viewBox="0 0 340 340" width="340" height="340" v-if="radarAxes.length >= 3">
             <polygon v-for="(ring, i) in gridRings" :key="i" :points="ring" class="grid-ring" />
             <line v-for="(a, i) in axisLines" :key="'ax' + i" x1="170" y1="170" :x2="a.x" :y2="a.y" class="axis-line" />
             <polygon :points="polygonPoints" class="score-polygon" />
@@ -108,7 +122,7 @@ const gridRings = [0.25, 0.5, 0.75, 1].map((f) => {
               {{ a.label }}（{{ a.score }}%）
             </text>
           </svg>
-          <p v-else class="hint">维度不足 3 个，暂不画雷达图，看"技能明细" tab 就行。</p>
+          <p v-else class="hint">技能数不足 3 个，暂不画雷达图，看"技能明细" tab 就行。</p>
         </div>
 
         <div v-else class="lists">

@@ -35,3 +35,8 @@ venv/
 tools/.springboot-tmp/
 tools/.tunnel-*.pid
 tools/.backend-url
+
+# local-only, not part of this project
+.claude/CLAUDE.md
+.claude/skills/
+*.docx
