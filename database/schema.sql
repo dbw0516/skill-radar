@@ -204,14 +204,16 @@ CREATE TABLE quiz_attempts (
   correct_count TINYINT UNSIGNED NOT NULL,
   total_count   TINYINT UNSIGNED NOT NULL,
   passed        BOOLEAN NOT NULL COMMENT 'true 时触发 user_skills.status = quiz_verified',
+  kind          ENUM('quiz','review') NOT NULL DEFAULT 'quiz'
+                COMMENT 'quiz = 正式测评（可触发 quiz_verified）；review = 错题复习（只计入活跃天数，不认证技能）',
   attempted_at  DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (user_id) REFERENCES users(id),
   FOREIGN KEY (skill_id) REFERENCES skills(id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- ---------------------------------------------------------
--- 错题本：某个用户当前还没订正的题，答对一次就从这张表里删掉——
--- 表里"存在的行"就代表"现在还错着"，不需要额外的 status 字段。
+-- 错题本 + 间隔复习：表里"存在的行"代表这道题还没巩固好。答错进表（或重置为阶段 0），
+-- 之后按 1 天 / 3 天 / 7 天的间隔到期复习，到期答对 3 次才移出。
 -- ---------------------------------------------------------
 CREATE TABLE wrong_questions (
   user_id            BIGINT UNSIGNED NOT NULL,
@@ -219,10 +221,46 @@ CREATE TABLE wrong_questions (
   last_wrong_answer  TEXT COMMENT '最近一次答错时提交的内容，选择题存选项文字、填空/简答存原文，供回顾对照',
   wrong_count        INT UNSIGNED NOT NULL DEFAULT 1 COMMENT '累计答错次数（含中间答对又答错的反复）',
   first_wrong_at     DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  last_wrong_at      DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  last_wrong_at      DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '由代码在答错时写入（答对推进复习阶段时不能改它）',
+  review_stage       TINYINT UNSIGNED NOT NULL DEFAULT 0 COMMENT '间隔复习阶段：答错归 0；到期后答对一次 +1；第 3 次到期答对即移出错题本',
+  next_review_at     DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '下次该复习的时间：答错后 +1 天，之后依次 +3 天、+7 天',
   PRIMARY KEY (user_id, question_id),
   FOREIGN KEY (user_id) REFERENCES users(id),
   FOREIGN KEY (question_id) REFERENCES questions(id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- ---------------------------------------------------------
+-- 学习资料阅读记录：用户点开过哪些资料，计入技能内部的部分进度
+-- ---------------------------------------------------------
+CREATE TABLE resource_views (
+  user_id      BIGINT UNSIGNED NOT NULL,
+  resource_id  BIGINT UNSIGNED NOT NULL,
+  viewed_at    DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (user_id, resource_id),
+  FOREIGN KEY (user_id) REFERENCES users(id),
+  FOREIGN KEY (resource_id) REFERENCES learning_resources(id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- ---------------------------------------------------------
+-- AI 模拟面试：一场面试一行，对话记录/评分/总评以 JSON 存，见 InterviewService
+-- ---------------------------------------------------------
+CREATE TABLE interview_sessions (
+  id               BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  user_id          BIGINT UNSIGNED NOT NULL,
+  category_id      BIGINT UNSIGNED NOT NULL,
+  question_ids     JSON NOT NULL COMMENT '本场抽中的 interview_questions.id，按提问顺序',
+  current_index    TINYINT UNSIGNED NOT NULL DEFAULT 0 COMMENT '正在问第几题（从 0 开始）',
+  follow_up_used   BOOLEAN NOT NULL DEFAULT FALSE COMMENT '当前这道题是否已追问过，每题最多追问一次',
+  transcript       JSON NOT NULL COMMENT '对话记录 [{role, content, questionIndex}]',
+  question_scores  JSON COMMENT '每题 AI 评分 [{questionIndex, score(1~5), comment}]',
+  status           ENUM('in_progress','finished') NOT NULL DEFAULT 'in_progress',
+  overall_score    TINYINT UNSIGNED COMMENT '0~100，结束时 AI 给出',
+  report           JSON COMMENT '结束时 AI 生成的总评 {summary, strengths[], improvements[]}',
+  created_at       DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  finished_at      DATETIME,
+  FOREIGN KEY (user_id) REFERENCES users(id),
+  FOREIGN KEY (category_id) REFERENCES job_categories(id),
+  INDEX idx_user (user_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- ---------------------------------------------------------

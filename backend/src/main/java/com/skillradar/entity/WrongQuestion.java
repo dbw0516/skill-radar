@@ -7,8 +7,8 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 
 /**
- * 错题本：表里"存在的行"就代表用户现在还没订正这道题——答对一次就整行删掉，
- * 不需要 status 字段。见 QuizService.submit 里对每道题结果的回写逻辑。
+ * 错题本 + 间隔复习：表里"存在的行"代表这道题还没巩固好。答错进表（或重置为阶段 0），
+ * 之后按 1 天 / 3 天 / 7 天到期复习，到期答对 3 次才整行删掉。规则见 WrongQuestionService.record。
  */
 @Entity
 @Table(name = "wrong_questions")
@@ -34,8 +34,15 @@ public class WrongQuestion {
     @Column(name = "first_wrong_at", insertable = false, updatable = false)
     private LocalDateTime firstWrongAt;
 
-    @Column(name = "last_wrong_at", insertable = false, updatable = false)
+    // 不再交给数据库 ON UPDATE 自动维护：答对推进复习阶段时也会更新这一行，那时不能改"最近答错时间"
+    @Column(name = "last_wrong_at")
     private LocalDateTime lastWrongAt;
+
+    @Column(name = "review_stage", nullable = false)
+    private Integer reviewStage = 0;
+
+    @Column(name = "next_review_at", nullable = false)
+    private LocalDateTime nextReviewAt;
 
     public WrongQuestion(Long userId, Long questionId, String lastWrongAnswer) {
         this.userId = userId;

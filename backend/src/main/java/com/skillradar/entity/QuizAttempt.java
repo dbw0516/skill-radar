@@ -31,6 +31,13 @@ public class QuizAttempt {
     @Column(nullable = false)
     private boolean passed;
 
+    /** quiz = 正式测评（通过时认证技能）；review = 错题复习（只算活跃，不认证技能、不计入通过次数）。 */
+    @Enumerated(EnumType.STRING)
+    @Column(length = 16, nullable = false)
+    private Kind kind = Kind.quiz;
+
     @Column(name = "attempted_at", insertable = false, updatable = false)
     private LocalDateTime attemptedAt;
+
+    public enum Kind { quiz, review }
 }

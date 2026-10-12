@@ -25,4 +25,7 @@ public class WrongQuestionView {
     private String correctAnswer;
     private int wrongCount;
     private LocalDateTime lastWrongAt;
+    private int reviewStage;          // 已隔天巩固的次数，满 3 次移出错题本
+    private LocalDateTime nextReviewAt;
+    private boolean due;              // 今天是否该复习了
 }

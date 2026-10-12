@@ -4,10 +4,12 @@ import com.skillradar.entity.WrongQuestion;
 import com.skillradar.entity.WrongQuestionId;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
 public interface WrongQuestionRepository extends JpaRepository<WrongQuestion, WrongQuestionId> {
     List<WrongQuestion> findByUserIdOrderByLastWrongAtDesc(Long userId);
     Optional<WrongQuestion> findByUserIdAndQuestionId(Long userId, Long questionId);
+    long countByUserIdAndNextReviewAtLessThanEqual(Long userId, LocalDateTime now);
 }

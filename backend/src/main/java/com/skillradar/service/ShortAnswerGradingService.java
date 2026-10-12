@@ -1,21 +1,20 @@
 package com.skillradar.service;
 
+import jakarta.annotation.PreDestroy;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestClient;
 import tools.jackson.databind.JsonNode;
-import tools.jackson.databind.ObjectMapper;
 
-import java.time.Duration;
-import java.util.List;
-import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
- * 简答题 AI 判分：调用本机 Ollama（本地大模型），判断学生作答是否覆盖了参考答案的要点。
- * 用本地模型而不是云端 API，是因为团队这台共享主机有独显，本地推理零成本、不用管密钥；
- * 代价是换一台机器当共享主机时，那台机器需要自己装好 Ollama 并拉取 app.ollama.model 配置的模型。
+ * 简答题 AI 判分：调用 DeepSeek，判断学生作答是否覆盖了参考答案的要点。
+ * 返回的不只是对错，还有 AI 对要点覆盖情况的分析和一句点评——交卷后逐题展示给用户，
+ * 光告诉人"0/8"却不说错在哪，用户没法从测评里学到东西。
+ *
+ * gradeAsync 走一个固定大小的线程池并发判分：之前一道一道串行调，8 道简答题要等十几秒。
  */
 @Slf4j
 @Service
@@ -33,59 +32,44 @@ public class ShortAnswerGradingService {
 
             先在 key_points_covered 字段里说明学生答案覆盖了参考答案的哪些要点、遗漏了哪些，
             再给出最终判断 correct（先分析后下结论，不要跳过 key_points_covered 直接下结论）。
+            feedback 是直接写给学生看的一句话：答对了就肯定他抓住的关键点，答错了就指出最关键的遗漏，
+            语气友善、具体，不要空泛地说"继续加油"。
             只输出 JSON，不要输出其他文字，格式：
-            {"key_points_covered": "...", "correct": true 或 false, "feedback": "一句话简评"}""";
+            {"key_points_covered": "...", "correct": true 或 false, "feedback": "..."}""";
 
-    private final RestClient restClient;
-    private final String model;
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    /** 同时在途的 DeepSeek 请求上限：一次测评最多 10 题，再留点余量给多人同时交卷。 */
+    private static final int MAX_CONCURRENT_CALLS = 12;
 
-    public ShortAnswerGradingService(
-            @Value("${app.ollama.base-url}") String baseUrl,
-            @Value("${app.ollama.model}") String model) {
-        SimpleClientHttpRequestFactory factory = new SimpleClientHttpRequestFactory();
-        factory.setConnectTimeout(Duration.ofSeconds(5));
-        factory.setReadTimeout(Duration.ofSeconds(60)); // 模型冷启动加载进显存可能要几十秒
-        this.restClient = RestClient.builder().baseUrl(baseUrl).requestFactory(factory).build();
-        this.model = model;
+    public record Grade(boolean correct, String feedback, String keyPointsCovered) {}
+
+    private final DeepSeekClient deepSeekClient;
+    private final ExecutorService executor = Executors.newFixedThreadPool(MAX_CONCURRENT_CALLS);
+
+    public ShortAnswerGradingService(DeepSeekClient deepSeekClient) {
+        this.deepSeekClient = deepSeekClient;
     }
 
-    public boolean isCorrect(String questionText, String referenceAnswer, String studentAnswer) {
+    @PreDestroy
+    void shutdown() {
+        executor.shutdownNow();
+    }
+
+    public CompletableFuture<Grade> gradeAsync(String questionText, String referenceAnswer, String studentAnswer) {
+        return CompletableFuture.supplyAsync(() -> grade(questionText, referenceAnswer, studentAnswer), executor);
+    }
+
+    public Grade grade(String questionText, String referenceAnswer, String studentAnswer) {
         if (studentAnswer == null || studentAnswer.isBlank()) {
-            return false;
+            return new Grade(false, "没有作答。", null);
         }
         String userPrompt = "题目：" + questionText
                 + "\n参考答案要点：" + referenceAnswer
                 + "\n学生作答：" + studentAnswer;
-
-        Map<String, Object> body = Map.of(
-                "model", model,
-                "stream", false,
-                "format", "json",
-                // think:false —— qwen3 这类混合推理模型默认会先输出一大段思考过程再给结论，
-                // 关掉后判断结果不变、但从 20+ 秒降到 1 秒内，值得关掉；不支持 thinking 的模型忽略此参数
-                "think", false,
-                // temperature 0：判分要的是同一份作答每次都给同一个结果，不要采样多样性
-                "options", Map.of("temperature", 0),
-                "messages", List.of(
-                        Map.of("role", "system", "content", SYSTEM_PROMPT),
-                        Map.of("role", "user", "content", userPrompt)));
-
-        try {
-            String raw = restClient.post()
-                    .uri("/api/chat")
-                    .body(body)
-                    .retrieve()
-                    .body(String.class);
-            JsonNode root = objectMapper.readTree(raw);
-            JsonNode verdict = objectMapper.readTree(root.path("message").path("content").asText());
-            boolean correct = verdict.path("correct").asBoolean(false);
-            log.info("AI 判分 - 题目「{}」 correct={} feedback={}",
-                    questionText, correct, verdict.path("feedback").asText(""));
-            return correct;
-        } catch (Exception e) {
-            throw new IllegalStateException(
-                    "AI 判分服务调用失败，请确认本机 Ollama 已启动且已执行 `ollama pull " + model + "`", e);
-        }
+        // temperature 0：判分要的是同一份作答每次都给同一个结果，不要采样多样性
+        JsonNode verdict = deepSeekClient.chatJson(SYSTEM_PROMPT, userPrompt, 0);
+        boolean correct = verdict.path("correct").asBoolean(false);
+        String feedback = verdict.path("feedback").asText("");
+        log.info("AI 判分 - 题目「{}」 correct={} feedback={}", questionText, correct, feedback);
+        return new Grade(correct, feedback, verdict.path("key_points_covered").asText(null));
     }
 }
