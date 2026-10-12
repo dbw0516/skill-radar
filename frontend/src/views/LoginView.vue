@@ -22,7 +22,8 @@ async function submit() {
     const user = await api.login({ email: email.value, password: password.value })
     auth.setUser(user)
     profile.syncFromUser(user)
-    router.push(route.query.redirect || '/')
+    // 还没选过目标岗位的老用户，登录后也先进上手引导，不然进度条/路径/面试都是空的
+    router.push(route.query.redirect || (user.targetCategoryId ? '/' : '/onboarding'))
   } catch (e) {
     error.value = e.message
   } finally {

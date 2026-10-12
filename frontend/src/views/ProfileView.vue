@@ -3,12 +3,13 @@ import { ref, reactive, computed, onMounted } from 'vue'
 import { api } from '@/api/client'
 import { useAuthStore } from '@/stores/auth'
 import TabBar from '@/components/TabBar.vue'
+import ProgressPanel from '@/components/ProgressPanel.vue'
 
 // 个人中心：基本资料（含所在地区/意向就业地区，供①岗位推荐做地点排序）+ 技能自评清单
 // （设计文档「用户画像怎么建」一节说的"初始化来自专业选择 + 自评清单"，这里就是那个入口）。
 // 两块内容分开放在 tab 里，不用一次性把整页拉得很长。
 const auth = useAuthStore()
-const activeTab = ref('basic')
+const activeTab = ref('progress')
 
 const majors = ref([])
 const form = reactive({ nickname: '', majorId: null, location: '', targetLocation: '' })
@@ -122,11 +123,13 @@ async function saveSkills() {
   <section>
     <h1>个人中心</h1>
     <TabBar
-      :tabs="[{ key: 'basic', label: '基本资料' }, { key: 'skills', label: '技能自评' }]"
+      :tabs="[{ key: 'progress', label: '学习进度' }, { key: 'basic', label: '基本资料' }, { key: 'skills', label: '技能自评' }]"
       v-model="activeTab"
     />
 
-    <form v-if="activeTab === 'basic'" @submit.prevent="saveProfile">
+    <ProgressPanel v-if="activeTab === 'progress'" />
+
+    <form v-else-if="activeTab === 'basic'" @submit.prevent="saveProfile">
       <label>昵称<input v-model="form.nickname" type="text" /></label>
       <label>专业
         <select v-model="form.majorId">
@@ -196,6 +199,6 @@ button { align-self: flex-start; margin-top: 4px; }
 .badge { padding: 3px 8px; border: 1px solid var(--color-border); border-radius: var(--radius-sm); font-size: 0.72rem; font-weight: 700; }
 .badge.verified { border-color: color-mix(in srgb, var(--color-success) 30%, transparent); background: color-mix(in srgb, var(--color-success) 10%, var(--color-surface)); color: var(--color-success); }
 .badge.self { border-color: color-mix(in srgb, var(--color-warning) 30%, transparent); background: color-mix(in srgb, var(--color-warning) 12%, var(--color-surface)); color: var(--color-warning); }
-.cancel-mastered { align-self: center; margin: 0; min-height: 32px; padding: 0 12px; border: 1px solid var(--color-border); border-radius: var(--radius-sm); background: transparent; color: var(--color-muted); font-size: 0.78rem; font-weight: 650; }
-.cancel-mastered:hover { border-color: color-mix(in srgb, var(--color-danger) 40%, var(--color-border)); color: var(--color-danger); background: color-mix(in srgb, var(--color-danger) 6%, var(--color-surface)); }
+.cancel-mastered, .cancel-mastered:hover:not(:disabled) { align-self: center; margin: 0; min-height: 34px; padding: 0 12px; border: 2.5px solid var(--ink); border-radius: var(--radius-sm); background: var(--paper); box-shadow: none; transform: none; color: var(--ink); font-size: 0.8rem; font-weight: 800; }
+.cancel-mastered:hover:not(:disabled) { background: #ffe3e8; }
 </style>

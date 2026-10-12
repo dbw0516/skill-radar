@@ -22,7 +22,7 @@ async function submit() {
     const user = await api.register({ email: email.value, password: password.value, nickname: nickname.value })
     auth.setUser(user)
     profile.syncFromUser(user)
-    router.push('/')
+    router.push('/onboarding') // 新用户先走三步上手引导：选岗位 → 勾已会技能 → 第一次测评
   } catch (e) {
     error.value = e.message
   } finally {

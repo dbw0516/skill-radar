@@ -1,3 +1,10 @@
+// 字体打包进项目，比赛现场网络不好也不会退回系统字体。
+// fontsource 的中文字体按 unicode-range 切成小块，浏览器只下载页面上实际用到的字。
+import '@fontsource/noto-sans-sc/500.css'
+import '@fontsource/noto-sans-sc/700.css'
+import '@fontsource/noto-sans-sc/900.css'
+import '@fontsource/zcool-qingke-huangyou/400.css'
+import '@fontsource/archivo-black/400.css'
 import './assets/main.css'
 
 import { createApp } from 'vue'

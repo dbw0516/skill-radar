@@ -3,54 +3,60 @@
 #app { min-height: 100vh; }
 
 a {
-  color: var(--color-primary);
+  color: var(--color-link);
+  font-weight: 700;
   text-decoration: none;
-  transition: color 180ms ease, background-color 180ms ease, border-color 180ms ease;
+  transition: color 160ms ease, background-color 160ms ease, border-color 160ms ease, box-shadow 160ms ease, transform 160ms ease;
 }
-a:hover { color: var(--color-primary-strong); }
+a:hover { color: var(--ink); text-decoration: underline; text-decoration-thickness: 3px; text-decoration-color: var(--yellow); text-underline-offset: 3px; }
 
 main {
-  width: min(100% - 32px, 1120px);
+  width: min(100% - 32px, 1240px);
   margin: 0 auto;
-  padding: 40px 0 72px;
+  padding: 36px 0 80px;
 }
 
+/* 每个页面的外层卡片：粗黑框 + 硬投影 */
 main section {
   width: 100%;
-  padding: 28px;
-  border: 1px solid var(--color-border);
+  padding: 32px;
+  border: var(--border-thick);
   border-radius: var(--radius-lg);
   background: var(--color-surface);
-  box-shadow: var(--color-shadow);
+  box-shadow: var(--shadow-lg);
 }
 
 main section > h1 {
-  margin: 0 0 8px;
+  margin: 0 0 10px;
   color: var(--color-heading);
-  font-size: clamp(1.65rem, 3vw, 2.25rem);
-  font-weight: 760;
-  letter-spacing: -0.02em;
-  line-height: 1.15;
+  font-family: var(--font-display);
+  font-size: clamp(2.2rem, 4vw, 3.2rem);
+  font-weight: 400;
+  letter-spacing: 0.01em;
+  line-height: 1.1;
 }
 
 main section > h2,
-main section > h3 { color: var(--color-heading); font-weight: 700; }
+main section > h3 { color: var(--color-heading); font-weight: 900; }
+h2, h3 { font-weight: 900; }
 
+/* 按钮：黑底白字，粉色硬投影；悬停往左上抬起，按下压回去 */
 button {
   min-height: 44px;
-  padding: 0 16px;
-  border: 1px solid transparent;
+  padding: 0 18px;
+  border: var(--border-thick);
   border-radius: var(--radius-md);
   color: var(--color-on-primary);
   background: var(--color-primary);
+  box-shadow: 4px 4px 0 var(--pink);
   cursor: pointer;
-  font-weight: 650;
+  font-weight: 900;
   line-height: 1.2;
-  transition: background-color 180ms ease, border-color 180ms ease, color 180ms ease, box-shadow 180ms ease, transform 180ms ease;
+  transition: background-color 140ms ease, color 140ms ease, box-shadow 140ms ease, transform 140ms ease;
 }
-button:hover:not(:disabled) { background: var(--color-primary-strong); box-shadow: 0 5px 14px color-mix(in srgb, var(--color-primary) 22%, transparent); }
-button:active:not(:disabled) { transform: translateY(1px); box-shadow: none; }
-button:disabled { color: var(--color-muted); background: var(--color-border); cursor: not-allowed; opacity: 0.72; }
+button:hover:not(:disabled) { transform: translate(-2px, -2px); box-shadow: 6px 6px 0 var(--pink); }
+button:active:not(:disabled) { transform: translate(3px, 3px); box-shadow: 1px 1px 0 var(--pink); }
+button:disabled { color: #555555; background: #d6d6d6; border-color: #8a8a8a; box-shadow: none; cursor: not-allowed; }
 
 input,
 select,
@@ -58,35 +64,123 @@ textarea {
   width: 100%;
   min-height: 44px;
   padding: 9px 12px;
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
+  border: var(--border-thick);
+  border-radius: 10px;
   color: var(--color-text);
-  background: var(--color-surface-raised);
-  transition: border-color 180ms ease, background-color 180ms ease, box-shadow 180ms ease;
+  background: var(--paper);
+  transition: box-shadow 140ms ease, background-color 140ms ease;
 }
-input:hover, select:hover, textarea:hover { border-color: color-mix(in srgb, var(--color-primary) 50%, var(--color-border)); }
-input:focus, select:focus, textarea:focus { border-color: var(--color-primary); background: var(--color-surface); box-shadow: 0 0 0 4px color-mix(in srgb, var(--color-primary) 14%, transparent); outline: none; }
+input:focus, select:focus, textarea:focus { background: var(--paper); box-shadow: 4px 4px 0 var(--blue); outline: none; }
+input[type='radio'], input[type='checkbox'] { width: 18px; min-height: 18px; accent-color: var(--ink); box-shadow: none; }
 
 .hint { color: var(--color-muted); }
-.error { color: var(--color-danger); font-weight: 600; }
-.ok { color: var(--color-success); font-weight: 650; }
+.error { color: var(--color-danger); font-weight: 700; }
+.ok { color: var(--color-success); font-weight: 800; }
 
-.back { display: inline-flex; align-items: center; min-height: 44px; margin-bottom: 16px; color: var(--color-muted); font-size: 0.92rem; font-weight: 600; }
-.back:hover { color: var(--color-primary); }
+.back { display: inline-flex; align-items: center; min-height: 44px; margin-bottom: 16px; color: var(--ink); font-size: 0.95rem; font-weight: 900; }
+.back:hover { color: var(--ink); }
 
-.chip-row { display: flex; flex-wrap: wrap; gap: 8px; margin: 20px 0; }
-.cat-chip, .skill-chip { min-height: 40px; padding: 0 14px; border: 1px solid var(--color-border); border-radius: var(--radius-md); color: var(--color-text); background: var(--color-surface-raised); }
-.cat-chip:hover, .skill-chip:hover { border-color: var(--color-primary); color: var(--color-primary); background: var(--color-soft); }
-.cat-chip.active { border-color: var(--color-primary); color: var(--color-on-primary); background: var(--color-primary); }
+/* 胶囊：岗位类别、技能选择 */
+.chip-row { display: flex; flex-wrap: wrap; gap: 10px; margin: 20px 0; }
+.cat-chip, .skill-chip {
+  min-height: 44px;
+  padding: 0 16px;
+  border: 2.5px solid var(--ink);
+  border-radius: 999px;
+  color: var(--ink);
+  background: var(--paper);
+  box-shadow: none;
+  font-weight: 800;
+}
+/* 必须带 :not(:disabled)：否则特异性 (0,2,0) 低于上面的 button:hover:not(:disabled) (0,2,1)，
+   悬浮时会被换成按钮的黑底，而文字仍是黑色，看不清。 */
+.cat-chip:hover:not(:disabled), .skill-chip:hover:not(:disabled) { color: var(--ink); background: var(--yellow); box-shadow: var(--shadow-sm); transform: translate(-1px, -1px); }
+.cat-chip.active { color: var(--yellow); background: var(--ink); box-shadow: 3px 3px 0 var(--pink); }
+.cat-chip.active:hover:not(:disabled) { color: var(--yellow); background: var(--ink); box-shadow: 4px 4px 0 var(--pink); }
 
-.posting, .question, .domain-group, .resources, .lists > div, .radar-wrap, .quiz { border: 1px solid var(--color-border); border-radius: var(--radius-md); background: var(--color-surface-raised); }
-.posting { margin: 10px 0; padding: 0 16px; }
-.posting-link { display: block; padding: 15px 0; color: inherit; }
-.posting:hover { border-color: color-mix(in srgb, var(--color-primary) 55%, var(--color-border)); background: var(--color-surface); }
-.cta { display: inline-flex; align-items: center; min-height: 44px; margin-top: 20px; font-weight: 700; }
+/* 内容卡片 */
+.posting, .question, .domain-group, .resources, .lists > div, .radar-wrap, .quiz {
+  border: var(--border-thick);
+  border-radius: var(--radius-md);
+  background: var(--paper);
+}
+.posting { margin: 14px 0; padding: 0 18px; transition: box-shadow 160ms ease, transform 160ms ease; }
+.posting-link { display: block; padding: 16px 0; color: inherit; }
+.posting-link:hover { text-decoration: none; }
+.posting:hover { box-shadow: var(--shadow-md); transform: translate(-2px, -2px); }
 
-.page-enter-active, .page-leave-active { transition: opacity 220ms ease, transform 260ms cubic-bezier(.22, 1, .36, 1); }
-.page-enter-from { opacity: 0; transform: translateY(8px); }
+/* 主要行动：黄色硬投影按钮样式的链接 */
+.cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 48px;
+  margin-top: 22px;
+  padding: 0 20px;
+  border: var(--border-thick);
+  border-radius: var(--radius-md);
+  color: var(--ink);
+  background: var(--yellow);
+  box-shadow: var(--shadow-md);
+  font-weight: 900;
+}
+.cta:hover { color: var(--ink); text-decoration: none; transform: translate(-2px, -2px); box-shadow: 7px 7px 0 var(--ink); }
+
+/* ---------- 共用小部件 ---------- */
+
+/* 线路编号方块：地铁站牌上的 1/2/3 */
+.line-badge {
+  display: inline-grid;
+  place-items: center;
+  flex: 0 0 auto;
+  width: 28px;
+  height: 28px;
+  border: 2.5px solid var(--ink);
+  border-radius: 6px;
+  color: var(--ink);
+  font-family: var(--font-num);
+  font-size: 13px;
+  line-height: 1;
+}
+
+/* AI 标记：评委一眼认出"这里是 AI 在干活" */
+.ai-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border: 2.5px solid var(--ink);
+  border-radius: 6px;
+  color: var(--ink);
+  background: var(--ai);
+  font-family: var(--font-num);
+  font-size: 12px;
+  line-height: 1.3;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+}
+
+/* 歪斜贴纸 */
+.sticker {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 14px;
+  border: var(--border-thick);
+  border-radius: 999px;
+  color: var(--ink);
+  background: var(--yellow);
+  box-shadow: var(--shadow-sm);
+  font-weight: 900;
+  transform: rotate(-3deg);
+  white-space: nowrap;
+}
+
+.num { font-family: var(--font-num); font-weight: 400; letter-spacing: -0.01em; }
+
+/* ---------- 动效 ---------- */
+.page-enter-active, .page-leave-active { transition: opacity 200ms ease, transform 240ms cubic-bezier(.22, 1, .36, 1); }
+.page-enter-from { opacity: 0; transform: translateY(10px); }
 .page-leave-to { opacity: 0; transform: translateY(-4px); }
 .stagger-enter-active, .stagger-leave-active, .stage-enter-active, .stage-leave-active { transition: opacity 260ms ease, transform 300ms cubic-bezier(.22, 1, .36, 1); }
 .stagger-enter-from, .stage-enter-from { opacity: 0; transform: translateY(10px); }
@@ -99,7 +193,7 @@ input:focus, select:focus, textarea:focus { border-color: var(--color-primary); 
 
 @media (max-width: 760px) {
   main { width: min(100% - 20px, 680px); padding: 20px 0 48px; }
-  main section { padding: 20px; border-radius: var(--radius-md); }
+  main section { padding: 20px; border-radius: var(--radius-md); box-shadow: var(--shadow-md); }
 }
 
 @media (prefers-reduced-motion: reduce) {

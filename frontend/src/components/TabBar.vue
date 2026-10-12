@@ -23,18 +23,21 @@ defineEmits(['update:modelValue'])
 </template>
 
 <style scoped>
-.tab-bar { display: inline-flex; flex-wrap: wrap; gap: 4px; padding: 4px; border: 1px solid var(--color-border); border-radius: var(--radius-md); background: var(--color-surface-raised); margin: 18px 0 22px; }
-.tab {
+.tab-bar { display: inline-flex; flex-wrap: wrap; gap: 4px; margin: 22px 0 24px; padding: 5px; border: var(--border-thick); border-radius: 999px; background: var(--paper); box-shadow: var(--shadow-sm); }
+/* 选择器都带 :not(:disabled)，压过 main.css 里全局 button 的悬停/按下效果 */
+.tab, .tab:hover:not(:disabled), .tab:active:not(:disabled) {
   min-height: 40px;
-  padding: 0.55rem 1rem;
-  border: 1px solid transparent;
-  border-radius: calc(var(--radius-md) - 2px);
+  padding: 0 18px;
+  border: 0;
+  border-radius: 999px;
+  color: var(--ink);
   background: transparent;
+  box-shadow: none;
+  transform: none;
   cursor: pointer;
-  font-size: 0.92rem;
-  color: var(--color-muted);
-  font-weight: 650;
+  font-size: 0.95rem;
+  font-weight: 900;
 }
-.tab:hover { color: var(--color-heading); background: var(--color-soft); box-shadow: none; }
-.tab.active { color: var(--color-on-primary); border-color: var(--color-primary); background: var(--color-primary); box-shadow: 0 3px 8px color-mix(in srgb, var(--color-primary) 18%, transparent); }
+.tab:hover:not(:disabled) { background: var(--color-soft); }
+.tab.active, .tab.active:hover:not(:disabled) { color: var(--yellow); background: var(--ink); }
 </style>

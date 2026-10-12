@@ -17,6 +17,9 @@ const error = ref('')
 const profile = useUserProfileStore()
 const auth = useAuthStore()
 
+// postingId -> 我和这条岗位的技能匹配度（只有抽取出技能的 JD 才有）
+const matches = ref({})
+
 const favorites = ref([])
 const favoritesLoading = ref(false)
 const favoritesError = ref('')
@@ -41,6 +44,12 @@ async function loadPostings(id) {
   try {
     const page = await api.listPostings(id, { preferLocation: auth.user?.targetLocation, size: 10 })
     postings.value = page.content || []
+    matches.value = {}
+    if (auth.isLoggedIn && postings.value.length) {
+      api.postingMatches(auth.userId, postings.value.map((p) => p.id))
+        .then((m) => { matches.value = m })
+        .catch(() => {})
+    }
   } catch (e) {
     error.value = e.message
   } finally {
@@ -80,7 +89,13 @@ function isLocationMatch(loc) {
 
 <template>
   <section>
-    <h1>岗位推荐</h1>
+    <div class="page-header">
+      <div>
+        <h1>岗位推荐</h1>
+        <p class="lead">先选一个目标岗位，下面列出这类岗位的真实招聘信息，以及你和每条 JD 的技能匹配度。</p>
+      </div>
+      <RouterLink v-if="profile.targetCategoryId" to="/quiz" class="quiz-entry"><span class="ai-badge">AI</span>进入在线测评 →</RouterLink>
+    </div>
     <TabBar
       :tabs="[{ key: 'browse', label: '岗位浏览' }, { key: 'favorites', label: '我的收藏' }]"
       v-model="activeTab"
@@ -117,6 +132,10 @@ function isLocationMatch(loc) {
                 <div class="posting-meta">
                   {{ p.companyName }} · {{ p.location || '地点未标注' }}
                   <span v-if="isLocationMatch(p.location)" class="match">地点匹配</span>
+                  <span
+                    v-if="matches[p.id] != null" class="skill-match" :class="{ good: matches[p.id] >= 70 }"
+                    title="你已掌握的技能覆盖了这条 JD 要求技能的比例"
+                  >技能匹配 {{ matches[p.id] }}%</span>
                 </div>
               </RouterLink>
             </li>
@@ -147,19 +166,46 @@ function isLocationMatch(loc) {
 </template>
 
 <style scoped>
-.chip-row { margin: 20px 0; }
-.cat-chip { font-size: 0.88rem; }
-.hint { padding: 12px 14px; border-left: 3px solid var(--color-primary); border-radius: 0 var(--radius-sm) var(--radius-sm) 0; background: var(--color-soft); font-size: 0.88rem; margin-bottom: 18px; }
+.page-header { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 16px 20px; margin-bottom: 8px; }
+.page-header h1 {
+  margin: 0;
+  color: var(--ink);
+  font-family: var(--font-display);
+  font-size: clamp(2.2rem, 4vw, 3.2rem);
+  font-weight: 400;
+  line-height: 1.1;
+}
+.lead { margin: 8px 0 0; color: var(--color-muted); font-weight: 700; }
+.quiz-entry {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 52px;
+  padding: 0 22px 0 14px;
+  border: var(--border-thick);
+  border-radius: var(--radius-md);
+  color: var(--paper);
+  background: var(--ink);
+  box-shadow: 5px 5px 0 var(--ai);
+  font-size: 1.05rem;
+  font-weight: 900;
+  text-decoration: none;
+  transition: transform 140ms ease, box-shadow 140ms ease;
+}
+.quiz-entry:hover { color: var(--paper); text-decoration: none; transform: translate(-2px, -2px); box-shadow: 7px 7px 0 var(--ai); }
+.chip-row { margin: 8px 0 22px; }
+.cat-chip { font-size: 0.95rem; }
+.hint { margin-bottom: 18px; padding: 12px 16px; border: var(--border-thick); border-radius: var(--radius-md); background: var(--color-soft); color: var(--ink); font-size: 0.95rem; font-weight: 700; }
 .postings ul, ul { list-style: none; padding: 0; margin: 0; }
-.posting { transition: border-color 180ms ease, background-color 180ms ease, transform 180ms ease; }
-.posting:hover { transform: translateY(-1px); }
-.posting-link:hover .posting-head strong { color: var(--color-primary); }
-.posting-head { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; }
-.posting-head strong { color: var(--color-heading); font-size: 1rem; font-weight: 720; }
-.salary { color: var(--color-warning); font-size: 0.88rem; font-weight: 700; white-space: nowrap; font-variant-numeric: tabular-nums; }
-.posting-meta { color: var(--color-muted); font-size: 0.86rem; margin-top: 4px; display: flex; align-items: center; flex-wrap: wrap; gap: 8px; }
-.match { padding: 2px 8px; border: 1px solid color-mix(in srgb, var(--color-success) 32%, transparent); border-radius: var(--radius-sm); background: color-mix(in srgb, var(--color-success) 10%, var(--color-surface)); color: var(--color-success); font-size: 0.72rem; font-weight: 700; }
-.cta { color: var(--color-primary); }
-.error { padding: 12px 14px; border-radius: var(--radius-md); background: color-mix(in srgb, var(--color-danger) 9%, var(--color-surface)); }
-@media (max-width: 560px) { .posting-head { align-items: flex-start; flex-direction: column; gap: 3px; } }
+.posting-link:hover .posting-head strong { text-decoration: underline; text-decoration-thickness: 3px; text-decoration-color: var(--yellow); text-underline-offset: 3px; }
+.posting-head { display: flex; justify-content: space-between; align-items: center; gap: 16px; }
+.posting-head strong { color: var(--ink); font-size: 1.12rem; font-weight: 900; }
+.salary { flex: 0 0 auto; padding: 2px 12px; border: 2.5px solid var(--ink); border-radius: 999px; background: var(--yellow); color: var(--ink); font-size: 0.92rem; font-weight: 900; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.posting-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 8px; color: var(--color-muted); font-size: 0.92rem; font-weight: 700; }
+.match, .skill-match { padding: 2px 10px; border: 2.5px solid var(--ink); border-radius: 999px; color: var(--ink); font-size: 0.8rem; font-weight: 900; }
+.match { background: var(--blue); }
+.skill-match { background: var(--paper); }
+.skill-match.good { background: var(--green); box-shadow: 2px 2px 0 var(--ink); }
+.error { padding: 12px 14px; border: var(--border-thick); border-radius: var(--radius-md); background: #ffe3e8; }
+@media (max-width: 560px) { .posting-head { align-items: flex-start; flex-direction: column; gap: 6px; } }
 </style>
