@@ -9,7 +9,7 @@
 - 后端：Spring Boot 4.1（Java 17）+ Spring Data JPA + MySQL
 - 前端：Vue 3 + Vite + Vue Router + Pinia
 - 数据库：MySQL 8
-- AI 判分：本地 [Ollama](https://ollama.com/) + Qwen2.5，简答题用（详见「后端」一节）
+- AI 判分：[DeepSeek](https://platform.deepseek.com/) 线上 API（`deepseek-chat`），简答题用（详见「后端」一节）
 
 ## 当前进度
 
@@ -26,13 +26,23 @@
 - [x] 本机装了 JDK 17 + Maven + 本地 MySQL，完整跑通一遍：建库 → 导入全部种子数据 → 启动后端 → 前端点击操作 → 提交测评 → 确认画像回写生效
 - [x] 登录 / 注册：`/api/auth/register`、`/api/auth/login`，密码 BCrypt 哈希存储，前端有对应页面，`user_skills`/`target_category` 都挂在真实用户上而不是写死的演示账号
 - [x] 团队共享 + 零配置访问：主机跑一个脚本，Cloudflare Tunnel 同时把后端**和前端**开成公网地址，队友什么都不用装、不用 clone 代码，浏览器打开前端地址就能用；注册数据统一落在主机这台电脑的 MySQL 里，见下方「团队共享」
-- [x] 测评题支持三种题型：选择题（`single_choice`，服务端精确判分）、填空题（`fill_blank`，服务端归一化后精确匹配 `accepted_answers` 任一候选）、简答题（`short_answer`，开放式问答没法用字符串匹配，交给本地 Ollama AI 判断作答是否覆盖 `reference_answer` 要点）——`database/schema.sql` 新增 `type`/`accepted_answers`/`reference_answer` 三列，已有数据库（比如团队共享主机上那份）需要额外跑一次 `database/migrate_add_question_types.sql` 才能用上新字段
+- [x] 测评题支持三种题型：选择题（`single_choice`，服务端精确判分）、填空题（`fill_blank`，服务端归一化后精确匹配 `accepted_answers` 任一候选）、简答题（`short_answer`，开放式问答没法用字符串匹配，交给 DeepSeek AI 判断作答是否覆盖 `reference_answer` 要点）——`database/schema.sql` 新增 `type`/`accepted_answers`/`reference_answer` 三列，已有数据库（比如团队共享主机上那份）需要额外跑一次 `database/migrate_add_question_types.sql` 才能用上新字段
 - [x] 简答题参考答案改成答题后才展示（提交前只看得到题目，答完提交才看到参考答案，跟选择题/填空题不泄题一个道理）
 - [x] 错题本：测评时答错的题自动记进 `wrong_questions`，后来同一道题答对了自动从表里删掉——新页面「错题本」按技能分组回顾，选择题标出"你的选择/正确答案"，填空/简答题摊开对照文本，附"重新测评"跳转。新表见 `database/schema.sql`，已有数据库跑 `database/migrate_add_wrong_questions.sql`
 - [x] 个人中心的技能自评清单，"已认证"（`quiz_verified`）的技能现在也能点"取消"直接撤销——之前只有自评的能取消，认证过的锁死；新增 `DELETE /api/users/{userId}/skills/{skillId}`，跟批量自评表单（`PUT`，会保护 `quiz_verified` 不被覆盖）是两条不同的路
 - [x] 题库覆盖率从 3/73 个技能提到 71/73：把 `interview_questions`（542 道面试题，`key_points` 本来就是"参考要点不是标准答案"）批量转成 `questions` 里的 `short_answer` 题，靠本地 AI 判分——`database/migrate_seed_short_answer_from_interview_questions.sql`，`INSERT IGNORE` + 新唯一键 `uk_skill_question_text` 保证重复跑安全。这是"有什么就先用什么"的过渡方案，面试题的措辞/难度不是照着"考核掌握程度"设计的，跟人工专门编写的测评题不是一回事，后续要精编题库时可以逐步替换；`数据结构`、`Git` 这两个技能连面试题都没有，仍然是 0 道。单个技能题量差异很大（少的 1 道，多的 137 道），`QuizService` 现在会对超过 10 道的技能随机抽 10 道，不然一次测评没法答完
 - [x] `Go后端工程师`/`全栈工程师`/`嵌入式开发工程师`/`游戏开发工程师`这 4 个岗位类别已删除——天池数据集不覆盖这几个方向，一直是 0 条真实招聘信息，与其留着一个点进去空空如也的类别，不如先删掉；`job_categories`/`job_skills` 里对应的行清掉了，唯一一个把 Go后端工程师 设成目标岗位的用户，`target_category_id` 改回了 NULL（需要重新选一个）。**技能本身没有删**：Go 相关 6 个、游戏开发相关 5 个技能连同它们的面试题/测评题都还在，只是不再挂在任何岗位类别下——差距分析/学习路径找不到它们了，但"在线测评"页不选目标岗位时的"全部技能"列表里还能直接测。全栈/嵌入式的技能本来就和其他保留的类别共用，不受影响。想恢复就是反过来重新插入 `job_categories`/`job_skills` 那几行，没做正式的 down 脚本
 - [x] 技能雷达图（[GapView.vue](frontend/src/views/GapView.vue)）之前按 domain 聚合维度不够 3 个就直接放弃画图，只显示一行提示——`数据分析师`/`移动开发工程师`/`网络安全工程师`/`运维工程师/DevOps` 这 4 个类别都只有 2 个 domain（比如移动开发就分 Android/iOS 两块），但技能本身有 6~11 个，明明够画。现在 domain 数不够时退化成按单个技能画（一个技能一维，掌握=100%/未掌握=0%），只有技能总数也不够 3 个才真的显示提示语。顺手修了一个不相关的潜伏 bug：`gridRings`（雷达图背景的同心网格）之前没包 `computed()`，值在组件初始化那一刻（数据还没异步加载回来）就定死成空数组，网格环其实从来没画出来过
+- [x] 简答题 AI 判分从本地 Ollama 换成 DeepSeek 线上 API：共享主机不再需要独显、不用再 `ollama pull`，换一台机器当主机只要在 `backend/.env` 配好 `DEEPSEEK_API_KEY` 就行（该文件已 gitignore）。`start-server.ps1` 第 2 步相应改成检查密钥
+- [x] 学习进度条 + 激励机制（[ProgressService](backend/src/main/java/com/skillradar/service/ProgressService.java)、[ProgressPanel.vue](frontend/src/components/ProgressPanel.vue)）：目标岗位技能进度条、下一个里程碑提示、下一步推荐技能、连续学习打卡天数、徽章、随状态变化的鼓励语。放在「个人中心 → 学习进度」（默认 tab）和「学习路径」页顶部；测评提交后结果框里播放进度增长动画、弹出新解锁的徽章
+- [x] **需要跑一次迁移** `database/migrate_add_engagement_features.sql`（新增 `resource_views`/`interview_sessions` 两张表，`quiz_attempts.kind`、`wrong_questions.review_stage`/`next_review_at` 三个字段，并去掉 `wrong_questions.last_wrong_at` 的 `ON UPDATE`），下面 6 项都依赖它：
+  - 交卷后逐题展示对错、正确答案，简答题附 AI 点评和要点覆盖分析（以前 AI 生成了这些却只写进日志）
+  - 简答题并发判分（[ShortAnswerGradingService](backend/src/main/java/com/skillradar/service/ShortAnswerGradingService.java) 线程池），交卷走 SSE 流式接口边判边显示"AI 判分中 3/8"——实测 8 道简答题从十几秒降到约 2.5 秒。DeepSeek 调用抽成了 [DeepSeekClient](backend/src/main/java/com/skillradar/service/DeepSeekClient.java)，失败自动重试一次
+  - 新用户上手引导 [OnboardingView.vue](frontend/src/views/OnboardingView.vue)：注册后（以及没选过目标岗位的用户登录后）三步走：选目标岗位 → 只在该岗位要求的技能里勾已会的 → 看到进度、一键开始第一次测评
+  - 技能内部的部分进度：没掌握的技能按"历史最好正确率 × 60% + 学习资料阅读比例 × 30%"给部分分（封顶 90%），进度条多一段"学习中"，学习路径的技能 chip 上也显示各自进度。点开学习资料会记为已读。错题复习的正确率不计入（复习题是自己错过、看过答案的，算进来会虚高）
+  - 错题间隔复习：答错后按 1 天 → 3 天 → 7 天到期复习，**到期**答对 3 次才移出错题本（没到期就答对不推进，同一天刷三遍不算巩固）；错题本显示今日到期数和每题巩固进度，「错题复习」模式（`/quiz?mode=review`）只出错题，记为 `kind=review`，不认证技能。顺手修了错题第一次被记录时 `wrong_count` 就是 2 的 bug
+  - 岗位匹配度（[JobMatchService](backend/src/main/java/com/skillradar/service/JobMatchService.java)）：岗位列表每条显示"技能匹配 X%"，详情页列出已具备/还差的技能（还差的可一键去测评）；进度面板和交卷结果显示"匹配度 ≥ 70% 的可投岗位 N 条"及其变化。注意匹配度依赖 `posting_skills` 的抽取质量——有些 JD 原文明明写了 HTML/CSS/JS，抽取结果里却没有，这类 JD 的匹配度会失真
+  - AI 模拟面试（[InterviewService](backend/src/main/java/com/skillradar/service/InterviewService.java)、[InterviewView.vue](frontend/src/views/InterviewView.vue)）：从目标岗位高权重技能的 `interview_questions` 里抽 5 道题，DeepSeek 扮演面试官，每题最多追问一次（节奏由代码控制，追问内容由 AI 生成），结束后给 0~100 总分、优缺点、逐题评分点评和参考要点；面试过程存在 `interview_sessions`，可中断后继续，完成的面试也计入连续打卡。支持**限时作答**（开始前选：不限时 / 宽松 60 秒思考 + 5 分钟作答 / 标准 30 秒 + 3 分钟 / 紧张 15 秒 + 90 秒）：每问先"思考"倒计时（不能输入，可提前开始），再"作答"倒计时，时间到自动提交已写的内容；每次回答的用时随对话记录存进 `transcript`（不改表结构），AI 点评和总评会参考时间把控。计时在前端，档位按面试 id 存 localStorage，刷新后仍是限时（当前这一问重新计时）
 - [ ] 题库内容仍然偏薄、来源单一（几乎全是面试题转来的 `short_answer`），需要团队后续人工补充更多选择题/填空题
 
 ## MVP 策略
@@ -61,7 +71,7 @@ mysql -u root -p skill_radar < database/seed_learning_resources.sql
 
 **顺序不能乱**：后三个 `seed_*.sql` 靠 `WHERE name = ...` 反查 id，得先有 `seed.sql` 建好的技能/类别才查得到。这三个都是脚本自动生成的（见 `tools/import_*.py`），改了数据源文件后重新跑脚本即可重新生成，不用手改 SQL；`job_categories.name`、`learning_resources(skill_id,url)` 都加了唯一约束，脚本用 `INSERT IGNORE`，重复执行是安全的。
 
-15 张表对应设计文档里的模块：`job_categories`/`job_postings`（岗位库，类别与具体招聘信息分层）、`skills`/`skill_prereq`（技能图谱）、`user_skills`（用户技能画像）、`posting_skills`/`job_skills`（JD 技能抽取与权重）、`learning_resources`/`questions`/`interview_questions`/`quiz_attempts`（学习资料与测评，`interview_questions` 是开放式面试题库，纯阅读用，不挂在测评闭环里；`questions` 驱动在线测评，选择题/填空题服务端精确判分，简答题走本地 Ollama AI 判分）、`wrong_questions`（错题本，答错自动记、答对自动清）、`favorites`（用户收藏的招聘信息）。字段含义见 `schema.sql` 内注释，完整参考表见[开发手册](https://claude.ai/code/artifact/b1edeb33-f97e-44f1-9945-284ca4866116)。
+17 张表对应设计文档里的模块：`job_categories`/`job_postings`（岗位库，类别与具体招聘信息分层）、`skills`/`skill_prereq`（技能图谱）、`user_skills`（用户技能画像）、`posting_skills`/`job_skills`（JD 技能抽取与权重）、`learning_resources`/`questions`/`interview_questions`/`quiz_attempts`（学习资料与测评，`interview_questions` 是开放式面试题库，纯阅读用，不挂在测评闭环里；`questions` 驱动在线测评，选择题/填空题服务端精确判分，简答题走 DeepSeek AI 判分）、`wrong_questions`（错题本 + 间隔复习，到期答对 3 次才移出）、`resource_views`（学习资料阅读记录，计入技能的部分进度）、`interview_sessions`（AI 模拟面试记录）、`favorites`（用户收藏的招聘信息）。字段含义见 `schema.sql` 内注释，完整参考表见[开发手册](https://claude.ai/code/artifact/b1edeb33-f97e-44f1-9945-284ca4866116)。
 
 ## 后端
 
@@ -74,13 +84,13 @@ mvn spring-boot:run
 
 默认连接 `localhost:3306/skill_radar`，用户名 `root`、空密码；不同可设置环境变量 `DB_USERNAME` / `DB_PASSWORD` 覆盖（见 `application.yml`）。启动后 http://localhost:8080/api/skills 应该能看到种子数据里的技能列表。
 
-**简答题判分还需要本机装 [Ollama](https://ollama.com/) 并拉取模型**（[ShortAnswerGradingService](backend/src/main/java/com/skillradar/service/ShortAnswerGradingService.java)），否则提交带简答题的测评会报错：
+**简答题判分需要配置 DeepSeek API 密钥**（[ShortAnswerGradingService](backend/src/main/java/com/skillradar/service/ShortAnswerGradingService.java)），否则提交带简答题的测评会报错。在 `backend/.env` 里写一行（这个文件已被 `.gitignore` 忽略，**密钥千万别提交进仓库**）：
 
-```bash
-ollama pull qwen3:8b
+```
+DEEPSEEK_API_KEY=sk-你的密钥
 ```
 
-默认接 `http://localhost:11434`、用 `qwen3:8b`；可设置环境变量 `OLLAMA_BASE_URL` / `OLLAMA_MODEL` 覆盖（见 `application.yml`）。选择题/填空题不受影响，不用装 Ollama 也能测。这台共享主机有独显（4090），换成 `qwen3:14b`/`32b` 判分质量会更好，显存够用。`tools/start-server.bat` 已经把 Ollama 拉起 + 按需拉模型这一步接进去了（软依赖，装不了/起不来只警告不阻塞其他步骤），团队共享主机不用再手动 `ollama serve`。
+也可以直接设成环境变量。默认接 `https://api.deepseek.com`、用 `deepseek-chat`，可用 `DEEPSEEK_BASE_URL` / `DEEPSEEK_MODEL` 覆盖（见 `application.yml`）。选择题/填空题不受影响，不配密钥也能测。按 token 计费，判一道简答题大约几百 token。
 
 接口一览（① ~ ④ 对应设计文档的四个引擎）：
 
@@ -95,7 +105,15 @@ ollama pull qwen3:8b
 | `GET /api/learning-path?categoryId=&userId=` | ③ 学习路径：待学技能按拓扑排序分层 |
 | `GET /api/skills/{id}/resources` | ④ 该技能的学习资料 |
 | `GET /api/skills/{id}/questions` | ④ 该技能的测评题（选择题/填空题/简答题，不含选择题正确答案与填空题候选答案；简答题的参考答案会返回，答完提交后前端才展示）。题量超过 10 道会随机抽 10 道，不会一次性全列出来 |
-| `POST /api/quiz-attempts` | ④ 提交作答并判分：选择题精确比对、填空题归一化字符串匹配、简答题调用本地 Ollama AI 判分（`ShortAnswerGradingService`），通过时把 `user_skills` 更新为 `quiz_verified`；同时把每道题的对错写进错题本（答对了顺带把之前的错题记录清掉） |
+| `POST /api/quiz-attempts` | ④ 提交作答并判分：选择题精确比对、填空题归一化字符串匹配、简答题调用 DeepSeek AI 判分（`ShortAnswerGradingService`），通过时把 `user_skills` 更新为 `quiz_verified`；同时把每道题的对错写进错题本（答对了顺带把之前的错题记录清掉）。返回值里附带激励反馈：提交前后的目标岗位进度、连续学习天数、新点亮的徽章、一句鼓励语 |
+| `GET /api/users/{userId}/progress` | 学习进度 + 激励：目标岗位技能进度（认证/自评/学习中三段，含每个技能的部分进度）、可投岗位数、下一个里程碑、下一步推荐技能、连续学习打卡天数、今日到期错题数、徽章墙、鼓励语 |
+| `POST /api/quiz-attempts/stream` | 同 `POST /api/quiz-attempts`，但以 SSE 推送：每判完一道推 `progress {done,total}`，最后推 `result`（含逐题 `details`），出错推 `error {message}`。`mode: "review"` 为错题复习 |
+| `GET /api/users/{userId}/wrong-questions/review?skillId=` | 错题复习出题：带 `skillId` 出该技能的全部错题，不带就出今天到期的，最多 10 道 |
+| `GET` / `PUT /api/users/{userId}/resource-views[/{resourceId}]` | 读过的学习资料 id 列表 / 记一次已读（幂等） |
+| `GET /api/postings/{id}/match?userId=` | 我和这条 JD 的技能匹配度、已具备/还差的技能（JD 没抽出技能时按同类岗位估算） |
+| `GET /api/users/{userId}/posting-matches?ids=` | 一批 JD 各自的匹配度（岗位列表角标用） |
+| `POST /api/interview/sessions` | 开始一场 AI 模拟面试（`{userId, categoryId?}`，默认用目标岗位）；`GET /api/interview/sessions/{id}?userId=` 读取、`POST .../{id}/answer` 回答、`POST .../{id}/finish` 提前结束 |
+| `GET /api/users/{userId}/interview-sessions` | 面试历史 |
 | `GET /api/users/{userId}/wrong-questions` | ④ 错题本：这个用户当前还没订正的题，附你当时的作答和正确答案，供回顾 |
 | `DELETE /api/users/{userId}/skills/{skillId}` | 取消一个技能的已掌握状态——自评、测评认证过的都能取消（`PUT` 那个批量自评表单会保护 `quiz_verified` 不被覆盖，这个不会） |
 
@@ -128,7 +146,7 @@ npm run dev
 脚本按 6 步依次拉起，已经在跑的部分会自动跳过（重复运行安全）：
 
 1. 本地 MySQL
-2. 本地 Ollama（简答题 AI 判分，`localhost:11434`）+ 按需拉取 `qwen3:8b`——这一步是软依赖，没装 Ollama 只会打印警告，不影响其他 5 步照常启动
+2. 检查 DeepSeek 密钥（简答题 AI 判分，读 `backend/.env`）——软依赖，没配只打印警告，不影响其他 5 步照常启动
 3. 后端 Spring Boot（`localhost:8080`）
 4. 后端的 Cloudflare Tunnel → `https://xxx.trycloudflare.com`
 5. 前端 Vite dev server（`localhost:5173`）——脚本自动把上一步的后端隧道地址写进 `frontend/.env.local`，不用手改

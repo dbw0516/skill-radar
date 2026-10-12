@@ -7,8 +7,8 @@
 #
 # 这个脚本重复运行是安全的——已经在跑的部分会跳过，隧道地址只要进程还活着就沿用旧的、不会变。
 #
-# Ollama（简答题 AI 判分）是软依赖：没装、起不来、模型没拉全，都只打印警告然后继续——
-# 选择题/填空题/其他功能不受影响，只有提交带简答题的测评会报错，等 Ollama 好了重新提交即可。
+# 简答题 AI 判分走 DeepSeek 线上 API，密钥放在 backend\.env（DEEPSEEK_API_KEY=sk-xxx，不进 git）。
+# 这是软依赖：没配密钥只打印警告然后继续——选择题/填空题/其他功能不受影响，只有提交带简答题的测评会报错。
 #
 # 说明：
 #  - 免费不记名隧道地址（xxx.trycloudflare.com）在真正重新开隧道时会换一个新的（比如这台电脑重启过）。
@@ -21,8 +21,6 @@ $root = Split-Path -Parent $PSScriptRoot
 $mysqlBin = "C:\Program Files\MySQL\MySQL Server 8.4\bin"
 $mysqlData = "D:\tools\mysql-data"
 $cloudflared = "C:\Program Files (x86)\cloudflared\cloudflared.exe"
-$ollama = "$env:LOCALAPPDATA\Programs\Ollama\ollama.exe"
-$ollamaModel = "qwen3:8b"
 
 function Test-Port($port) {
     Test-NetConnection -ComputerName localhost -Port $port -InformationLevel Quiet -WarningAction SilentlyContinue
@@ -75,33 +73,15 @@ if (Test-Port 3306) {
     Start-Sleep -Seconds 4
 }
 
-# ---------- 2) Ollama（简答题 AI 判分，软依赖） ----------
-Write-Host "2/6 本地 Ollama（简答题 AI 判分）..." -ForegroundColor Cyan
-if (Test-Port 11434) {
-    Write-Host "   已经在跑了，跳过。"
-} elseif (-not (Test-Path $ollama)) {
-    Write-Host "   没装 Ollama（$ollama 不存在），简答题判分会不可用，其他功能不受影响。" -ForegroundColor Yellow
-    Write-Host "   要用就去 https://ollama.com/download 装一下，重新跑这个脚本。" -ForegroundColor Yellow
+# ---------- 2) DeepSeek 密钥（简答题 AI 判分，软依赖） ----------
+Write-Host "2/6 DeepSeek 密钥（简答题 AI 判分）..." -ForegroundColor Cyan
+$backendEnv = "$root\backend\.env"
+$hasKey = $env:DEEPSEEK_API_KEY -or ((Test-Path $backendEnv) -and (Select-String -Path $backendEnv -Pattern "^\s*DEEPSEEK_API_KEY\s*=\s*\S+" -Quiet))
+if ($hasKey) {
+    Write-Host "   已配置。"
 } else {
-    # -e 传 serve：不走 "ollama app.exe" 那个会弹 GUI 欢迎窗口的托盘程序，直接起纯后台服务。
-    Start-Process -FilePath $ollama -ArgumentList "serve" -WindowStyle Hidden
-    $ready = $false
-    for ($i = 0; $i -lt 20; $i++) {
-        Start-Sleep -Seconds 1
-        if (Test-Port 11434) { $ready = $true; break }
-    }
-    if (-not $ready) {
-        Write-Host "   Ollama 没起来，简答题判分会不可用，其他功能不受影响。" -ForegroundColor Yellow
-    }
-}
-if (Test-Port 11434) {
-    $tags = $null
-    try { $tags = Invoke-RestMethod -Uri "http://localhost:11434/api/tags" -TimeoutSec 5 } catch {}
-    $hasModel = $tags -and ($tags.models | Where-Object { $_.model -eq $ollamaModel -or $_.name -eq $ollamaModel })
-    if (-not $hasModel) {
-        Write-Host "   还没有 $ollamaModel，拉取中（第一次比较慢，几分钟起步，看网速）..." -ForegroundColor Cyan
-        & $ollama pull $ollamaModel
-    }
+    Write-Host "   没找到 DEEPSEEK_API_KEY，简答题判分会不可用，其他功能不受影响。" -ForegroundColor Yellow
+    Write-Host "   在 backend\.env 里写一行 DEEPSEEK_API_KEY=sk-xxx，重启后端即可。" -ForegroundColor Yellow
 }
 
 # ---------- 3) 后端 ----------
