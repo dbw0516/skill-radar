@@ -1,6 +1,8 @@
-# 就业技能雷达
+# 灵犀职途
 
-面向应届生的求职技能辅助系统：对照目标岗位所需技能与用户已掌握的技能，自动生成差距清单、学习路径、学习资料与测评，测评结果回写用户画像，形成持续更新的学习闭环。
+**基于人工智能的应届生求职能力评估与学习规划系统**（原名"就业技能雷达"，2026-10 更名；代码里的 `com.skillradar` 包名、`skill_radar` 数据库名没改）
+
+面向应届生的求职技能辅助系统：对照目标岗位所需技能与用户已掌握的技能，自动生成差距清单、学习路径、学习资料与测评，测评结果回写用户画像，形成持续更新的学习闭环；简答题由大模型（DeepSeek）语义判分，并提供 AI 模拟面试。
 
 完整技术方案（含流程图）：[设计文档](https://claude.ai/code/artifact/a6e79c55-86a2-4f28-bde6-6af50f0a8f85)，或见团队群里分享的 PDF。项目结构、数据库设计、当前数据现状：[开发手册](https://claude.ai/code/artifact/b1edeb33-f97e-44f1-9945-284ca4866116)。
 
@@ -15,7 +17,7 @@
 
 - [x] 技术方案设计（数据流、学习路径算法、用户画像、岗位技能提取、数据维护策略）
 - [x] 数据库结构 `database/schema.sql`（14 张表）+ 试点种子数据 `database/seed.sql`
-- [x] 真实岗位数据：天池公开数据集导入，1,202 条、覆盖 13 个岗位类别（`database/seed_real_postings.sql`）——这部分是**招聘信息**，跟下面"技能词典扩展"是两回事，4 个新岗位类别暂时还没有对应的招聘信息
+- [x] 真实岗位数据：天池公开数据集导入，现有 1,062 条、覆盖 12 个岗位类别（`database/seed_real_postings.sql`；原本 1,202 条 / 13 类，产品经理那 140 条后来删了，见下）——这部分是**招聘信息**，跟下面"技能词典扩展"是两回事，4 个新岗位类别暂时还没有对应的招聘信息
 - [x] 面试题库：542 道（193 道 JavaGuide 来源的 Java 后端面试题 + 349 道团队收集的其他方向面试题，`database/seed_interview_questions.sql` + `database/seed_expanded_skills_and_questions.sql`）
 - [x] 技能词典扩展：从 11 个（全是 Java 后端）扩到 73 个，新增覆盖 Go/Python/前端/大数据/Android/iOS/测试/运维/网络安全/数据分析/数据库/游戏开发，顺带新建了 4 个原来没有的岗位类别（Go后端/全栈/嵌入式开发/游戏开发工程师，这 4 个类别后来因为一直没有真实招聘信息被删掉了，见下面进度里那条 `[x]` 记录），见 `tools/import_expanded_interview_questions.py`
 - [x] 除 Java 后端外的 15 个岗位类别都补上了 `job_skills`（岗位需要哪些技能、权重多少），实测②差距分析、③学习路径接口对这些新类别都能正常返回——`database/seed_job_skills_expanded.sql`（`tools/import_job_skills_expanded.py` 生成，权重是核心/次要/边缘的人工判断值，跟 seed.sql 里 Java 后端那 9 行一个性质，不是真实统计出来的）。**产品经理**这次没有任何相关技能数据，跳过了；**全栈工程师/嵌入式开发工程师/算法-机器学习工程师**这三个方向的原始面试题文档没有可提炼的技术内容，权重是按"这个方向通常需要什么"的通用判断给的，覆盖度和可信度都不如其他类别，需要团队后续找真实技术资料补充
@@ -41,8 +43,10 @@
   - 新用户上手引导 [OnboardingView.vue](frontend/src/views/OnboardingView.vue)：注册后（以及没选过目标岗位的用户登录后）三步走：选目标岗位 → 只在该岗位要求的技能里勾已会的 → 看到进度、一键开始第一次测评
   - 技能内部的部分进度：没掌握的技能按"历史最好正确率 × 60% + 学习资料阅读比例 × 30%"给部分分（封顶 90%），进度条多一段"学习中"，学习路径的技能 chip 上也显示各自进度。点开学习资料会记为已读。错题复习的正确率不计入（复习题是自己错过、看过答案的，算进来会虚高）
   - 错题间隔复习：答错后按 1 天 → 3 天 → 7 天到期复习，**到期**答对 3 次才移出错题本（没到期就答对不推进，同一天刷三遍不算巩固）；错题本显示今日到期数和每题巩固进度，「错题复习」模式（`/quiz?mode=review`）只出错题，记为 `kind=review`，不认证技能。顺手修了错题第一次被记录时 `wrong_count` 就是 2 的 bug
-  - 岗位匹配度（[JobMatchService](backend/src/main/java/com/skillradar/service/JobMatchService.java)）：岗位列表每条显示"技能匹配 X%"，详情页列出已具备/还差的技能（还差的可一键去测评）；进度面板和交卷结果显示"匹配度 ≥ 70% 的可投岗位 N 条"及其变化。注意匹配度依赖 `posting_skills` 的抽取质量——有些 JD 原文明明写了 HTML/CSS/JS，抽取结果里却没有，这类 JD 的匹配度会失真
+  - 岗位匹配度（[JobMatchService](backend/src/main/java/com/skillradar/service/JobMatchService.java)）：岗位列表每条显示"技能匹配 X%"，详情页列出已具备/还差的技能（还差的可一键去测评）；进度面板和交卷结果显示"匹配度 ≥ 70% 的可投岗位 N 条"及其变化。匹配度依赖 `posting_skills` 的抽取质量，抽取规则见下面「数据收集 → JD 技能抽取」
   - AI 模拟面试（[InterviewService](backend/src/main/java/com/skillradar/service/InterviewService.java)、[InterviewView.vue](frontend/src/views/InterviewView.vue)）：从目标岗位高权重技能的 `interview_questions` 里抽 5 道题，DeepSeek 扮演面试官，每题最多追问一次（节奏由代码控制，追问内容由 AI 生成），结束后给 0~100 总分、优缺点、逐题评分点评和参考要点；面试过程存在 `interview_sessions`，可中断后继续，完成的面试也计入连续打卡。支持**限时作答**（开始前选：不限时 / 宽松 60 秒思考 + 5 分钟作答 / 标准 30 秒 + 3 分钟 / 紧张 15 秒 + 90 秒）：每问先"思考"倒计时（不能输入，可提前开始），再"作答"倒计时，时间到自动提交已写的内容；每次回答的用时随对话记录存进 `transcript`（不改表结构），AI 点评和总评会参考时间把控。计时在前端，档位按面试 id 存 localStorage，刷新后仍是限时（当前这一问重新计时）
+- [x] JD 技能抽取重做（[skill_extractor.py](tools/skill_extractor.py)）：以前的 `posting_skills` 是数据集自带的「已匹配技能」列，只认得十来个 Java 后端技能——Python 岗位抽不出 Linux、反而挂上 Java基础；抽不出技能的 JD 退回按类别估算，于是每条 Python 岗位都显示同一串 Python* 技能。现在从 JD 原文按 73 个技能抽取：关联从 1,035 条 / 497 个岗位变成 3,143 条 / 845 个岗位（用到 58 个技能；这组数字是删产品经理之前统计的）；JD 里提到 Linux 的 202 条，抽出 Linux基础 的从 135 条到 192 条（剩下 10 条是"优先/加分"）；Python 岗位挂 Java基础 的从 8 条到 0。"有 xx 经验者优先"这类加分项不计入匹配度。**已有数据库跑一次** `database/seed_posting_skills.sql` 即可（可重复执行）
+- [x] `产品经理`岗位类别已删除：技能词典里没有任何产品方向的技能，`job_skills` 一直是空的，140 条 JD 里 113 条一个技术技能都抽不出来，差距分析/学习路径/测评对它都给不出东西。连带删掉了这个类别下的 140 条招聘信息、它们的技能关联和 1 条用户收藏；当时没有用户把它设成目标岗位，也没有相关的模拟面试记录。`tools/import_tianchi.py` 的 `EXCLUDED_CATEGORIES` 让新建库也不再导入它。**已有数据库跑一次** `database/migrate_remove_product_manager.sql`（可重复执行）。想恢复：把它从 `EXCLUDED_CATEGORIES` 去掉，重新生成并导入 `seed_real_postings.sql`、`seed_posting_skills.sql`
 - [ ] 题库内容仍然偏薄、来源单一（几乎全是面试题转来的 `short_answer`），需要团队后续人工补充更多选择题/填空题
 
 ## MVP 策略
@@ -67,7 +71,10 @@ mysql -u root -p skill_radar < database/seed.sql
 mysql -u root -p skill_radar < database/seed_real_postings.sql
 mysql -u root -p skill_radar < database/seed_interview_questions.sql
 mysql -u root -p skill_radar < database/seed_learning_resources.sql
+mysql -u root -p skill_radar < database/seed_posting_skills.sql
 ```
+
+`seed_posting_skills.sql`（每条 JD 要哪些技能）按技能名关联，要放在**所有技能种子之后**跑（包括 `seed_expanded_skills_and_questions.sql` 里扩充的那些技能，没导入的技能会被跳过）；它按 JD 原文找回岗位、不依赖自增 id，已有数据库也可以单独重跑。
 
 **顺序不能乱**：后三个 `seed_*.sql` 靠 `WHERE name = ...` 反查 id，得先有 `seed.sql` 建好的技能/类别才查得到。这三个都是脚本自动生成的（见 `tools/import_*.py`），改了数据源文件后重新跑脚本即可重新生成，不用手改 SQL；`job_categories.name`、`learning_resources(skill_id,url)` 都加了唯一约束，脚本用 `INSERT IGNORE`，重复执行是安全的。
 
@@ -187,3 +194,22 @@ python tools/jd_intake.py
 不要直接写爬虫抓拉勾/BOSS直聘/猎聘等平台的数据——这几家都明确禁止自动化抓取，国内已有多起相关民事甚至刑事案例，风险远大于"违反用户协议"。
 
 面试题/学习资料这类内容型数据走的是另一套路子：团队自己整理成文档（`面试题/*.docx`、`database/*面试题集.md` 等）放进仓库，再写个一次性脚本解析成 SQL——`tools/import_interview_questions.py`（JavaGuide 那批）和 `tools/import_expanded_interview_questions.py`（这批覆盖 Go/Python/前端/大数据/移动端/测试/运维/网络安全/数据分析/数据库/游戏开发方向）是同一个模式。后者的脚本文件头注释里写了取舍：`key_points` 是提炼过的要点提示、不是原文逐字转录，行为面试题统一挂到共享的"职业素养与求职技巧"技能，没有技术内容可提炼的岗位方向（全栈/嵌入式开发）目前只有职业素养题。
+
+### JD 技能抽取
+
+`tools/skill_extractor.py` 从「岗位标题 + JD 原文」里抽技能，`tools/extract_posting_skills.py` 对天池数据集逐条跑一遍，生成 `database/seed_posting_skills.sql`：
+
+```bash
+python tools/extract_posting_skills.py
+```
+
+规则要点（细节和理由见 `skill_extractor.py` 文件头）：
+
+- **泛指只落到基础技能**：技能词典是按面试考点划的（Python 有核心语法/正则/网络编程/内存管理……），JD 里写"熟悉 Python"只算"Python核心语法与内置类型"，写了"正则""socket""HTTP 协议"才加对应的细分技能；"正则"只在要 Python 的岗位里算
+- **英文词有边界**："mysql" 里的 "sql"、"javascript" 里的 "java" 都不算；**同一个词按语境分技能**："多线程"在 Java 岗记 Java并发、其他岗记进程与线程基础，"操作系统"要跟"原理/计算机基础"一起出现才算（运维岗的"熟悉操作系统（Windows、Linux）"不算）
+- **必需 vs 加分**："有 Redis 经验者优先"、"加分项："/"具备以下条件者优先："后面的条目算加分项，不写进 `posting_skills`，不然达标的人会因为没碰过加分项而匹配度上不去；"熟悉 Java/Python/Go 其中一门"只留一门当必需
+- 公司介绍、福利待遇段落跳过；沟通能力、团队合作这类软技能不抽
+
+改规则后先跑测试再重新生成：`python -m unittest discover -s tools -p "test_*.py"`。单条 JD 调试：`python tools/skill_extractor.py "岗位标题"`，粘贴 JD、单独一行 `END` 结束，会列出每个技能是必需还是加分、命中的是哪个词。
+
+仍有 244 条岗位抽不出必需技能，匹配度退回按岗位类别估算，主要是混进技术类别的非技术岗（硬件/品质方向的测试岗、"健康管理师""网络销售"之类）；另外技能词典本身没有机器学习框架、Docker/K8s、C/C++、Django/Flask 这类技能，JD 写了也抽不出来，要补得先往 `skills` 表加技能。
