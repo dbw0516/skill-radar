@@ -47,7 +47,7 @@ async function submit() {
 
 <style scoped>
 .auth { max-width: 460px; }
-.auth::before { content: 'SKILL RADAR / CREATE PROFILE'; display: block; margin-bottom: 12px; color: var(--color-primary); font-size: 0.72rem; font-weight: 800; letter-spacing: 0.12em; }
+.auth::before { content: 'LINGXI AI / CREATE PROFILE'; display: block; margin-bottom: 12px; color: var(--color-primary); font-size: 0.72rem; font-weight: 800; letter-spacing: 0.12em; }
 form { display: flex; flex-direction: column; gap: 16px; max-width: 380px; margin-top: 24px; }
 label { display: flex; flex-direction: column; gap: 6px; color: var(--color-heading); font-size: 0.9rem; font-weight: 650; }
 button { width: 100%; margin-top: 4px; }

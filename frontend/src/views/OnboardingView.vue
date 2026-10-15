@@ -82,7 +82,7 @@ function onProgressLoaded(p) {
 
 <template>
   <section class="onboarding">
-    <h1>欢迎来到技能雷达 👋</h1>
+    <h1>欢迎来到灵犀职途 👋</h1>
     <p class="lead">三步就能看到你离目标岗位还有多远。</p>
 
     <ol class="steps" aria-label="引导步骤">

@@ -34,8 +34,8 @@ function logout() {
           <rect x="2" y="17" width="44" height="14" fill="#ffd84d" stroke="#111111" stroke-width="3" />
         </svg>
         <span class="brand-text">
-          <strong>技能雷达</strong>
-          <span>SKILL RADAR METRO</span>
+          <strong>灵犀职途</strong>
+          <span>LINGXI AI CAREER</span>
         </span>
       </RouterLink>
       <nav class="links" aria-label="主导航">
