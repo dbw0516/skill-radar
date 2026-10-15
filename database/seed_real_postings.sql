@@ -1,6 +1,6 @@
 -- ============================================================
 -- 由 tools/import_tianchi.py 从「天池数据集-计算机相关岗位.xlsx」自动生成
--- 生成日期：2026-09-08
+-- 生成日期：2026-10-13
 -- 数据来源：阿里天池公开数据集，经关键词筛选+每类封顶后的计算机相关岗位子集
 -- 注意：source_url 该数据集未提供，均为 NULL；posted_at 原始只有月-日、无年份，本次导入不填年份猜测值，均为 NULL
 -- ============================================================
@@ -10,7 +10,6 @@ SET NAMES utf8mb4;
 -- 岗位类别（数据集里出现的全部类别，major_id 先统一挂到 1=计算机科学与技术）
 INSERT IGNORE INTO job_categories (name, major_id, description, status) VALUES ('Java后端工程师', 1, '由天池数据集导入，技能画像/依赖图谱待后续补充', 'active');
 INSERT IGNORE INTO job_categories (name, major_id, description, status) VALUES ('Python开发工程师', 1, '由天池数据集导入，技能画像/依赖图谱待后续补充', 'active');
-INSERT IGNORE INTO job_categories (name, major_id, description, status) VALUES ('产品经理', 1, '由天池数据集导入，技能画像/依赖图谱待后续补充', 'active');
 INSERT IGNORE INTO job_categories (name, major_id, description, status) VALUES ('前端开发工程师', 1, '由天池数据集导入，技能画像/依赖图谱待后续补充', 'active');
 INSERT IGNORE INTO job_categories (name, major_id, description, status) VALUES ('大数据开发工程师', 1, '由天池数据集导入，技能画像/依赖图谱待后续补充', 'active');
 INSERT IGNORE INTO job_categories (name, major_id, description, status) VALUES ('数据分析师', 1, '由天池数据集导入，技能画像/依赖图谱待后续补充', 'active');
@@ -25,7 +24,7 @@ INSERT IGNORE INTO job_categories (name, major_id, description, status) VALUES (
 -- 用 name 反查刚插入的 category id，避免手写行号
 -- （在同一个事务/脚本里执行即可保证下面的子查询能查到上面刚插入的行）
 
--- 具体招聘信息 + 技能关联（用 LAST_INSERT_ID() 精确对应刚插入的那一条，不靠内容反查，避免同名/重复 JD 关联错行）
+-- 具体招聘信息（每条要哪些技能见 seed_posting_skills.sql，由 tools/extract_posting_skills.py 生成）
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = 'Java后端工程师' LIMIT 1), '北京北斗星座科技发展有限责任公司', 'java开发', '北京-朝阳区', '0.8-1万/月', NULL, '岗位职责：
 1.参与项目的需求分析设计，负责功能模块的设计；
 2.根据软件模块设计，按计划完成模块的编码开发工作，保证软件的开发质量；
@@ -85,10 +84,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 5年后的交易量10000亿大关，日较量50000笔。
 全球***家专为中小型企业服务垂直领域云平台服务交易量------万亿级！！！
 官网：www.bdyuncai.com', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 5, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 8, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = 'Java后端工程师' LIMIT 1), '北京外企德科人力资源服务上海有限公司', 'Java开发与数据工程师', '东莞-松山湖区', '2-2.5万/月', NULL, '【岗位说明】
 招聘华为OD(外包)，签约德科，但是和华为员工一起办公，薪酬福利与对应等级与华为员工一致，两年以后20%可以申请转为正式华为员工，类似于华为的预备役，今年新的招聘方式。
 1、华为&德科联合招聘，挂职500强外企德科，并与德科签署合同。德科是一家人力资源解决方案提供商。负责候选人的薪酬福利管理、社保缴纳、证件办理等。签订4年合同，6个月试用期，在华为研究所办公，参与华为核心项目开发；
@@ -110,9 +105,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 （3）创造性解决产品在实现过程中的技术难题，应用前沿技术提升产品的核心竞争力，如分布式系统、性能调优、可靠性、数据分析等。
 （1）根据需求与设计，高质量地完成服务开发，感兴趣并具备能力者将负责客户需求分析、业务与架构设计、运营分析产品生命周期中的各个环节；
 （2）应用落实数据规划，根据数据管理需求，实现从数据感知、预处理、汇聚存储、计算归并和分析结果可视，并满足容量和性能规格要求；', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 4, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = 'Java后端工程师' LIMIT 1), '国际私塾', '技术经理(Go/Java)', '广州-天河区', '1.5-2.5万/月', NULL, '岗位职责：
 1. 负责项目的系统建模和分析，核心业务代码编写，参与技术架构评审，团队技术指导；
 2. 解决核心技术难题，快速定位并修复软件缺陷，系统性能优化，保证系统稳定、快速、安全运行；
@@ -140,10 +132,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 8、团队建设、节日活动、公益活动及其他不定期的企业文化活动；
 9、转正即有晋升、调薪机会；公平、公开、平等的职业晋升机会……
 了解更多关于i2，可登陆企业官方网站：www.i2edu.cn', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 7, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 8, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = 'Java后端工程师' LIMIT 1), '深圳市吉星时代科技有限公司', 'JAVA软件开发工程师', '深圳-龙岗区', '2-3万/月', NULL, '岗位职责：
 1、精通Java Web开发相关技术，包括JSP、Sevlet、jdbc等；
 2、熟悉J2EE架构和开发模式，能熟练使用Spring、Spring MVC、Spring Boot等相关框架;
@@ -173,10 +161,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 2、培训机制：根据每位员工的优点及综合能力，让每位员工人尽其才。对于企业中层级干部进行横向轮调的模式进行培养。企业管理透明化, 提供公平公正的平台,让每位员工的纵向竞争公开化，公平化。
 3、工作时间：大小周 9:00--12:00 13:30--18:00。
 4、面试地点：龙岗区横岗街道贤达会展中心17A-F', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 6, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 4, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = 'Java后端工程师' LIMIT 1), '武汉中海庭数据技术有限公司', '大数据开发工程师（Java方向）', '武汉-洪山区', '1-1.5万/月', NULL, '任职要求：
 1、统招本科以上学历，计算机相关专业；
 2、熟悉大数据处理分析相关的工具框架，如Hadoop Hive Spark Storm 等，有丰富的分布式系统疑难问题定位经验;
@@ -196,13 +180,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 7、帮助用户快速构建基于大数据的数据产品和应用，将大数据快速转变成商业价值；
 8、负责大数据平台集群的部署、发布、监控、维护和优化；
 9、负责大数据系统的性能分析与系统优化，不断提高系统运行效率。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 6, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 5, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 7, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 4, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 3, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = 'Java后端工程师' LIMIT 1), '武汉吾康数据科技有限公司', 'Java开发工程师', '武汉-硚口区', '0.8-1万/月', NULL, '1.参与项目的需求分析、技术选型、方案预研，编写软件开发过程中的相关技术文档。
 2.负责公司项目系统的功能开发、日常维护工作，保障系统的持续优化迭代，以及系统的安全稳定高效运行。
 3.解决软件开发过程中遇到的技术难题,参与系统稳定性、性能和扩展性测试。
@@ -219,13 +196,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 8. 具备良好的需求分析能力、逻辑推理能力、团队沟通协作能力以及解决问题能力。
 9。了解hadoop、zookeeper、spark等大数据框架使用经验者优先考虑。
 10.BI系统、数据统计分析平台、大数据分析平台类产品开发经验者优先考虑。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 6, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 10, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 5, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 7, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 3, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = 'Java后端工程师' LIMIT 1), '杭州品茗安控信息技术股份有限公司', 'Java开发工程师', '杭州-西湖区', '1.5-1.8万/月', NULL, '我们需要你：
 1、负责公司互联网知识服务平台的技术架构设计、核心代码开发，以及框架优化；
 2、持续对系统进行性能优化及稳定性提升，协助制定技术发展路线。
@@ -246,11 +216,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 4、我们的工作时间是双休，每天7小时工作制；
 5、我们享受优于国家规定的人性化带薪假期：婚假、丧假、产假、陪产假、超长春节假等带薪假期；
 6、我们有丰富多彩的集体活动：文体活动、不定期团建、拓展活动、年会盛典等。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 10, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 5, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 7, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = 'Java后端工程师' LIMIT 1), '威海精讯畅通电子科技有限公司', 'Java开发工程师（可应届）', '异地招聘', '4-7千/月', NULL, '精讯畅通是一家集研发、生产、营销于一体的全产线高速发展的专业工业物联网企业。运用大数据、云计算、物联网、区块链、人工智能等新一代信息技术，推进“新基建”的创新和发展。同时提供以Saas云平台--精讯云为核心的一体化工业物联网解决方案。“精讯云”集成数据采集、远程控制、数据分析、预警发布…为一体的通用性物联网平台，囊括智慧城市、智慧农业、智慧养殖、智慧工业、智慧管廊、智慧公厕等十余行业界面模板。基于链接-计算-服务三层架构，提供免费、私有化部署一站式服务。
 公司提供：高薪资标准+六险一金+绩效奖金+年终奖+总经理嘉奖+双向晋升通道+1对1师父指导+不定期团建活动+生日party、福利+法定休假+年节福利+免费公寓
 岗位描述：
@@ -264,8 +229,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 4、员工晋升：工程师→“雏鹰计划”→公司管理层/中高级工程师（管理层90%来自内部晋升）。
 应届生补贴：2018年及以后全日制毕业博士生18万元、硕士生10.8万元、普通本科生3.6万元。
 工作地点：山东威海高区，乘坐公交12路火炬大厦、K1路、6路、47路、K2路、123路、7路直达', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = 'Java后端工程师' LIMIT 1), '方正国际软件（北京）有限公司', 'Java开发工程师', '南京-玄武区', '1-1.5万/月', NULL, '岗位职责：
 1、积极接受开发负责人分配的设计和开发任务，并按要求高质量地完成设计和开发工作；
 2、熟练掌握分析设计工具，按照规范的要求，编写软件设计文档；
@@ -283,12 +246,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 7、责任心强，具备良好的团队合作精神；
 8、根据实际项目驻场开发需要，能适应阶段性出差；
 9、有公安行业应用软件开发经验者优先；有Android移动端APP开发经验者优先；有WEB GIS技术领域开发经验者优先；有大数据分析项目开发经验者优先。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 6, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 10, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 5, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 3, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = 'Java后端工程师' LIMIT 1), '江苏风云科技服务有限公司', '大数据工程师（java方向)', '苏州', '1.5-2万/月', NULL, '岗位职责：
 1、负责数据采集、数据处理、数据分析应用功能的开发；
 2、根据业务团队、软件开发团队和开发经理的需求，设计并开发数据采集接口、数据处理和分析应用程序；
@@ -306,12 +263,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 7、 能独立搭建大数据开发平台及边缘计算平台；
 8、熟练掌握Python者优先；
 9、良好的沟通协调能力，团队合作精神和执行力，思路开阔，积极上进，不断学习，愿意和公司共同发展。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 7, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 8, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 4, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 3, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = 'Java后端工程师' LIMIT 1), '上海航数智能科技有限公司', 'Java高级开发工程师', '上海-闵行区', '1.5-2.5万/月', NULL, '1. 负责Java代码工程组织优化、产品项目发布流程优化、产品运行架构优化；
 2. 负责新的集群项目方案编写，并主持开发实现；
 3. 负责在既有架构与产品逻辑下引导队员进行模块化开发；
@@ -329,12 +280,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 9. 有嵌入式、机器学习、游戏、3D的项目经验者优先。
 10. 自信、正直、诚实；性格乐观开朗，主动积极向上。
 11. 工作细致，具备高度责任心和良好的团队精神', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 10, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 5, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 7, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 8, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = 'Java后端工程师' LIMIT 1), '北京泰德信用管理有限公司', 'IT主管（Java工程师）', '北京-朝阳区', '1-1.5万/月', NULL, '岗位职责：
 1、负责系统技术平台和产品的技术规划和实施，并主导功能模块设计、数据结构设计、对外接口设计；
 2、参与需求分析、概要设计，组织并完成详细设计并承担核心代码的编制并能独立解决项目上遇到的技术问题；
@@ -355,13 +300,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 7、精通项目部署，精通Linux操作系统，能够优化项目程序执行效率。
 8、有负责设计过数据分析、数据挖掘、数据可视化、在线数据相关产品者优先；
 9、具有良好的规范意识和质量意识，良好的沟通表达能力和分析问题、解决问题的能力，具备较强的团队合作精神，能够在一定压力下工作；', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 6, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 10, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 5, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 8, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 4, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = 'Java后端工程师' LIMIT 1), '甘井子区铭伯汽车修配市场捷众汽车维修服务中心', '软件架构师（JAVA）', '大连-甘井子区', '1.5-2.5万/月', NULL, '欢迎微信咨询（18624261240）
 1、主持行业或重点客户的技术架构相关工作，掌握行业发展动态、挖掘行业潜在问题与机会，引导、指导并参与项目的技术工作；
 2、协助营销部门规划软件方案，为公司的业务拓展提供保障；
@@ -377,8 +315,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 熟悉主流中间件和应用服务平台、java技术整体解决方案的应用；
 3、具备个人的自信心和专业精神，可以在没有直接的指令或指示时，主动地影响和说服他人并采取具体的行动。
 4、5年以上软件行业工作经验、具备2年以上C/S或B/S体系结构软件产品开发及架构和设计经验，有一定管理经验', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = 'Java后端工程师' LIMIT 1), '上海艾艺信息技术有限公司', 'Java高级开发工程师', '上海-浦东新区', '1.3-2万/月', NULL, '岗位职责
 1、负责数据分析系统设计、开发等各项工作；
 2、能够独立完成复杂的项目模块，根据开发需求整理开发文档；
@@ -395,12 +331,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 8、可以单独对已有的系统进行维护，工作认真细致负责，有良好的自学能力，独立思考能力，能够在短时间内学习并应用新技术； 具有良好的文档编写能力；
 9、积极热情、沟通能力强，有强烈的责任心，具有良好的团队合作精神和敬业精神；
 10、能够承受工作压力，能在规定的时间内高效完成任务，具有良好的团队合作精神', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 10, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 3, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 5, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 7, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = 'Java后端工程师' LIMIT 1), '北京华热科技发展有限公司', 'Java开发工程师（数据分析方向）', '北京', NULL, NULL, '岗位职责：
 1、负责基于Hadoop/Spark生态体系建设大数据平台，包括架构设计、搭建、开发、运维、监控和性能调优等；
 2、负责数据上报、数据存储、数据查询、数据计算等平台基础能力的设计和开发工作；
@@ -416,9 +346,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 5、对新技术有强烈的求知欲望，有良好的学习和理解能力；
 6、有大型互联网公司、电商企业相关项目实践经历者优先；
 7、有Hadoop/Spark大数据平台搭建、运维相关项目经验者优先。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 3, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = 'Java后端工程师' LIMIT 1), '广州中国科学院软件应用技术研究所', 'java开发工程师', '广州-南沙区', '0.8-1.5万/月', NULL, '岗位职责
 1. 从事政务系统、大数据分析系统开发;
 2. 按项目经理要求参与项目中java系统开发;
@@ -436,12 +363,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 10. 具有良好的编码习惯、单元测试编写习惯和较强的文档编写能力；
 11. 工作严谨、认真负责、积极主动，有较强的责任心和事业心 ;
 12. 有良好的沟通能力和理解能力，有良好的团队合作精神。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 10, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 5, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 7, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 8, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = 'Java后端工程师' LIMIT 1), '牧星机器人（江苏）有限公司', 'Java开发经理', '南京-浦口区', '1.5-3万/月', NULL, '1. 与公司领导共同规划技术及产品发展方向；
 2. 负责产品设计、软件框架搭建、核心代码编写；带领技术团队进行产品设计开发、客户项目实施；
 3. 负责公司技术制度、流程、规范的制定；技术团队的组建和管理；
@@ -453,8 +374,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 3. 具有开阔的技术视野及前瞻性；必须具备专业的代码风格、遵循严谨的设计开发规范；
 4. 良好的沟通和语言表达能力，为人诚恳，团队意识强，有高度的责任感
 5. 有仓储管理、物流、电子商务、大数据分析、人工智能、优化算法等技术领域经验优先；有国际化学习、工作背景优先；', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = 'Java后端工程师' LIMIT 1), '上海易立德信息技术股份有限公司', 'Java高级开发工程师（微服务）', '深圳-龙岗区', '1.5-3.5万/月', NULL, '岗位要求：
 1.熟练使用JAVA开发语言，擅长SpringCloud.Dubbo.kafka等分布式技术,有微服务开发经验更佳；
 2.熟悉分布式数据库技术及缓存技术如Redis；
@@ -473,9 +392,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 4.入职1年有机会参与员工持股计划，
 5.五险一金、培训赋能、集体聚餐、旅游活动……
 尽心、尽力，我们希望与您同创一份事业。尽善、尽美，我们希望与您一起永不止步！', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 7, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = 'Java后端工程师' LIMIT 1), '陕西协通智能科技有限公司', 'Java中级开发工程师', '西安', '0.8-1.2万/月', NULL, '1、负责系统关键模块的开发工作；
 2、负责系统模块设计、优化、重构、参与技术方案制定与实施
 3、负责团队技术培训、指导工作
@@ -490,12 +406,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 8、根据业务需求，与产品经理、业务运营等沟通协作，提供产品技术解决方案；
 9、熟悉WEBSERVICE技术
 10、有安防、公安行业产品或项目经验者优先考虑;', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 10, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 5, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 3, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 4, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = 'Java后端工程师' LIMIT 1), '广州科亿信息技术有限公司', 'Java高级开发工程师', '广州-番禺区', '1-1.5万/月', NULL, '工作内容
 1. 依据产品需求积极参与项目，包括需求分析、系统设计、文档编写和程序开发等，维护高并发下的服务稳定；
 2.负责应用服务平台架构、设计、开发?工作；
@@ -511,11 +421,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 6.有团队精神，良好的抗压能力，心态积极，能主动融入团队；
 7.密切关注业界***的发展动态，有效把握技术发展方向；
 8.具备系统架构能力，熟悉分布式容错、分布式缓存、高并发等主流技术。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 5, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 10, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 7, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = 'Java后端工程师' LIMIT 1), '成都联成科大信息技术有限责任公司', 'Java高级开发工程师', '成都-武侯区', '15-20万/年', NULL, '岗位职责：
 1.按分配的项目业务功能进行编码，在规定时间内完成编码任务并通过测试；
 2.进行项目初始化，项目数据移植，处理各项业务数据问题；
@@ -529,10 +434,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 6.JAVA面向对象基础扎实，了解设计模式，能***限度提高代码重用性。
 7.熟悉JSP/Servlet、JavaScript、Ajax、Jquery等WEB技术，熟悉SSH，MyIbatis 等主流的开源框架。
 8.有金融、财务、办公OA类项目实际开发经验者优先。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 5, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 3, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = 'Java后端工程师' LIMIT 1), '杭州亿秒网络技术有限公司', 'Java开发工程师（钉钉）', '杭州-余杭区', '0.8-1万/月', NULL, '1. 负责钉钉客户项目和产品研发交付工作；
 2. 负责客户项目需求与PD、业务方一起讨论业务场景并进行产品化平台化系统设计落地；
 3. 重点项目的设计方案评审，项目管理和技术难点攻关，承担技术项目经理的职责；
@@ -544,8 +445,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 5. 能够积极创新，乐于面对挑战，负责敬业，优秀的团队合作精神，善于沟通，对技术有热情；
 6. 良好的综合素质：沟通表达、时间管理、结构化思维，能独立分析和解决问题，具备良好的项目管理能力。
 加分项：如果同时具备其他开发能力，例如 PHP，Python开发更佳。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = 'Java后端工程师' LIMIT 1), '上海宇臻科技有限公司', 'java高级开发工程师（物联网平台）', '上海-嘉定区', '1-3万/月', NULL, '1.负责公司YIOT云平台开发；
 2.参与物联网平台产品需求分析，架构讨论和流程模块设计；
 3.负责物联网平台互数据接收层、数据处理层、网络安全架构设计；
@@ -559,14 +458,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 5.熟悉Docker自动化部署；
 6.具有物联网云平台、大数据、数据分析研发经验优先；
 7.具备良好的团队合作精神，沟通能力、高度的责任感与工作激情。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 6, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 10, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 5, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 7, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 8, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 4, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = 'Java后端工程师' LIMIT 1), '厦门中软海晟信息技术有限公司', '中级JAVA开发工程师', '厦门', '1-1.5万/月', NULL, '工作职责：
 1、承担项目中的核心模块的实现工作；
 2、能够独立完成整个软件的开发流程，需求分析，详细设计，代码实现，联调测试等。
@@ -578,8 +469,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 5、熟悉Oracle数据库，有较强的sql设计能力与sql语句优化能力，对数据分析能力极强；
 6、具有良好的职业素质，良好的沟通能力和领悟力，团队合作意识强，敬业，有责任感，能够承受工作压力；
 7、肯钻研，新理念、能快速融入团队，对新技术与新业务有敏锐的触觉。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = 'Java后端工程师' LIMIT 1), '四川星海系统集成工程有限公司', '大数据-java研发', '成都-金牛区', '0.5-1.5万/月', NULL, '岗位职责：
 1、负责大数据任务开发设计和代码编程工作；
 2、负责海量数据的清洗、处理和挖掘工作，支持数据分析师和算法工程师的数据需求；
@@ -592,10 +481,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 4、熟悉大规模数据挖掘、机器学习、分布式计算等相关技术；有解决大容量数据实时及实时计算的开发经验；
 5、熟练掌握LINUX常规命令与工具；
 6、具备优秀的逻辑思维能力，善于解决问题和分析问题，有水利行业开发经验者优先。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 8, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 3, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = 'Java后端工程师' LIMIT 1), '武汉奋进电力技术有限公司', 'Java高级开发工程师', '武汉', '1.1-1.4万/月', NULL, '1.精通Java程序设计，熟练运用Spring、Spring boot、Spring Cloud框架相关技术；
 2.熟练掌握Oracle、SQLServer、MySql等数据库之一，熟悉数据库 计，掌握SQL语言，熟悉软件测试流程与主流工具；
 3. 能够熟练使用Struts2、Spring、Hibernate、ibatis进行开发，熟悉MVC设计模式；
@@ -605,12 +490,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 7.熟悉常见的开源大数据工具的使用（Zookeeper、Kafka、Hadoop、HBase、Hive、Spark、Sqoop等），有平台产品或大数据 应用的开发经验经验者为佳；
 8.具备基本的自动化部署运维经验；
 9.有时间观念，独立性强，具备良好的沟通能力和团队合作精神。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 6, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 5, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 8, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 3, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = 'Java后端工程师' LIMIT 1), '昆山双宇新信息科技有限公司', 'java游戏开发实习生', '常州', '6-8千/月', NULL, '1、负责游戏功能系统的服务端开发工作；
 2、协助系统架构师对服务器程序进行架构分析和软件设计，并完成相应的文档；
 3、主动跟进与处理各模块的bug；
@@ -627,10 +506,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 2、享有国家规定的法定假期、带薪年休假等福利待遇
 3、公司提供定期体检，月度聚餐，节日旅游等活动
 4、五天工作制，早9点-晚18：00，周末双休', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 5, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 8, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = 'Java后端工程师' LIMIT 1), '桂林长海发展有限责任公司', 'Java开发工程师（工作地点在桂林）', '异地招聘', '1-1.5万/月', NULL, '1.精通Java编程和J2EE相关规范，掌握Socket/WebSocket网络编程、多线程、网络通信、数据库编程技术；
 2.熟练使用Mysql、Oracle等数据库及Hibernate、Mybatis等数据库持久化框架；
 3.精通SpringMVC/Spring Boot/Spring Cloud、Hibernate、Netty等开发框架；
@@ -641,12 +516,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 8.具备良好的团队合作精神和沟通协调能力；
 9.具备良好的沟通和协作能力，具有抗压能力，适应一定程度加班，认可企业文化优先。
 （***年度综合年薪本科年薪9-10万左右，研究生14-26万并享受1-2万元安家费补贴，试用期结束后按12%缴纳全额工资基数公积金）', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 6, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 10, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 5, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 3, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = 'Java后端工程师' LIMIT 1), '北京三维天地科技股份有限公司成都分公司', 'java开发工程师(J10265)', '成都', '0.6-1.2万/月', NULL, '工作职责:
 1. 负责事业部相关系统的功能设计、编码开发、性能优化、稳定性优化等。
 2. 参与事业部原单体架构产品的微服务架构转化工作。
@@ -660,10 +529,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 3. 掌握Linux 操作系统和主流关系型数据库的部署、调优技能，有较强的分析设计能力和方案整合能力；
 4. 良好的沟通技能，团队合作能力，勤奋好学；
 5. 喜欢去看及尝试最新的技术，追求编写优雅的代码，从技术趋势和思路上能影响技术团队。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 8, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 3, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = 'Java后端工程师' LIMIT 1), '广州神器网络科技有限公司', '高级java游戏服务端', '广州-天河区', '1.5-1.8万/月', NULL, '职位描述：
 1、负责游戏功能系统的服务端开发工作；
 2、协助系统架构师对服务器程序进行架构分析和软件设计，并完成相应的文档；
@@ -678,10 +543,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 5、熟悉MySQL数据库，能编写数据分析及查询类SQL语句，具备对游戏服务端数据存储的设计能力；
 6、有规范化标准化的代码编写习惯，思路清晰，善于思考，能独立分析和解决问题；
 7，必须要游戏行业相关经验；', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 5, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 8, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = 'Java后端工程师' LIMIT 1), '深圳市法奥管理咨询有限公司', 'Java中级开发工程师', '深圳-南山区', '0.8-1.7万/月', NULL, '1.年龄35岁以下，全日制大学本科及以上学历，计算机相关专业，工作地点在深圳南山区；
 2.具备良好的沟通力、表达力、团队协作力以及责任心；
 3.精通Java语言，熟悉LINUX或WINDOWS开发环境和工具；
@@ -697,12 +558,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 4.公司有丰富的团建活动，旅游爬山，轰趴晚会应有尽有；
 5.公司提供培训机会；
 6.每年两次调薪机会，收入提升有保障。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 6, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 5, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 8, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 9, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = 'Java后端工程师' LIMIT 1), '上海拉浪国际贸易有限公司', 'Java高级开发工程师', '上海-普陀区', '1.8-2.2万/月', NULL, '1.负责公司ERP系统设计和开发，解决系统各种疑难问题，参与需求分析；
 2.根据ERP需求，完成系统架构设计，核心代码编写；
 3.负责系统技术难题公关、持续优化系统，包括性能、安全、可扩展性等方面；
@@ -714,13 +569,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 5.参与过分布式系统架构设计和研发经验，熟悉spring cloud、Redis、RocktMQ等中间件，了解Docker容器技术；
 6.有电商行业（跨境电商）行业经验优先，包括商品刊登管理系统、OMS、数据分析、WMS和TMS开发经验；
 7.具有较强的敬业精神和团队合作精神；较强的自学能力，认同公司文化；', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 6, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 5, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 10, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 7, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 3, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = 'Java后端工程师' LIMIT 1), '南京睿翊腾信息技术有限公司', 'Java开发工程师', '南京', '1-1.5万/月', NULL, '职位描述:
 1． 参与项目前期的需求调研和分析工作，承担一定的用户沟通、文档整理和数据分析工作；
 2． 参与项目的开发和测试工作，熟悉系统功能，系统操作熟练；
@@ -736,8 +584,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 6． 有电力业务知识的优先考虑；
 7． 好学上进，耐心细致，责任心强，有良好的沟通能力、具备优秀团队合作精神和职业道德；
 8． 计算机、通信、电子等相关专业，大专及以上学历。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = 'Java后端工程师' LIMIT 1), '成都盯潮科技有限公司', '中级JAVA开发工程师', '成都', '1-1.5万/月', NULL, '1. 参与盯潮APP需求的方案设计、功能开发；
 2. 参与系统高可用建设，主要是系统稳定性、性能优化、扩展性等建设。
 岗位要求：
@@ -748,10 +594,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 5. 具有NoSQL、Key-Value 存储设计及实施经验、数据分析及展示应用设计及实施经验优先；
 6. 熟悉Nodejs为佳；
 7. 拥有和工作年限相称的广度和（或）深度，有较强的逻辑/概率思维能力，善于分析、归纳、描述、沟通、和解决问题。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 10, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 5, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 7, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = 'Java后端工程师' LIMIT 1), '宝付网络科技（上海）有限公司', 'Java开发工程师（风控方向）', '上海-浦东新区', '1.8-3万/月', NULL, '职责描述：
 1、参与风控系统整体架构设计，构建支持高并发、高性能的风控技术架构体系；
 2、参与核心业务模块的代码编写，按计划高质量地完成系统开发、测试与交付；
@@ -765,10 +607,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 4、熟练使用drools或有自研规则引擎经验；
 5、有良好编程素养，较强的工作规划、问题分析和技术研究能力；
 6、有大数据计算和存储引擎开发经验者优先。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 10, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 7, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = 'Java后端工程师' LIMIT 1), '杭州炬华科技股份有限公司', 'Java服务端高级', '杭州', '10-15万/年', NULL, '岗位职责：
 1、 负责企业能源管理系统相关产品、平台、接口的代码编写；
 2、 参与项目/任务的模块架构、数据库的设计，解决项目/任务开发中遇到的各种问题 ；
@@ -779,9 +617,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 2、 熟悉JAVA平台下技术开发，具有丰富的项目经验，熟练使用Spring，Mybatis，Dubbo等常用框架，了解常见的一些解决方案及其原理：
 3、 熟悉主流关系型数据库技术，至少使用过一种NoSql数据库；
 4、 具备良好学习、沟通能力及团队协作精神，对工作积极严谨，勇于承担压力, 具备良好的逻辑分析、数据分析和问题解决的能力、问题排查能力。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 10, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = 'Java后端工程师' LIMIT 1), '重庆中元生物技术有限公司', 'Java中级开发工程师', '广州-黄埔区', '1-1.5万/月', NULL, '1.精通Java基础，熟悉Mvc开发模式，熟悉SpringCloud微服务框架；
 2.有能力完成系统建模，熟悉MySQL设计与性能调优，熟悉Oracle优先；
 3.熟练使用Eclipse/Git或SVN/Maven，熟练掌握分布式通讯框架（如Netty），熟悉分布式事务处理；
@@ -794,10 +629,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 3.编写必要的技术文档；
 4.根据测试反馈，快速修复bug，对性能问题进行追踪、定位，并快速解决；
 5.参与项目技术框架的持续优化；', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 5, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 9, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = 'Java后端工程师' LIMIT 1), '大连艾思信息技术有限公司', 'Java高级工程师leader/架构师（国内项目）', '大连', '1-2万/月', NULL, '1、至少3年以上Java经验，深刻理解面向对象的编程思想，精通java语法，知道其原理，能独立完成复杂功能模块的编码工作或带领研发团队完成一个子系统的研发；
 2、熟悉VUE原理并熟练使用，能结合其他工具或支持库完成系统界面应用；对调优排错、兼容性有丰富的经验；
 3、熟练掌握SQL、MySql的使用和应用，能进行复杂语句编写，能处理常见问题并解决，掌握常用的数据性能优化技术，并能进行一般系统的数据库性能调优；
@@ -805,11 +636,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 5、掌握常用的设计模式，能独立完成多模块系统的概要设计、详细设计；
 6、了解常见安全体系设计结构和设计原则，能进行一般系统的安全结构设计；了解数据分析算法和建模方法。
 7、统招本科以上学历，重本优先考虑', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 5, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 3, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 9, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = 'Java后端工程师' LIMIT 1), '信雅达系统工程股份有限公司', 'Java开发经理', '上海-浦东新区', '1.6-2万/月', NULL, '1、领导研发团队进行业务平台的设计、搭建、调优；
 2、设计软件平台的整体架构；
 3、领导研发团队的日常工作，解决开发中的技术问题；
@@ -831,9 +657,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 6、有良好、规范的编程习惯和文档编写习惯。
 7、具有良好的分析能力，问题解决能力以及人际沟通能力。
 8、优秀团队合作能力、沟通理解能力，工作责任心及抗压能力强。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 5, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = 'Java后端工程师' LIMIT 1), '苏州科达科技股份有限公司', '高级java开发工程师', '苏州-工业园区', '1.5-2万/月', NULL, '岗位职责：
 1、主要从事基于Spring、Spring MVC的B/S架构应用软件的开发；
 2、根据需求与概要设计，进行相关系统模块的详细设计，并且指导团队具体实现；
@@ -856,10 +679,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 4、熟悉关系型数据库（DB2、ORACLE、MYSQL、SQl Server），了解NoSQL、缓存技术；
 5、熟练掌握Spring、SpringMVC、iBatis等开源框架，熟练运用设计模式；
 6、对技术有热情，执行力责任心强且在医疗行业同岗位的优先。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 5, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 7, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = 'Java后端工程师' LIMIT 1), '高伟达软件股份有限公司', 'Java开发工程师', '深圳', '1-2万/月', NULL, '工作职责:
 1、根据客户需求完成软件的设计、开发、测试、修改bug等工作，包括业务需求的沟通，功能模块详细设计，业务功能实现与单元测试，系统维护；
 2、撰写相关的技术文档。
@@ -871,10 +690,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 5：熟悉unix或linux技术及应用操作;
 6：熟练掌握java开发技术，并具有较强的解决问题的能力;
 7：具有较强的设计分析能力，以及一定的管理协调能力。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 6, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 8, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = 'Java后端工程师' LIMIT 1), '上海游雁网络科技有限公司广州分公司', 'Java游戏服务端开发工程师', '广州-天河区', '1-2万/月', NULL, '岗位职责：
 1、根据公司产品的版本管理规范，完成卡牌项目的服务器代码的版本归档、版本变更、版本发布工作；
 2、协助主程对服务器程序进行架构分析和软件设计，并完成相应的文档；
@@ -884,9 +699,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 2、熟悉MySQL数据库，能编写数据分析及查询类SQL语句，具备对游戏服务端数据存储的设计能力；
 3、有良好的代码编写习惯，思路清晰，善于思考，能独立分析和解决问题；
 4、善于沟通，工作积极，能承受较大工作压力。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 5, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = 'Java后端工程师' LIMIT 1), '上海箭塔互娱网络科技有限公司', '高级游戏Java服务器', '广州', '1.2-1.8万/月', NULL, '岗位职责：
 1、负责游戏功能系统的服务端开发工作；
 2、主动跟进与处理各模块的bug；
@@ -897,11 +709,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 3、熟悉并使用过缓存数据库如redis/memcached；
 4、熟悉Linux/Unix常用命令，能完成简单的应用部署；
 5、良好的编程习惯，较强的问题分析及解决能力，能很好的融入团队，快速分析和实现产品需求，能独立完成功能模块工作。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 5, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 7, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 8, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = 'Java后端工程师' LIMIT 1), '四川咻电科技有限公司', 'Java高级开发工程师', '成都-金牛区', '1.5-2万/月', NULL, '岗位职责：
 1. 负责开发数据分析系统，为业务部门提供数据支撑
 2. 负责对业务需求进行评审、开发实施、迭代优化
@@ -913,9 +720,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 3. 掌握Hadoop、Hive、Spark，Storm，Flink等大数据相关技术者优先考虑
 4. 有万级高并发处理经验
 5. 有JVM调优经验', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 6, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 3, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = 'Java后端工程师' LIMIT 1), '广州三瑞医疗器械有限公司', 'Java开发工程师', '广州-天河区', '0.8-1万/月', NULL, '1. 2年以上软件开发经验，精通java开发技术，掌握Spring、Mybatis、ActiveMQ等开发技术
 2. 1年App开发经验，熟悉Android、IOS系统架构及相关技术
 3. 熟悉HTTP、XML、JSON等协议格式;
@@ -924,10 +728,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 工作内容：
 1. 根据公司业务发展要求，负责现有软件系统对外系统的协议制定、调试对接；
 根据公司业务发展要求，负责Android和IOS应用开发和维护。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 10, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 5, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = 'Java后端工程师' LIMIT 1), '杭州平航科技有限公司', 'Java开发工程师', '杭州-滨江区', '0.8-1.5万/月', NULL, '岗位职责:
 1、独立设计核心业务解决方案,编写技术文档;
 2、独立开发核心功能或配合团队进行开发工作,保证开发质量
@@ -940,10 +740,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 6、有多线程编程经验优先;
 7、有微服务框架Dubbo、Spring Boot使用经验优先;
 8、有spark、hadoop等数据分析工具使用经验优先', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 6, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 3, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = 'Java后端工程师' LIMIT 1), '上海求步信息系统有限公司', 'Java软件开发工程师（靠近2号线威宁路站）', '上海-长宁区', '0.8-1万/月', NULL, 'Java软件工程师：
 1、精通Java或者.Net，熟悉MVC架构；
 2、3年以上的实际项目工作经验；
@@ -955,15 +751,11 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 工作时间9:00-18:00，加班有加班费，如果休日出勤按休日加班计算。年终奖，年度体检，旅游，节日福利。总公司在日本东京，有出国出差机会。
 公司也做国内项目的，不会日语没有关系。同事都是中国人。
 内部员工推荐人员入职另外有奖金。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = 'Java后端工程师' LIMIT 1), '康德曼（北京）互联网技术有限公司', 'Java中级开发工程师', '异地招聘', '0.8-1万/月', NULL, '1、计算机或相关专业，本科及以上学历、35岁以下，4年以上工作经验。
 2、要求沟通能力及理解能力强，能够准确理解客户的业务需求和公司产品。
 3、外部系统对接研发人员，负责与青海电子证照管理系统、青海省信用信息平台对接应用场景设计、需求梳理、技术对接等工作。（后端研发5人。）
 4、熟练使用Oracle\\Mysql及部分国产数据库操作，负责数据分析及割接工作，协助现有团队进行一期数据分析、对接脚本编写、对接数据展示等工作。（后端研发4人。）
 上班地点：兰州市中环广场B栋2301', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 5, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = 'Java后端工程师' LIMIT 1), '广州登高科技有限公司', 'java研发工程师', '广州-黄埔区', '6-8千/月', NULL, '岗位职责：
 1. 根据公司产品方向，协助研发工程师完成相应产品的开发及测试；
 2. 协助研发工程师进行技术调研，确定潜在的新技术，产品，原材料或最终供应商；
@@ -976,8 +768,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 岗位职责：根据项目具体功能需求，撰写设计文档，用Java进行开发编码，必要时承担软件测试职能。在既定的项目周期内，确保软件性能、质量和安全符合预期。
 工作内容简介：基于公司研发的仪器设备，负责Android客户端应用软件的开发与维护，编写仪器控制软件或数据分析软件，偏向于嵌入式应用软件方向。开发人员应尽量对仪器设备类的研发过程有一定的认知，熟悉仪器控制相关的多线程并发编程，且具备基本的数学功底。
 职位要求：', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = 'Java后端工程师' LIMIT 1), '深圳市深晨虹科技有限公司', '软件java助理', '深圳-龙岗区', '4.5-6千/月', NULL, '岗位要求：
 1、大专及以上学历，无项目开发经验的求职人员，可由项目经理带着后上岗；
 2、可接受无经验求职人员，由项目负责人带领，但要求勤奋好学，积极主动；
@@ -997,8 +787,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 3、有Python经验者优先。
 4、有数据分析基础者优先。
 5、具有强烈的责任感，良好的沟通和表达能力，优秀的抗压能力。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = 'Java后端工程师' LIMIT 1), '沈阳洪瑞源信息技术有限公司', 'Java开发工程师', '沈阳-和平区', '4.5-6千/月', NULL, '工作职责/任务：
 1）负责呼叫中心、通信相关软件产品的开发；
 2）负责呼叫中心相关项目的定制开发；
@@ -1008,9 +796,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 2）熟练使用SQL，熟悉MySQL、Oracle、SQL Server；
 3）熟练使用Javascript和Web应用开发；
 4）良好的沟通能力、工作踏实，具有强烈的责任心和积极进取精神。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 5, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = 'Java后端工程师' LIMIT 1), '广东正诚电气科技有限公司', 'JAVA软件工程师', '汕头', '0.5-1万/月', NULL, '1、岗位职责：
 全面参与公司云平台建设，对客户需求统筹管理，制定相应解决方案并按布实施，参与软件选型或对接工作，包括远程监控、数据的实时传输和报警系统，负责公司在建项目的实施和维护，跟进项目的完成进度情况等。
 2、岗位要求：
@@ -1018,8 +803,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 （2）具有云平台、数据库等项目开发经验；
 （3）具备较强的逻辑思维和数据分析能力；
 （4）具备良好的沟通能力和团队协作能力。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = 'Java后端工程师' LIMIT 1), '广东智慧电子信息产业股份有限公司', 'Java开发工程师（大数据方向）', '广州-天河区', '0.8-1.3万/月', NULL, '岗位职责：
 1.参与大数据分析系统的建设
 2.参与公司各类数据的存储优化、维护及建模等工作
@@ -1029,9 +812,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 1、统招大专及以上学历，计算机相关专业；
 2、2年以上JAVA开发经验，熟悉主流JAVA框架及数据库技术，并在项目有实际应用经验；
 3、掌握Hadoop的原理和使用，有千万级数据处理和分析的项目经验；', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 3, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = 'Java后端工程师' LIMIT 1), '珠海纳睿达科技有限公司', 'JAVA工程师（ERP方向)', '珠海', '13-25万/年', NULL, '任职要求：
 岗位职责：
 1. 修复现有ERP系统的bug；
@@ -1057,8 +837,6 @@ Experience: ·
 ？ Programming knowledge of SQL, python is a must. ·
 ？ Programming knowledge of C, C++ , CAPL is a plus. ·
 ？ Be skilful in Vector CANoe, CANape, CANalyzer and have program capability with CAPL. ·', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 5, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = 'Python开发工程师' LIMIT 1), '义乌市哈彼电子商务有限公司', 'Python数据分析师', '南昌-青山湖区', '4-8千/月', NULL, '岗位职责：
 1. 负责国内外运营数据分析，结合市场需求，分析与追踪店铺销售业绩的变化趋势，深入挖掘有用有价值数据，并提供市场与公司领导数据化决策提供数据支持；
 2. 基于应用和业务流程数据进行数据建模，分析；
@@ -1099,8 +877,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 基本工资（无责任）+课时费+绩效奖金+六险一金+工龄奖+年终奖金
 周末双休、法定节假日、节日福利、员工培训、定期晋升、团建活动等
 晋升通道：助理讲师——中级讲师——高级讲师——资深讲师——学术总监', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = 'Python开发工程师' LIMIT 1), '丽台（上海）信息科技有限公司', 'Python工程师', '上海-徐汇区', '1-2万/月', NULL, '1、负责公司软件产品的设计、选型、框架搭建、开发、部署、维护等工作；
 2、负责与人工智能系统工程相关的需求的实现；
 3、负责开发文档的编写，代码质量管理；
@@ -1117,10 +893,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 工作时间：做五休二 早8:00-晚5:00（考虑到上海交通压力较大，每天有2小时弹性工作时间）
 工作地点：上海市闵行区莲花路1978号E栋（9号线漕河泾开发区站）
 公司爱惜人才，公司氛围佳，福利好，人性化管理，速投简历吧！', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 5, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 9, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = 'Python开发工程师' LIMIT 1), '长沙紫檀数据科技有限公司', '8K+初级Python开发工程师+双休五险', '长沙-岳麓区', '6-8千/月', NULL, '1.参与公司数据自动化分析平台的开发和维护。
 2.参与公司大数据采集、数据可视化呈现的工作。
 3.参与公司数据交付平台的维护及二次开发工作。
@@ -1137,9 +909,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 3. 5-12天带薪年假，远超国家规定和一般企业5天的标准。
 4.在高速发展的朝阳行业里，提供施展个人能力的广阔空间和快速成为公司核心成员的晋升通道
 5.全球化、高素质的团队氛围和英文的工作环境：团队成员分别来自中国大陆、美国、韩国、中国香港4个国家和地区，毕业于清华大学，香港大学，英国沃里克大学等。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 7, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 4, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = 'Python开发工程师' LIMIT 1), '深圳汇翼信息科技有限公司', 'python工程师', '深圳-南山区', '2-2.5万/月', NULL, '工作职责：浏览器网页/APP数据爬取、内容分类、内容分析、数据展示等；
 1.负责主导项目系统搭建，爬虫系统架构和数据存储设计等；
 2.建立完整的数据获取、解析、清洗、入库和监控流程，并不断优化迭代完善；
@@ -1156,10 +925,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 7.了解、使用过自然语言处理优先；
 8.强烈的责任心与主动性，并能自我驱动成长
 上班时间：09：00-18：00 双休', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 5, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 7, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 4, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = 'Python开发工程师' LIMIT 1), '上海澳马信息技术服务有限公司', 'python数据分析师', '上海-浦东新区', '1-2万/月', NULL, '1.负责基于Python系统的开发、维护工作；
 2.负责数据的深度提取和挖掘、数据抽取、数据清洗、数据消重等研发和优化工作；
 3.后端接口数据开发对接；
@@ -1179,12 +944,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 12.具备较好的文档创作能力；
 13.有大数据处理经验者优先；
 14.熟悉常用数据挖掘算法（如分类、聚类、回归、关联规则、神经网络等）及其原理者优先。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 5, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 9, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 7, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 3, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = 'Python开发工程师' LIMIT 1), '河南八六三软件股份有限公司', 'Python初级开发（杭州出差）', '郑州', '0.6-1万/月', NULL, '工作职责：
 1. 负责完成公司MES平台的后台项目， 架构设计/代码编写/测试上线 。
 2. 负责 linux/windows 环境下的功能脚本的开发，维护和迭代更新 。
@@ -1198,8 +957,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 5. 有 Linux 环境下的研发工作经验, 掌握shell基础，尤佳 。
 6. 具备使用 oracle 数据库的基本技能， 熟练掌握python环境下的数据库编程 。
 7. 良好的沟通能力，热衷于技术钻研，工作踏实诚恳负责任，有良好的抗压能力。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 8, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = 'Python开发工程师' LIMIT 1), '百联全渠道电子商务有限公司', 'Python开发工程师', '上海', '1.5-2.5万/月', NULL, '岗位描述：
 1、深入研究运维相关技术，结合自动化运维工具快速集成部署相关服务；
 2、参与公司自研DevOps系统的前后端开发工作；
@@ -1212,9 +969,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 3、精通前端基础技术，Html5, CSS3, JavaScript，JQuery、AJAX等；
 4、熟悉DevOps 相关理论和常用工具链，如：SVN/Git、Ant/Maven、GitLab、Jenkins、Ansible、SonarQube、Zabbix和Prometheus等；
 5、对技术有热情，具备良好数学思维能力和对数据的敏感度，有数据分析能力者优先。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 9, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = 'Python开发工程师' LIMIT 1), '北京环球医疗救援有限责任公司', 'Python助理数据工程师（应届-北京/成都）', '成都-高新区', '4-8千/月', NULL, '岗位职责：
 1. 从结构化的和非结构化的数据中获取文本信息，对海量文本数据进行提取、去重、清洗、入库等操作
 2. 综合运用各种算法对预处理后的文本数据进行搜索、分类、实体识别、关系识别、模式识别等操作
@@ -1228,9 +982,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 5. 了解常见的数据库，例如MySQL、MongoDB、Redis等
 6. 了解ElasticSearch等全文检索工具
 7. 有深度学习、NLP算法经验者优先', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 5, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 7, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = 'Python开发工程师' LIMIT 1), '上海贝耳塔信息技术有限公司', '大数据开发工程师（python）', '上海', '3-3.5万/月', NULL, '岗位职责：
 1、负责用户行为分析、客户画像、智能推荐等相关大数据分析及运算开发；
 2、负责大数据分析体系的规划、设计和建设；
@@ -1244,8 +995,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 5、有用户行为分析、客户画像、智能推荐、数据仓库建设、商业数据分析、增长项目经验者优先。
 6、具备较强的表达能力和抽象总结能力，具备极强的逻辑思维能力；
 7、有自然语言处理、机器学习经验者优先。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 3, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = 'Python开发工程师' LIMIT 1), '青岛工业软件研究所', 'Python开发工程师', '青岛-高新区', '0.6-1万/月', NULL, '1.参与项目需求分析，进行系统概要与详细设计；
 2.负责数据平台的数据整合，数据库设计和开发；
 3.设计构建数据分析平台；
@@ -1258,9 +1007,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 5.熟悉Python常用的代码检测工具如：flake8、pylint等；
 6.了解多种开发语言，如C/C++，Java等；
 7.富有团队合作精神，乐于接受挑战，能出差承受工作压力。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 5, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = 'Python开发工程师' LIMIT 1), '湖南雨人网络安全技术股份有限公司', 'Python开发工程师', '长沙-岳麓区', '0.8-1.2万/月', NULL, '职位描述
 1、负责公司产品的抓取及格式化信息提取；
 2、负责产品开发及维护工作
@@ -1272,8 +1018,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 3、熟练掌握消息队列，定时，异步任务，具有高并发大数据量系统的开发和维护经验。
 4、具备优秀的逻辑思维能力，对解决挑战性问题充满热情，善于解决问题和分析问题。良好的团队合作精神，较强的沟通能力。
 5、熟练SQL语法，对mysql熟练', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 5, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = 'Python开发工程师' LIMIT 1), '湖南省金盾信息安全等级保护评估中心有限公司', 'Python/爬虫工程师', '长沙-岳麓区', '0.8-1.2万/月', NULL, '职位描述
 1、负责公司产品的抓取及格式化信息提取；
 2、负责产品开发及维护工作
@@ -1285,8 +1029,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 3、熟练掌握消息队列，定时，异步任务，具有高并发大数据量系统的开发和维护经验。
 4、具备优秀的逻辑思维能力，对解决挑战性问题充满热情，善于解决问题和分析问题。良好的团队合作精神，较强的沟通能力。
 5、熟练SQL语法，对mysql熟练', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 5, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = 'Python开发工程师' LIMIT 1), '德硕管理咨询（深圳）有限公司', 'Python软件开发（应届生）', '深圳-福田区', '6-8千/月', NULL, '岗位职责：
 1、负责IoT数据分析和企业系统开发
 2、编写设计文档，实现项目中功能的代码与单体测试
@@ -1300,8 +1042,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 5、熟悉matplotlib, Google Chart, Echarts等主流可视化工具；
 6、如果有ML，DL相关知识和实际经验优先考虑；
 7、逻辑思维优秀，有良好的沟通能力和语言表达能力。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = 'Python开发工程师' LIMIT 1), '同方鼎欣科技股份有限公司', 'Python开发工程师 R', '广州-黄埔区', '1.5-3万/月', NULL, '驻场到：兴森科技
 工作地点：广州市高新技术产业开发区科学城光谱中路33号
 要求：
@@ -1311,9 +1051,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 4、 熟练掌握NLTK, Jieba等文本数据分析工具以及对各文档类型的数据提取解析
 5、 熟悉图像数据处理及分析，及常用的图像特征描述
 6、 熟悉管理工具git/Jenkins，并有开发 restful API 的经验', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 8, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 9, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = 'Python开发工程师' LIMIT 1), '松下信息系統（上海）有限公司', 'Python开发工程师', '无锡', '0.8-1.5万/月', NULL, '1、负责BI数据仓库的架构设计，构建可扩展的数据仓库和分析解决方案；
 2、负责从业务数据库抽取，转换，清洗数据；
 3、搭建业务数据模型，建立分析模型对业务问题进行深入分析；
@@ -1335,9 +1072,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 4.有数据分析经验者优先，如 Pandas，MapReduce，Spark；
 5.熟悉缓存服务（如Nginx/Squid/Varnish/TrafficServer等）的使用经验优先；
 6.有开源项目贡献经历者优先。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 5, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 7, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = 'Python开发工程师' LIMIT 1), '澳鹏科技（无锡）有限公司', 'python开发工程师', '无锡-无锡新区', '4.5-6千/月', NULL, '协助项目团队进行项目分析和平台项目的创建/设置
 使用内部平台/工具，对项目数据进行预处理，后处理，质量检查及备份
 根据项目需求进行小工具/脚本的开发，测试和更新
@@ -1366,9 +1100,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 2.计算机专业,熟练使用python，做事细致认真。
 3.有扎实的数据库（SqlServer或MySQL或Oracle 等）SQL技能，熟悉HTML、CSS、JavaScript者优先
 4.具备基本的英语读写能力', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 5, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = 'Python开发工程师' LIMIT 1), '坤金聚宝（深圳）科技有限公司', 'python开发', '深圳-罗湖区', '1.5-2万/月', NULL, '岗位描述：
 1、参与数据层建设，专注于基础数据采集平台建设，研究各种网页特点和规律，负责网页信息抽取、数据清洗等研发和优化工作；
 2、负责设计和开发分布式网络爬虫系统，参与数据爬取平台相关工具平台的架构设计与产品开发等工作；
@@ -1386,9 +1117,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 4、熟悉MySQL数据库应用，熟悉Linux开发环境
 5、有投资、风险量化模型开发经验者优先
 6、具备较强的自我学习能力和抗压能力，善于团队协作与沟通', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 5, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 8, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = 'Python开发工程师' LIMIT 1), '上海博为峰软件技术有限公司', 'Python数据分析老师', '上海-黄浦区', '2.5-3万/月', NULL, '开发python数据分析就业班课程。
 在线python数据分析班授课，问题答疑和批改作业
 要求计算机、统计学或者理工科专业本科及以上学历
@@ -1397,2073 +1125,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 1、 应届大学大专以上毕业生，计算机相关专业优先;
 2、 至少掌握一门面向对象编程语言（JAVA、C#、python等均可）；
 3、 具有较强的学习能力、沟通能力、团队协作能力;', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 3, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
-INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '产品经理' LIMIT 1), '江苏英特莱杰信息科技有限公司', '工业互联网产品经理', '常州-钟楼区', '1-1.5万/月', NULL, '一、产品整体运营定位规划
-1. 组织新产品定位，可行性研究，推进开发；
-2. 对系统整体定位、工作思路、业务模式进行策划，协助制定运营规划；
-3. 熟悉产品从业务调研、需求分析到实现过程、产品发布的整个流程。制定项目的战略计划包括产品的设计、开发管理和实施，及后期的市场营销。制定并执行合理的产品推广方案，并为此提高产品的销售业绩；
-4. 根据公司和产品发展策略，负责公司产品策划工作。对自己所负责产品的整个生命周期进行监管，监管产品的市场运作，创造良好的产品业绩。负责产品运营全过程，进行产品优化，不断提升产品业绩。
-二、市场及竞争对手：
-1. 收集行业竞争对手状况、对目标市场进行分析。对市场竞争对手、竞争产品、竞争策略信息收集、整理、汇总。分析和研究产品市场发展变化趋势，了解行业动向，及时、准确地监控、分析竞争对手动态，并提出相应的对策。
-三、用户需求、产品原型及文档撰写：
-1. 收集市场反馈与用户行为及需求，提升用户体验。参与用户需求分析、原型设计、产品开发、演示讲解、上线支持等活动。
-2. 撰写详细的产品需求文档及原型设计文档，跟踪产品研发进度。基于用户体验设计方法，结合用户需求和产品技术架构，完成新产品/功能的概念设计和原型展示。熟悉相关业务流程，负责确定公司研发项目和产品的业务功能及界面设计。
-3. 具有良好的平台规划与策划能力、较好的文档编写能力及沟通、协调能力。根据产品库标准，负责建设产品文档库。
-四、部门协调：
-1. 逻辑分析能力强，善于沟通和协调资源，负责公司内部各相关职能部门间的协调工作。协调市场、开发、运营、管理等团队评审和最终确立产品方案。
-2. 负责或配合其他部门制定相关产品运营计划，全程跟踪运营工作，监控并分析产品数据，根据数据来优化产品并调整运营策略，持续改进产品。
-五、项目管理
-1. 对软件开发生命周期有一定研究，对开发流程、标准熟悉，对应用框架、技术方案、测试方案等有深入见解；
-2. 负责产品/项目的具体运作、监督和完成工作；
-3. 负责把控产品/项目推进进度、协调突发问题与质量管理工作；
-4. 制定项目及产品的目标和计划，参与或协调上层执行相关政策和制度。制定项目产品的发展时间表，并控制整个计划的进程；
-5. 负责确定公司研发项目和产品的总体技术平台；
-6. 参与核心技术的研发与实现。指导技术和业务知识。指导技术架构实施；
-7. 协助项目经理完成项目实施工作；
-8. 负责其它产品方案的审核和完善，能够对公司产品、业务发展提出合理建议。
-1. 大学本科以上学历，计算机及相关专业；
-2. 接受过市场营销、需求分析、用户体验、数据分析、竞品分析、原型设计、等相关培训或者工作经验；
-3. 具有产品开发及其管理5年以上工作经验，具备良好的资源整合能力、沟通协调能力和书面报告能力，具备独立解决问题的能力和较强的市场分析能力，对产品和数据运营敏感，思维清晰而有条理，有极强的学习能力，能够承受较大的工作压力。由公检法工作经验优先；
-4. 熟悉工具；原型制作：Axure，Mockplus，fireworks，Photoshop，mockingbird（web），Balsamiq Mockups，omnigraffle等，区别于其他的原型工具，Mockplus兼具审阅功能，更加方便了设计，提高了工作效率；
-5. 项目管理：Pricise Project Management（PPM），Project（微软产品），Todolist，Excel，Sheet，Gcalendar，Google task，trac，Outlook；
-6. 在线协作：SVN，Google Docs,Mockplus；
-7. 测试反馈：TestCenter，QC,Jira,Bugzilla，Firebug、TestDirector、IETester；
-8. 需求池管理：Mantis；
-9. 专业能力；逻辑思考能力，产品感觉和设计能力，学习能力，创新能力；
-10. 管理能力；执行力，领导力，沟通协调等；
-11. 熟悉公司项目管理流程。有风险管理的意识和及时处理问题的能力。
-福利待遇：五险一金、年终奖金、绩效奖励、节日福利、旅游、团队活动、专业培训等
-作息时间：双休 8:00-11:30；13:00-17:30
-晋升通道：公司每年底进行员工职位评估，根据全年员工表现进行职位等级的提升。', 'open', NULL);
-INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '产品经理' LIMIT 1), '上海梅歌文化传播有限公司', '高级产品经理', '上海-徐汇区', '1-1.5万/月', NULL, '★公司介绍
-高科技美学品牌茶密的出品方Madison Art & Design 是梅歌传媒旗下高端设计品牌。创立于2006年，是专为Porsche保时捷、Mercedes-Benz奔驰、BMW宝马、Michelin米其林、Dell戴尔、Giti佳通轮胎等国际品牌提供高端衍生品设计研发、生产制造的专业服务商。
-Madison Art & Design 由国际知名设计师、4A广告人、品牌专家、IT和智能供应链、物联网技术专家等组成，是中国为数不多的同时在产品研发、创意设计、技术创新、品牌营销、生产制造等领域同时领先的多元化高端跨界设计品牌。
-梅歌传媒成立十四年来拥有超过一百个国际知名品牌客户，成功案例数以千计，多次获得包括德国红点及IF等国际设计大奖，并拥有数十项产品发明、实用新型、外观专利。
-Madison Art & Design的价值观是：与平庸不两立。
-梅歌传媒的企业文化是：殚精竭虑，锐意创新。
-品牌介绍
-茶密，诞生于2014年，是倡导时尚饮茶生活方式的高科技美学品牌。 出品方梅歌传媒旗下设计团队MadisonArt & Design自2014年至2020年，6年时间研发成功的茶密品牌系列包括：Spacewalk太空漫步AI泡饮杯、T-Nova超新星AI泡饮杯（荣获2019年德国红点中国好设计***金奖）、T-Master大师壶（荣获2017年德国IF设计奖）、Tea-Buddy智能功夫茶杯（荣获2016年德国红点中国好设计奖和2017年德国IF设计奖）。
-茶密将传统文化与科技创新完美结合，创造领先且推动时代发展的时尚饮茶工具，通过工具化、标准化、数字化、国际化，让博大精深源远流长的中国传统茶文化重返世界巅峰、重塑消费体验、重新引领时尚潮流。
-梅歌可以为优秀的你提供：
-1.与梅歌一起亲眼见证未来12个月以蓝海战略及互联网思维成就伟大产品的成功案例；
-2、 个人与公司共创辉煌的长期事业发展平台；
-3、 优质的团队工作氛围，享受与技术、产品、设计等领域顶尖人才共同创业成长的快意；
-4、 交通便利（11号线地铁口）和优越的工作环境（黄浦江畔5A写字楼顶层）；
-5、 拟上市创业公司中具竞争力的待遇（优秀人才可直接与公司高层面谈）
-岗位职责：
-1.根据公司战略进行市场调研和数据分析，负责梅歌旗下app网上商城等产品相关工作；
-2.深入了解目标用户群的需求，独立完成需求分析，产品设计，推动产品研发；
-3.负责产品规划的落地、实施，以及基于数据的产品提升；
-4.负责对产品运营数据进行监控和分析，并定期对产品、行业、竞争对手等数据分析并评估；
-5.负责对产品的目标客户群的分析、市场需求的调研、对产品体验和用户接受度负责，并保持与用户沟通顺畅，不断评估和完善产品；
-6.不断优化产品，提升产品质量，提高用户活跃度和用户转化率； 7.与技术团队紧密配合，快速、高效推动产品设计、研发、运营及推广。
-8.保持对产品的关注，运营监控和后续改良，最终为产品负责。
-任职资格：
-1.本科及以上学历，5年以上互联网产品经验；
-2.主导过互联网产品的定义，设计，以及规划工作，对产品从市场需求，方案规划，设计有良好的方法；
-3.具备良好的商业意识和逻辑思维能力、跨部门沟通和问题处理能力
-4.准确并深刻理解用户使用需求，能够直接面对用户，深度沟通，合理提炼产品需求，完善产品方案；
-5.擅长运用互联网思维解决问题， 善于学习敢于创新；
-6.具有良好的沟通及超强执行力，有强烈的责任心和团队合作精神。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 9, 'dict', TRUE);
-INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '产品经理' LIMIT 1), '成都懒购电子商务有限公司', '产品经理', '成都-武侯区', '0.7-1万/月', NULL, '岗位职责：
-1、根据公司战略完成市场调研，收集、分析并整理用户核心需求，梳理竞品优劣势深入分析，从而寻找切入点进行产品策划，设计出有生命力的产品；
-2、根据需求撰写产品需求文档、功能列表、设计产品的交互界面及流程原型；
-3、与技术、运营、市场、UI等紧密配合，推进产品进度，实现产品开发周期目标，并对产品质量及用户体验持续负责；
-4、把握项目开发的成本和进度，具备商业、运营等综合思维能力，具有成本意识和时间规划能力；
-5、负责市场调研，搜集、跟踪友商的产品策略、市场现状，定期提交竞品分析报告；
-6、产品上线后，根据反馈及调研对产品进行不断迭代创新和优化；
-7、将产品与各业务流程进行有机整合，协助产品运营及推广工作。
-任职资格：
-1、3年左右互联网产品经理工作经验，至少经历过1个完整的产品研发生命周期（或关键大版本发布周期），对互联网相关技术、架构有一定的了解，善于跟技术开发进行高效沟通；
-2、大专及以上学历，具备良好的用户体验意识、数据分析能力、沟通表达能力、项目管理能力和跨部门协调能力；
-3、善于倾听用户声音，擅长从用户角度考虑问题，对用户需求有较好识别判断能力 ；
-3、擅长文档的编写和整理，能写出高质量的文档和PPT；
-4、深入理解迭代、敏捷开发等通用产品开发流程模型，熟悉互联网产品快速迭代的方法论；
-5、熟悉互联网行业，对行业状态、行业变化敏感，能够把握行业业务发展趋势和产品理念的创新，对关键点有自己的见解；
-6、卓越的产品策划、设计能力，熟悉产品设计工作循环，有较高产品品味和产品生产力；
-7、有强大野心，敢去付出，有过自己创业经历或想法的优先录用；
-8、拥有以下工作特质：抗压力强、责任心强、主动性强、上进心强、执行力强。
-公司福利：
-1、奖金福利：公司会定期对全员进行价值观行为和绩效考核，根据考核结果评选出的优秀员工，公司以奖状＋现金奖励的形式对员工进行激励。
-2、调薪与年终奖：根据个人的绩效和贡献，业绩优秀者可享受每年会有两次调薪机会；年底提供丰厚年终奖，公司根据员工的贡献给予相应的回报。
-3、下午茶与营养晚餐：日常不定时会有温馨小零食，每周五均有奢华级下午茶，让你在忙碌的工作中拥有闲暇的一刻，工作需要加班时还有营养加班晚餐。
-4、团建与旅游：每月固定一次公司级团建活动，每年一次公司级集体旅行；日常工作突出贡献（考核成绩优异）的同事可获得额外旅游机会。
-5、节日福利：春节、端午节、中秋节、元宵节等节日礼品福利，让你时刻感受到公司的关怀。
-6、生日福利：公司会为每一位员工举办生日会，让你在懒购感受到生活的一百种甜。
-7、补贴福利：购买电脑、参加培训等工作相关物品可享受一定比例的补贴。
-8、定期分享启发成长:公司每月组织一到两次分享会，鼓励成员间相互交流学习，分享成功经验，启发共同进步；公司还会邀请行业大咖来做分享，既包括心理学、领导力、项目管理等个人成长相关知识。
-懒购电商是专注于高校市场的互联网应用公司，立志于打造出校园经济的商业新物种！
-我们的团队和产品将会给高校经济带来新的思考和新的改变。
-诚邀各路英豪、有志之士加入，你将会在这里和我们一起重新定义高校生活方式。
-熟悉互联网行业、高校市场，了解大学生用户需求的加分！
-有创业思想，渴望年少有为有财富自由梦想的加分！
-如果快乐太难，那就祝你腰缠万贯！
-同创伟业，有富共享！', 'open', NULL);
-INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '产品经理' LIMIT 1), '广州市驴迹科技有限责任公司', '高级产品经理', '广州-天河区', '2-3万/月', NULL, '岗位职责
-1、负责商业应用场景下的整体产品规划及设计工作。
-2、具有良好的产品商业思维与成本意识，能够把握项目/产品收益的平衡。
-3、基于业务方诉求，能全面评估与分析项目/产品的可行性，输出产品解决方案。
-3、通过策略、设计等方式，持续提升产品功能与服务。
-4、追踪业内最新产品动向，进行产品微创新。
-任职要求
-1、本科及以上学历，5年以上大中型互联网技术平台工作经验。
-2、有B端产品、SAAS类产品、智慧旅游类产品工作经验优先。
-3、擅长数据分析，能基于数据说话。
-4、对新事物好奇，并能基于行业分析找到产品创新点。
-5、具有较好沟通技巧和跨部门协作能力，能够快速融入团队。
-【who we are】
-驴迹科技成立于2013年12月，立足景区导览和全域导览两大核心战略，专注于导游软件、全域导览系统的研发以及旅游相关配套业务的发展，基于驴迹所构建的智慧旅游产业云脑，现已形成以在线电子导览和智慧管理服务系统为支撑的旅游生态圈，是全球知名的智慧旅游产业解决方案专家,于2020年1月成功登陆香港联合交易所主板挂牌上市，股票代码:1745.HK。
-公司以广州总部为中心，产品网络辐射全球，是国内前五大OTA平台之三的在线电子导览服务主要供应商，并与27家OTA平台建立了合作。以2018年全年交易额计，占国内市场份额的86.2%。截至2019年12月底，驴迹科技已为全球19493家景区建设在线电子导览系统，包括中国258个AAAAA级旅游景区和2097个AAAA级旅游景区。
-驴迹科技积极响应国家旅游局“智慧旅游”和“全域旅游”的发展政策，依托于产业生态平台，已分别携手腾讯与高德打造了“一部手机游云南”项目和“未来景区”项目，并且与国内多家旅游局建立了深度合作，深刻地影响和改变了旅游行业的服务方式和数千万消费者的旅行方式，为中国“旅游产业+互联网”开创了更加广阔的应用前景。
-驴迹成长史：
-2020年1月17日，正式在香港上市。
-2019年，完成全球12913家景区的在线导览产品覆盖，其中2086个在线导览覆盖日本、韩国、意大利、澳大利亚等海外景区；
-2018年，获得“腾讯荣誉合作伙伴奖”；中国5A景区覆盖率达96.9%；
-2017年，完成1000多家国内景区及首个海外景区导览产品覆盖；
-2016年，与国内多家知名OTA达成战略合作，上架销售导览产品；
-2015年，受聘完成国内首例5A级景区电子导览制作；
-2014年，正式推出驴迹导游APP，在中国注册首个卡通风格地图版权；
-2013年，驴迹科技有限公司（原骇特科技）成立。
-优越的薪酬福利：
-1、薪资不封顶，只要你够牛，我们就敢给；
-2、法定假期、带薪年假说给就给；
-3、五险一金你来我就买；
-4、每季度员工生日、生日贺卡、蛋糕零食活动，次次不重样；
-5、团队旅游、吃饭唱K等等那什么是必须都有的；
-6、技能培训，晋升轮岗，氛围好到你想象不到。
-我们定位于智慧旅游产业解决方案专家，期待你的加入，跟我们一起为大家创造美好旅游新体验！', 'open', NULL);
-INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '产品经理' LIMIT 1), '上海九乙生物科技有限公司', '产品经理', '上海-松江区', '0.8-1.5万/月', NULL, '1.1、市场分析：发现并掌握目标市场和用户需求的变化趋势，对未来几年市场上需要什么样的产品和服务做出预测；
-1.2、竞品分析：收集竞争对手的资料、试用竞争对手的产品，从而了解竞争对手产品；
-1.3、用户研究：通过定性（用户访谈）、定量（调查问卷）等分析方法对用户需求进行挖掘和分析；
-2.1、产品规划：确定目标市场、产品定位、发展规划及路线图；
-2.2、需求管理：对来自市场、用户等各方面的需求进行收集、汇总、分析、更新、跟踪；
-2.3、产品设计：编写产品需求文档，包括业务结构及流程、界面原型、页面要素描述等内容；
-2.4、版本管理：维护产品的每个版本的功能列表；
-3.1、需求确认：组织协调市场、研发等部门，对需求进行评估及确认开发周期；
-3.2、项目跟踪：跟踪项目进度，协调项目各方，推动项目进度，确保完成项目按计划完成；向领导及相关部门沟通项目进度；
-3.3、产品测试：配合测试部门完成产品的测试工作；BUG管理；
-4.1、流程制定：组织客服、运维部门，建立用户问题投诉、意见反馈及其他产品相关的工作流程、分工、响应时间要求；
-4.2、协调沟通：与公司领导、相关部门协调资源、沟通产品发展规划、产品发展现状及问题；
-4.3、对外合作：与合作方商讨合作可行性、方案，参与商业合同的编写，跟踪项合作项目的进度、完成；
-4.4、问题处理：跟踪产品运营过程中出现的故障、问题，并进行总结、分析，制定解决方法或纳入到产品改进计划；协助市场、客服、运维部门，解答或协调解决用户提出的产品问题；
-4.5、数据分析：组织建立并逐步完善业务数据分析系统，确定数据报表样式，建立日/周/月报制度，整理并定期向相关部门提供产品运营数据；对产品数据进行监控，分析产品运营效果、用户使用行为及需求，以便对产品进行持续性优化和改进；
-4.6、文档编写：建立产品文档库；编写产品相关文档，如产品白皮书、用户手册、客服手册及其他产品相关文档；
-4.7、培训演示：编写培训教程，并为公司相关部门、用户进行产品培训、产品演示；
-5.1、营销支持：协助营销部门，提炼产品核心价值、产品卖点、产品资料，参与制定营销、运营推广方案并提供产品支持；
-5.2、市场支持：协助市场部门，参与各类产品发布、推广及各类市场活动。
-确定工作职责后，同时也就确定了日常工作文档的保持结构，这样所有的工作资料都能有条不紊地保存，以便于分类管理及查找。以下就是目前我的工作文档存放目录。
-任职要求：
-1. 了解化妆品行业流行趋势；
-2. 3年以上化妆品产品或项目开发同等岗位经验，熟悉化妆品开发流程，有知名化妆品公司同等岗位工作经验优先；
-3. 喜欢化妆品，具有丰富化妆品使用技能和鉴别能力，对化妆品行业了解者优先；
-4. 良好的沟通能力及团队管理能力。', 'open', NULL);
-INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '产品经理' LIMIT 1), '广州幸好健康科技有限公司', '产品经理', '广州-越秀区', '0.8-1.2万/月', NULL, '主要职责：
-1、负责公司APP及PC端产品规划构思，产品调研及需求收集
-2、负责产品具体功能设计，产品原型，撰写产品需求文档
-3、跟进UI设计师完成产品高保真图，协助开发团队推动产品开发进度
-4、紧密跟踪竞品动态，行业热点，定时分析用户行为及反馈建议，对产品进行持续迭代及用户体验优化
-任职资格：
-1、本科及以上学历，5年及以上相关经验，互联网医疗工作经验优先
-2、熟悉精通Axure，Visio，X-mind等产品设计相关工具
-3、熟悉产品项目调研，可行性分析等工作，熟悉产品开发及项目管理流程
-4、熟悉IOS、安卓系统特性，熟悉产品交互设计，功能逻辑设计流程
-5、具有较强的数据分析能力，快速学习能力及良好的沟通协调能力
-广州幸好健康科技有限公司（简称幸好健康） 成立于2018年，以“男科、妇科、生殖科”为经营主导，致力于“新医疗+互联网”的模式，开创服务型的医疗生态新闭环。 “幸好健康” 具有良好的成长基因，其核心股东分别有着较强的专科医药、医生资源，以及“新医疗+互联网”平台的完整运作经验，在形成新生态的格局里有着强而有力的后盾支持。“幸好健康”是一个全渠道、一体化、融合式的创新型医疗健康运营服务平台，通过垂直医患对接，贯穿药厂、医生、连锁、药店、患者全方位闭环，提供高效的诊断、随访服务。
-公司拥有完备的自主专业技术团队和强有力的后勤服务团队，长远的发展目标和战略规划，以独特的全国合伙人模式，打造互惠共赢新局面。欢迎各位有识之士加入幸好健康，您我同行！
-一、公司福利
-1.【假期】
-（1）公司双休，并享受国家法定假；
-（2）带薪年休假、婚假、产前假和产假以及哺乳假（女员工）、护理假（男员工）、丧假。
-2.【旅游】定期举行集体旅游；
-3.【体检】每年为员工免费体检一次；
-4.【文体活动】不定期组织羽毛球、篮球、户外运动等多种形式活动。
-5.【五险一金】缴纳参加养老、工伤、失业、生育、医疗保险，住房公积金。
-6.【下午茶】经常性举办办公室下午茶活动。
-6.【餐补】工作日加班拥有晚餐补助。
-7.【法律顾问】公司所聘请的律师可为员工提供法律咨询。
-8.【其他】公司有冰箱，微波炉，咖啡机供员工享用。
-二、职业发展
-1.【晋升】完善的晋升体系；
-2.【学习与培训】每年度都为员工提供包括内训、外训等各种培训学习机会。
-【工作地址】广州市越秀区中山五路219号中旅商业城1308
-【上班时间】09:00-12:00 13:00-18:00
-【交通路线】
-1.地铁站点：1号线、2号线公园前A出口
-2.公交站点：中山五路站、中山六路站、迎宾馆站、广卫路总站等。
-说明：您的资料均保密并由人事处理！', 'open', NULL);
-INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '产品经理' LIMIT 1), '深圳市神火照明有限责任公司', '产品开发/产品经理', '深圳-龙岗区', '0.8-1.3万/月', NULL, '岗位职责：
-负责公司家居照明产品线产品的市场调研、产品开发、跟进生产及投入市场的效果分析，不断优化及完善公司产品。
-1.掌握市场动态，对产品市场进行数据调研，结合公司情况开发市场需求产品。
-2.对公司产品进行优化，对于滞销产品提出建议改善方案、。
-3.跟进新产品由立项到结案整个过程，协调各部门做好相应的产品上市前期工作。
-4.对于定制款要严格审核外观和价格，看看是否对现有款式以及和客户款有没有冲击。
-5.目标市场调研、及时掌握信息，实施商品情报的采集整理、分析。
-6.每一期的新产品要对业务部进行培训。
-7.新品上市后反馈信息的收集、分析及改善。
-8.领导安排的其他相关工作。
-9.依据市场变化及商品定位，进行商品自主研发，提出建设性的建议。
-任职要求：
-1.男女不限，年龄35岁以下。大专以上学历，有市场管理、数据分析类相关专业优先。
-2.有两年以上电子产品设计开发项目管理工作经验，照明行业优先。
-3.能熟练运用WORD、EXCEL、PowerPoint等办公软件。
-4.有敏捷的创新思维能力、判定能力、书写能力和决策能力。
-5.有良好的沟通、组织、策划、协调能力，并有较强的责任心。
-6.具有较强的执行能力和自我学习的意识，服从管理、服从安排。
-7.对于消费者需求、市场、商品变化有比较快速的认知和感受能力。
-8.追求工作效率，积极反馈工作进度并有解决问题的能力。
-福利待遇：
-1、优厚的薪酬及广阔的个人发展空间，提供横向纵向两种晋升渠道；
-2、公司购买五险（养老保险,医疗保险,失业保险,工伤保险,生育保险）；
-3、公司有员工宿舍，每月只需自费水电费；
-4、所有员工可享受国家法定节假日，有薪婚假、产假、丧假等假期；
-5、超长的过年假期，15—20天的过年假期，妈妈再也不用担心我回家抢不到高铁票、与家人团聚时间短了；
-6、舒适的办公环境：
-办公职员可享受：高档写字楼、中央空调，配多台冰箱与微波炉可自带健康午餐;
-工厂职员可享用来自公司食堂干净卫生的免费午餐；
-7、公司提供大量培训机会（综合素质培训、专业知识培训、户外拓展等），具有良好的晋升通道，发展前景；
-8、多样化的团建活动：生日会、聚餐、户外等。
-上班时间：上午09：00-12：00 下午 13：00-18：00
-公司附近公交线路：
-距离100米 鹏达花园南门 （公交车站点） M230路；M316
-距离200米 叠翠新峰 （公交车站点） M317路；B669路；M316路
-距离200米 龙溪 （公交车站点） M220路；M452路
-公司附近地铁线路：南联地铁站 3号线 B1出口 往前800米', 'open', NULL);
-INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '产品经理' LIMIT 1), '深圳齐聚科创科技有限公司', '电商产品经理(消费电子产品开发为主）', '深圳-南山区', '0.8-1.2万/月', NULL, '1、 根据公司发展战略，规划品线及相关产品的开发方向，能够独立完成产品的选品与开发，推动产品的不断优化；
-2、 负责产品项目的执行和效果评估以及后续改进工作，对整个产品线进行生命周期管理；
-3、 负责市场调研，收集行业最新讯息，提炼客户需求，熟悉竞品分析方法；
-4、寻找优质供应商，审核新供应商资质和条件，并配合采购做好供应链管理，优化供应商结构，确保产品稳定供货。
-5、 协调各方资源，保证产品开发和实施阶段的进度与质量。
-任职要求：
-1、专科及以上学历，英语CET-4级以上，2年以上消费电子产品（3C类目为主）、新奇有创意的产品开发经验，熟悉国内外消费电子市场，熟悉跨境电商互联网营销运作模式；
-2、 熟悉相关产品的技术开发，成本分析，需求分析，竞品分析，产品生命周期管理；
-3、 具有数据思维，梳理并沉淀不同业务场景下的数据分析思路；
-4、 具备良好的工作态度与责任心，沟通能力、学习能力和独立工作的能力，具有敬业精神，抗压性强，具有团队合作精神；
-5、 思维敏捷，逻辑清晰，具备较强的分析问题和解决问题的能力；有一定的项目管理经验和较强的推动能力。
-福利待遇：
-我们致力于为所有员工打造一个舒适、轻松的工作环境，为大家提供一个广阔的职业发展平台，更为大家提供：
-1、薪资待遇：基本底薪+提成奖金+五险一金+年终奖金构成，拥有在行业内颇具竞争力的薪资及激励机制；
-有能力者，薪资可面议
-2、工作时间：
-（1）7.5小时大小周工作制；
-（2） 上午9:00-12:00；下午13:30-18:00（弹性工作时间，可自由调休补班）
-（3）试用期1-3月；（视个人能力而定）
-3、生活保障：公司配置微波炉和冰箱，各种小零食，供员工享用；
-4、社会保险：为每位员工购买五险一金（深圳一档社保哦）；
-5、有薪假期：法定节假日、病假、年假、婚假、产假等；
-6、节日慰问：公司在端午节、中秋节等重大节日为员工发放节日慰问品；
-7、员工活动：每季度提供固定经费组织部门活动，不定期组织员工旅游、聚餐等各项文娱活动丰富员工的业余生活；
-8、发展空间：公司具有良好的激励机制，畅通的晋升渠道和充分的发展空间；
-公司现在正处于快速成长时期，期待热爱并执着于电子商务行业，极具挑战精神，勇于改变，追求事业成功，并与我们志同道合的你，加入我们，共创佳绩！
-公司地址：深圳市南山区南海大道3003号阳光华艺大厦A座18楼
-公司附近地铁站/公交站：南山地铁站、桃园地铁站、桂庙新村公交站、荔园大厦公交站
-公司网址：www.jidea.co', 'open', NULL);
-INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '产品经理' LIMIT 1), '深圳市莱斯特科技有限公司', '产品经理/亚马逊开发经理', '深圳-龙岗区', '0.9-1.8万/月', NULL, '1.开发具有市场潜力、适合在Amazon平台销售的新产品和热销产品；
-2.负责市场调研和数据分析，确定新产品的开发定位及研究方向。具备新产品开发计划的拟定与执行能力。
-3.寻找优质供应商，审核新供应商资质和条件，并配合采购做好供应链管理，优化供应商结构，确保产品稳定供货；
-4.与销售共同制定推广及营销方式，持续改进已上线产品，安排产品优化，延伸产品生命周期
-5. 制定分类商品每月、每季、每年的销售计划，定期总结数据，分析问题，提出解决方案；创建及维护产品信息资料，市场调查数据整理和分析，成本利润核算及销售初期市场预测，并通过数据和用户反馈，分析用户需求及行为，不断改进和提升产品性能；
-6.负责进度跟进，各阶段的时间节点的过程管理，对进度过程中工作安排进行查漏补缺，对新品进行专利检索及侵权判断分析，防控风险。
-任职要求：
-1、大专以上学历，英语CET4；
-2、2年以上亚马逊精品工作经验，1年以上的管理团队经验；
-3、 熟悉各个市场产品规格或证书要求；
-4、有优质的供应链或产品推荐优先；
-5、善于数据分析和总结，能找出并解决产品销售环节中出现的问题；会利用开发软件或网站来分析数据。
-6、具备良好的沟通表达能力、商务谈判技巧和团队合作能力，对工作认真负责，能够承受较大的工作压力。
-7、不限品类，有同行相关岗位工作经验者优先考虑。
-我们为你提供：
-1、入职即提供一对一培训，不定期专业技能培训提升。
-2、薪资构成：底薪+提成制，公司为所有员工提供五险一金。
-3、上班时间是9：00-12：30，14：00-18：00 每天7.5小时上班时间，大小周制，节假日跟着国家规定放假。
-4、公司全都是80.90后所以完全无沟通障碍，工作氛围轻松。上班时间认真上班，下班时间好好玩。
-5、交通便利，乘车路线：
-附近地铁：下水径地铁站A出口（100米）
-附近公交：下水径站
-福利待遇：
-1、工作时间：大小周，9:00-12:30,14:40-18:00；工作满一年享受5天带薪年假。
-2、薪酬待遇：有竞争力的薪酬, 年底分红；
-3、员工培训：组织入职培训，同时也会不定期为员工组织内外部培训；
-4、社会保险：购买五险一金；
-5、节日福利：公司在端午节、中秋节等重大节日为员工发放节日礼品或购物卡等；生日礼金，结婚礼金，节日礼金等
-6、员工活动：每月一次生日会，员工活动、部门团建活动、年会活动；不定期聚餐
-7、员工旅游：一年两次旅游，一次海外游，一次省内游。', 'open', NULL);
-INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '产品经理' LIMIT 1), '苏州市味知香食品股份有限公司', '产品经理', '苏州-吴中区', '1.5-2万/月', NULL, '1、认同并带头执行公司文化，执行公司的各项规章制度，遵守八大禁令；
-2、开展市场调研，确定产品方向：
-（1）跟踪行业发展趋势，建立和完善产品信息收集、处理、交流及保密工作；
-（2）搜集行业信息，特别是竞争品牌产品的性能、价格、竞争手段等情报的收集、整理和分析，及时提交对产品价格、性能等的调整方案；
-（3）洞察客户需求，确定产品方向。
-3、新品定义和设计
-(1) 根据市场调查结果，洞察公司未来新品发展机会与筛选；
-(2) 组织实施新产品研究开发，并对产品开发全过程进行控制，确保及时提供有竞争力的产品；
-(3) 按照公司对新产品的要求，监督原料审核，跨部门沟通组织品鉴会，解决产品相关问题；
-(4) 协调新产品上市的跨部门沟通问题，把控产品上市节点；
-(5) 组织实施新产品毛利分析评估，制定新产品价盘；
-(6) 审核包装，对卖点、颜色、效果等给予建议，对接供应商，确保包装效果；
-(7) 参与新品的推广方案；
-(8) 组织编制产品说明书，指导地区企划及促销员的产品培训。
-4、产品管理
-(1) 提出产品年度策略与发展方向的方案，报上级审核后组织实施；
-(2) 追踪及评估产品专案实施效果；
-(3) 不定期开展产品上市后品评，并将意见反馈给生产部门，监督改善；
-(4) 实施产品定位、定价和生命周期管理；
-(5) 根据产品定位向各渠道提供开发、维护的专业支持工作。
-5、部门内部管理：
-（1）负责部门制度文件、管理办法的起草与修订；
-（2）负责部门工作流程的建立与完善；
-（3）制定部门工作计划，合理分配各项工作任务；
-（4）建议或确定本部门的岗位职责设置和人员录用；
-（5）提供员工在职培训与指导；
-（6）对员工进行绩效激励制定和绩效考评。
-6、负责本部门的风险管控工作。
-任职要求：
-1、6年以上营销管理经验，具营业规模5亿（含）以上企业背景3年以上同等岗位经验；
-2、战略思考能力，能准确捕捉客户需求，制定适合公司战略的产品增长策略；
-3、掌握科学全面的调研方法；
-4、敏锐的市场洞察力和前瞻性，有大局意识；
-5、具备把握方向和大局的能力，有高度的工作热情和良好的团队合作精神，思路清晰，乐于接受挑战；
-6、具备较强的主观能动性及强烈的以结果为导向的工作意识；
-7、精力充沛，具备在高压下完成目标的能力。
-8、掌握市场营销管理、财务管理、公共关系等相关知识；
-9、具备较强的数据分析能力，能够看到数据背后的内容，可做跨部门沟通，协调项目。', 'open', NULL);
-INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '产品经理' LIMIT 1), '佛山市杜特软件科技有限公司', '产品经理', '佛山-禅城区', '1-1.5万/月', NULL, '岗位职责：
-1、 市场调研：调研客户需求。
-需求分析：形成MRD文档。（市场需求分析文档）。
-产品规划：根据市场需求和分享规划产品发展路线，设计产品商业和服务模式，并定义相关功能模块。
-产品开发：组织公司开发等相关资源立项开发，并跟进开发进度。
-产品定价：产品开发完成后进行产品定价。
-产品推广：配合销售部进行软件推广策划。
-日常产品管理：管理日常中出现的bug等问题。
-2、负责产品的全过程管理，包括相关业务市场分析、需求分析，整体规划和设计功能，收集用户需求、进行市场和竞品分析、制定产品规划等；
-3、负责研究用户行为习惯，提升产品的易用性和使用；跟踪观察竞争对手产品、用户情况，定期分析；
-4、跟踪业内重大事件趋势和动态，并作行业发展分析；
-5、定期评估现有产品、流程及业务的缺陷并提出改进建议；
-6、负责管理具体功能的UE设计，不断优化产品体验，能够撰写高质量的需求文档等产品相关文档；
-7、负责在项目推进过程中的跨部门协调沟通工作，能够协调各资源以确保产品按时完成并高质量上线；
-8、关注产品运营，能够不断改进产品用户体验。
-9.建立运营数据体系，监测及分析运营数据；
-10.监测和分析运营数据，出数据报告；基于数据分析结果，持续优化产品；
-任职要求：
-1、全日制大学专科及以上学历；有建筑类基础。
-2、2年（含）以上产品经理工作经验，有项目管理、软件管理相关经验为佳；
-3、熟练掌握powerpoint、visio、axure-rp、mindmanager等软件工作，能以视图方式向技术和管理团队清晰表达复杂、抽象的概念；
-3、具备一定的数据分析能力及逻辑思维能力；
-4、熟悉产品经理的工作流程、熟练使用RP等原型工具，具备产品经理的工作思维和能力，能够从业务的角度考虑和整理用户的需求；
-5、熟悉ERP理论知识
-6、有开发经验、熟悉SQL语句，能进行数据库操作和数据库设计者优先；
-7、有强烈的责任心、沟通、协调能力以及团队合作精神；
-福利待遇
-1、每周五天半工作制，提供餐补；
-上班时间，周一至周五08:30--12:00 13:30--18:00、 周六09:00--12:00
-2、健全的社会保险（养老、工伤、医疗、失业、生育）及补充意外险；
-3、丰厚的项目奖金；
-4、下午茶，不定期的员工文体活动与聚餐，年度旅游活动等；
-5、每月享有8小时带薪病假；带薪年假；
-6、提供培训和日常工作中的一对一指导；', 'open', NULL);
-INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '产品经理' LIMIT 1), '深圳市海云天科技股份有限公司', '产品经理（设计方向）', '深圳-南山区', '1-1.5万/月', NULL, '我们正在寻找教育领域的产品设计专家，我们的产品在全国考试范围市占率***，你将会与我们一起享受打造世界一流教育考试产品的过程和结果，让世界看到你的影响力。 我们希望你有自己独特的见解和追求，具备国际化视野，理解ToG、ToB、ToC市场的异同点，洞察客户的核心诉求，架构起多赢的产品服务体系。
-岗位职责：
-1. 基于战略规划，负责考试业务ToG/ToB产品规划、设计和落地，定义并完善业务及产品核心领域，版本计划、功能设计、推进研发上线，保证产品效果及数据质量。
-2. 基于用户反馈和业务数据，提出产品优化迭代方向以及把握节奏，负责产品推进过程中的跨部门沟通，协调各项资源以确保产品落地交付，并对最终结果负责。
-3. 负责撰写产品文档，对产品需求、产品功能、交互设计、研发验收等环节流程化管理。
-4. 洞悉考试行业的市场趋势及需求特点，能站在多方视角思考与判断需求价值，明确需求优先级，确保资源投入产出比，平衡用户体验与商业价值。
-5. 分析同行业竞品解决方案及产品，调研行业需求，分析目标行业的客户痛点，并分析、归纳，给出明确的产品优化建议
-任职要求：
-1. 产品能力：丰富的理论和实践，掌握场景矩阵搭建，需求分析和建模方法，可独立进行需求提炼、模块设计，完成长短期规划和版本迭代。
-2. 项目能力：3年以上产品策划或项目管理经历，有平台型产品策划、设计经验，经历过完成项目周期（0到1，1到N）。
-3. 主人翁精神：自我驱动力强，有产品Owner精神，使命必达。具备敏捷的洞察和深度思维能力，并且有把思考变为现实以不断满足用户需求的勇气和能力，乐观面对挑战及挫折，在困难压力中寻求机会。
-4. 影响力：良好的创新力、想象力、逻辑思维和系统分析能力、内外沟通协调能力、执行能力；突出文字组织能力和沟通能力，善于利用数据分析、用户访谈、场景分析等手段发掘用户需求，分解需求落地具体业务，协调并驱动技术、测试、运维、客服、运营等多个团队共同完成产品业务目标，管理产品。
-5. 技术能力：了解单体架构与微服务架构，了解设计模式、DDD领域驱动设计。了解Java开发、Spring、Mybatis、Spring MVC、Springcloud等主流框架，了解Flutter、Vue等前端框架。
-6. 全日制本科及以上学历，25-30岁，有AI、PaaS、SaaS 相关产品经验优先。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 10, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
-INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '产品经理' LIMIT 1), '深圳市润品创新技术有限公司', '亚马逊产品经理', '深圳-龙岗区', '0.8-2.5万/月', NULL, '职位信息
-岗位职责：
-1.负责跨境电商平台（Amazon）产品数据调研：关键词，bestseller，Top100, 数魔sellmotor ,junglescout，八爪鱼，爬山虎等工具应用搜集、分析、汇总和评估，进行市场调研和数据分析，品类包括但不仅限于：智能家居，3C手机周边，宠物用品等；
-2.结合外贸B2C平台数据热度、行业展会、竞争对手、时事动态、引擎搜索、第三方数据软件、从多个维度分析、调研、预测目标市场趋势、类目动态；
-3.收集销售部新品建议、销售需求、销售数据，并加以可行性分析和开展工作；
-4.定期查阅跨境电商平台政策和规定，配合销售部调整市场定位、产品定位，寻长销售增长点；
-5.对业务数据进行分析和建模，针对订单量、访问量及促销活动等，设计预测模型或算法；
-6.撰写数据分析方案，知识产权风险排查方案，并定期优化更新；
-7.熟悉产品供应链分布，充分挖掘工厂资源，并配合打造爆款。
-8.通过亚马逊 速卖通市场调研, 分析竞争力和利润水平，最终实现亚马逊 速卖通的爆款产品best seller开发.
-任职要求：
-1.本科以上学历，英语CET4或以上，3年以上Amazon 速卖通精品产品开发经验；
-2.有完善的产品开发流程，熟悉常用的市场分析工具，熟悉户外、家居、3C、汽配、母婴、玩具等任一品类产品；
-3.思维灵活且有逻辑性，敏锐的市场数据收集分析能力，较强的沟通能力，良好的团队合作精神。
-4.目标感强，有责任心，品行端正。
-职能类别：产品经理
-关键字：亚马逊Amazon产品经理
-待遇福利：
-1、薪资结构：岗位工资+补贴+绩效+全勤奖+提成（每年视个人能力灵活调薪，提成无封顶）；
-2、保险保障：五险（养老、医疗、失业、工伤、生育）一金 公积金；
-3、团队建设：公司定期组织聚餐，运动主题等文娱活动，节日福利，各种贴心小礼品随机放送，营造良好氛围；
-4、有薪假期：除国家法定假期（法定假日、婚假、产假等），入职满一年的员工可享受带薪年假；
-5、培训提升：公司有较为完善的培训架构，为新入职员工提供系统的岗前培训、在职培训、内部培训讨论等；
-6、职业生涯规划：提供良好的个人发展规划平台，根据个人实际和意愿多方面晋升。
-7、工作制：大小周 上午9：00-12：00 下午13：30-18：00', 'open', NULL);
-INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '产品经理' LIMIT 1), '深圳市浩程创新技术有限公司', '亚马逊产品经理', '深圳-龙岗区', '0.8-2.5万/月', NULL, '职位信息
-岗位职责：
-1.负责跨境电商平台（Amazon）产品数据调研：关键词，bestseller，Top100, 数魔sellmotor ,junglescout，八爪鱼，爬山虎等工具应用搜集、分析、汇总和评估，进行市场调研和数据分析，品类包括但不仅限于：智能家居，3C手机周边，宠物用品等；
-2.结合外贸B2C平台数据热度、行业展会、竞争对手、时事动态、引擎搜索、第三方数据软件、从多个维度分析、调研、预测目标市场趋势、类目动态；
-3.收集销售部新品建议、销售需求、销售数据，并加以可行性分析和开展工作；
-4.定期查阅跨境电商平台政策和规定，配合销售部调整市场定位、产品定位，寻长销售增长点；
-5.对业务数据进行分析和建模，针对订单量、访问量及促销活动等，设计预测模型或算法；
-6.撰写数据分析方案，知识产权风险排查方案，并定期优化更新；
-7.熟悉产品供应链分布，充分挖掘工厂资源，并配合打造爆款。
-8.通过亚马逊 速卖通市场调研, 分析竞争力和利润水平，最终实现亚马逊 速卖通的爆款产品best seller开发.
-任职要求：
-1.本科以上学历，英语CET4或以上，3年以上Amazon 速卖通精品产品开发经验；
-2.有完善的产品开发流程，熟悉常用的市场分析工具，熟悉户外、家居、3C、汽配、母婴、玩具等任一品类产品；
-3.思维灵活且有逻辑性，敏锐的市场数据收集分析能力，较强的沟通能力，良好的团队合作精神。
-4.目标感强，有责任心，品行端正。
-职能类别：产品经理
-关键字：亚马逊Amazon产品经理
-待遇福利：
-1、薪资结构：岗位工资+补贴+绩效+全勤奖+提成（每年视个人能力灵活调薪，提成无封顶）；
-2、保险保障：五险（养老、医疗、失业、工伤、生育）一金 公积金；
-3、团队建设：公司定期组织聚餐，运动主题等文娱活动，节日福利，各种贴心小礼品随机放送，营造良好氛围；
-4、有薪假期：除国家法定假期（法定假日、婚假、产假等），入职满一年的员工可享受带薪年假；
-5、培训提升：公司有较为完善的培训架构，为新入职员工提供系统的岗前培训、在职培训、内部培训讨论等；
-6、职业生涯规划：提供良好的个人发展规划平台，根据个人实际和意愿多方面晋升。
-7、工作制：大小周 上午9：00-12：00 下午13：30-18：00', 'open', NULL);
-INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '产品经理' LIMIT 1), '深圳市佰事德科技有限公司', '产品开发/产品经理（精品）', '深圳-龙华新区', '1-2万/月', NULL, '任职要求：
-1、调查和分析亚马逊市场，把握市场热点，负责指定品类的产品开发及管理；
-2、追踪、搜集、分析、汇总及考察评估产品信息，扩展公司产品线，开发热销产品；
-3、对接销售团队，参与策划或配合销售开展品类规划与产品引入；
-4、开发与寻找供应商，把控商品品质，开发出具有竞争力的产品及优质的供应商，优化公司产品供应链；
-5、优化与改进产品开发流程，维护和更新产品信息，不断改善产品；
-6、跟进与解答销售过程中出现的任何产品问题，跟踪新产品的销售情况，及时调整开发思路，使新品能快速切入市场
-岗位职责：
-1、大专以上学历，两年以上精品开发经验，熟悉家居或宠物品类
-2、具备很强的市场调研和数据分析能力，精通产品研究和调研方法，熟悉常用的市场分析工具
-3、具备丰富的行业经验与产品开发思路，制定品类拓展计划
-4、具备成功的产品开发的案例和有熟悉的供应链资源
-5、具备丰富的供应商开发经验，有很强的沟通和谈判能力，能开发出优质有实力及性价比高的供应商
-6、具备良好的团队合作精神，责任心强，具有良好的适应能力
-福利待遇：
-1、薪资结构：底薪+高提成+额外全勤（100元）；
-2、工作时间：8小时*大小周制，（早上9:00-12:30，下午14:00-18:30）；
-3、五险一金：试用期即购买，深户一档，非深户二档，非深户如想买一档也可以自费补差额购买一档；
-4、节假日：享受国家法定节假日及各项带薪休假，入职满一年即有5天年假，同时享有带薪婚假、病假、产假、陪产假和丧假等；
-6、下午茶：每个小周为员工提供下午茶；
-7、团建费用：每人每月50元经费用于部门团建；
-8、员工生日会：公司为当月过生日的员工举行集体生日会，庆祝生日并发放生日礼物；
-9、节日礼物：春节、妇女节（女员工）、儿童节、端午节、中秋节、平安夜、圣诞节等节日，公司将提供。
-10、定期运动：每周定期组织体育活动（羽毛球、篮球等），免费提供运动场地和运动器材，并与其他公司不定期组织联谊活动；
-11、体检补贴：为司龄满1年的员工发放入职体检补贴100元；
-12、体检福利：每年为司龄满2年的员工组织一次免费体检；
-13、其他不定时不定期的员工福利，如：节假日提前下班、不定期的培训和分享会。', 'open', NULL);
-INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '产品经理' LIMIT 1), '广州市卡贝路贸易有限公司', '互联网产品经理（跨境商城）', '广州-花都区', '1.5-2.5万/月', NULL, '薪酬预算范围：12000-20000
-能力条件特别优秀者年薪30万以内可开放另议
-投递时请提供您本人作为产品经理统筹负责的优秀作品网站链接或网站作品集。
-1. 统筹公司网站的需求分析、产品功能设计、业务流程设计、原型设计、产品可用性测试、产品进度跟进等，全程负责产品从立项至交付的全部事宜。
-2、深度理解业务和探求业务增长模式， 进行市场分析和竞品调研，完成准确的业务需求分析和产品定位，编制产品分析报告，进行产品功能模块的详细设计。
-3、基于用户体验设计理念，结合用户需求和产品技术架构，完成产品策划立项、设计，产品需求文档原型展示；完成开发和测试团队产品需求文档，功能定义，协同产品设计人员完成视觉设计、用户界面设计、交互设计等详细设计文档。
-4、管理产品需求开发的交付和更新迭代项目：推动产品的上线、运营，并负责日常业务数据分析，对数据进行深度挖掘和思考，与设业务团队、设计团队、开发团队密切配合，实现产品的按时交付和定期迭代。
-5、跟踪分析所负责产品各项数据和用户反馈，跟进产品实施效果以及业务发展状况，研究行业类优秀产品的模式，定期做分析，持续优化公司的产品并逐步建立产品竞争优势，促进业务增长。
-1、大专以上学历，年龄27岁-35岁，计算机相关专业，大学英语六级以上，英语听说读写能力良好，能无障碍阅读纯英文网站，必要时可作为工作语言与欧美外籍人交流。
-2、5年以上电商购物网站产品经理工作经验，具备独立统筹多个网站产品项目从立项到交付的全盘经验，大中型跨境电商网站或国内互联网电商的产品经理。
-3、具备丰富的产品项目统筹经验，熟练管理产品需求开发的交付和更新迭代项目：推动产品的上线、运营，并负责日常业务数据分析，对数据进行深度挖掘和思考，与设业务团队、设计团队、开发团队密切配合，实现产品的按时交付和定期迭代；
-4、具备较强的整体方案规划能力，有较强的用户需求判断、引导、控制能力；有产品意识，对产品流程、用户体验及用户需求有深入的理解；
-5、优秀的产品设计能力、交互设计能力，精通产品原型设计工具，如Axure、Visio、思维导图等相关设计软件。
-6、强烈的责任感、上进心、执行力，较强的逻辑思维、洞察力、理解力、沟通力。', 'open', NULL);
-INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '产品经理' LIMIT 1), '江西北软科技系统工程有限公司', '互联网产品经理', '南昌', '0.8-1.2万/月', NULL, '岗位职责：
-1、负责网页和APP产品方向上市场调研、竞争分析、以及设计、产品生命周期管理;
-2、根据产品需求，输出详细的产品流程设计文档、产品界面及原型设计文档;
-3、负责与研发、设计、测试等部门沟通，确保各个协作部门对产品的充分理解;
-4、引导设计师完成产品的界面设计，协调开发人员进行开发工作，推动及协调产品的开发进度，把控项目质量;
-5、收集用户反馈，分析用户行为及需求，对产品进行持续的优化和改进;
-6、对产品数据监控，提供客户支持，提升整体产品的用户满意度，对数据进行分析和统计。
-7.有教育行业、管理类产品经验者优先。
-任职资格的具体描述：
-1、本科及以上学历,熟悉业内网页和APP产品；
-2、3年以上产品设计相关工作经验，产品意识卓越 ；
-3、优秀的沟通协作，执行及项目管理能力；
-4、有较强的数据分析、逻辑思考能力，能够准确把握用户的需求；
-5、有很强的市场洞察力，有创新精神，能承受一定强度的工作压力；
-6、有较强的敬业精神，责任心及良好的沟通能力和团队合作精神，具有较强的学习能力和洞察力；
-7、具备良好的数据与竞争对手分析能力，能够对自有产品提出整改计划；
-8、卓越的逻辑思维与分析能力，能够很好的规划和设计产品功能、使用流程与交互体验；能够熟练使用AxureRP、MindManager 、Visio等产品原型搭建工具；
-9：精通互联网产品交互设计的相关流程，包括功能分析、用户角色分析、原型设计、界面开发、易用性测试等；
-10、有完整的平台类产品、中大型交互系统、CRM（客户关系管理）系统、SaaS、PaaS等设计经验者优先。
-岗位福利：
-1、社会保险
-2、公积金
-3、国家法定节假日及带薪年假
-4、每年三节福利
-5、为每位职员提供完善的培训体系（包括入职培训、基础培训、岗位技能培训、晋升培训、外派培训等），为骨干员工建立个性化的成长计划；
-6、不定期组织丰富的员工活动；
-公交路线：10,11,15,215,205,207,206,226坛子口站下
-联系人：江*** 15180150190 公司电话：0791-88211658 88216258 88299075', 'open', NULL);
-INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '产品经理' LIMIT 1), '天津浩丞恒通科技有限公司', '高级产品经理', '天津-西青区', '1.5-3万/月', NULL, '1. 根据产品实施效果以及业务发展状况，负责制定交互方案，设计说明文档等公司产品工作；
-2.调研与分析客户的意见和需求，并根据平台及用户需求搜集与分析，对产品进行持续的设计优化，不断改善在线产品功能；完善操作流程，提高用户体验。
-3. 对产品的生命周期负责，提出创新性的产品蓝图框架，完成需求调研/产品规划/产品设计/运营策略，以及推动项目的研发落地等，并能根据产品上线反馈持续改善产品支持业务发展，并确保产品建设成果符合预期；
-4. 与开发人员紧密结合，确保产品实施进度和质量，协调相关部门进行平台的开发及日常的维护。
-5. 负责产品的市场推广与销售策略制定；
-6.负责跟进产品项目的按时、保质交付；
-7. 负责协调用户历史数据导入，系统功能调试及用户使用培训；
-8.及时统筹处理团队里各项功能的开发困境核心业务问题；
-9.制定运营规范和流程，做运营沟通和运营维护，保持产品在较好的状态运营。
-1.本科及以上学历，计算机、软件工程或相关专业；
-2.五年以上工作经验，至少三年以上互联网产品经理岗位工作经验；
-3.具备业务敏感度和数据敏感度，有较强的数据分析能力；
-4.较熟练使用Axure、Mindmanager、Visio、Project等工具，能输出高质量的PRD文档；熟练设计各客户端界面高保真原型Demo，具备提供良好用户体验的交互设计能力；
-5.具有良好的团队意识和合作精神，擅于协调与沟通，能挖掘并引导客户需求；
-6.具备激情、敏锐的观察力、分析和创意能力，思维严谨，善于发现并理解业务需求；抗压能力良好；
-7.知名电商、互联网物流平台、区块链、AI人工智能、大数据方面工作经验优先考虑；
-8.优秀的逻辑分析、判断和语言表达能力。能够跨部门协调在日常运营中遇到的各种问题，并通过持续性的解决问题和沉淀形成完整的、完善的、有影响力的产品；
-9. 有跨境电商业务或普货贸易经验者待遇从优：理解上下游供应商、客户的协作模式及内部运营体系、物流体系运作模式；深入理解相关用户、公司内部业务运营部门、供应商、客户的需求，据此设计合理的产品解决方案；', 'open', NULL);
-INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '产品经理' LIMIT 1), '南京光辉互动网络科技股份有限公司', '产品经理', '南京-江宁区', '5-9千/月', NULL, '产品经理*（1人）
-岗位要求：
-1. 本科及以上学历，1年以上产品设计工作经验，有数据平台、EPG、供应链（采购、物流）等相关业务经验优先；
-2. 善于发现、思考，具备独到的产品见解，具备一定业务前瞻性，并能以产品的思路提出解决方案；
-3. 对数据敏感，有优秀的数据分析能力，善于从数据中发现问题；
-4. 具备较强的学习能力和责任心、良好的沟通能力、优秀的团队合作精神、执行力和抗压能力。
-5. 熟练掌握Axure\\Visio\\Mindmanager\\MS Office等基本产品工具。
-6. 熟练掌握Power point、Excel、Project、Visio等工具。
-7. 有项目管理经验者优先考虑。
-岗位职责：
-1. 负责公司数据资源管理平台项目的产品0-1设计以及项目管理工作；
-2. 收集各部门的需求，梳理和分析需求，输出产品设计方案，推动并解决具体业务问题；
-3. 与研发团队紧密配合、协调推进项目，完成产品目标。
-4. 承担与用户建立联系，收集和梳理用户反馈，及时调整产品策略，及时开展功能升级；
-产品经理*（1人）
-岗位要求：
-1. 本科及以上学历，2年以上互联网教育产品设计工作经验；
-2. 善于发现、思考，具备独到的产品见解，具备一定业务前瞻性，并能以产品的思路提出解决方案；
-3. 具备较强的学习能力和责任心、良好的沟通能力、优秀的团队合作精神、执行力和抗压能力。
-4. 熟练掌握Axure\\Visio\\Mindmanager\\MS Office等基本产品工具。
-5. 熟练掌握Power point、Excel、Project、Visio等工具。
-岗位职责
-1. 研究并完成教育产品需求调研和设计，制定产品计划；
-2. 完成产品需求分析，产品原型及相关产品文档输出；
-3. 与开发、测试团队紧密配合、协调推进项目，完成产品目标；
-4. 深入了解用户需求和使用场景，收集和梳理用户反馈，及时调整产品策略，及时开展功能升级；
-5. 指导并协助一线人员，对公司的一线团队提供专业咨询。', 'open', NULL);
-INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '产品经理' LIMIT 1), '雷拓（广东）科技有限公司', '产品经理', '广州-黄埔区', '1-2万/月', NULL, '一、岗位职责
-1、根据市场定位发展战略与规划，负责产品的需求梳理、产品策划、产品流程设计；
-2、对现有产品进行融合升级、合作开发、立项新产品引入、前期推广方案等相关管理；
-3、制定产品规划、产品方向等策划、研发，负责产品上线全流程；
-4、能完成市场分析和竞品调研的工作，把握行业产品趋势，实时掌握竞品对手合作伙伴最新产品、行业动态，参与制定产品竞争战略和计划；
-5、根据市场需求调研及市场反馈分析，对公司产品进行迭代更新优化规划中，原产品线的生命周期规格等进行维护、替换；
-6、研发前期产品框架立项、功能定义、形态模式、可行性方案等相关立项工作的管理；
-7、公司产品相关的管理工作：包括产品选型、采购沟通、生产协调、自主研发、合作开发等。
-二、 任职要求
-1、3年以上产品经理经历，能独立承担过产品的全过程管理，
-2、有音视频行业经验优先，有弱电科技公司产品经理/大数据分析行业经验优先；
-3、熟悉行业产品实现过程，包括市场分析、需求分析、产品功能设计、业务流程设计、界面设计和可用性测试等；
-4、对产品和市场高度了解，具备新产品的开拓策划能力，对数据敏感，善于发现问题，解决问题;
-5、熟悉产品的工作原理、工艺工序等，有扎实的理论基础和技术工作经验，能独立解决产品全生命周期的相关问题；
-6、性格外向、开朗正能量，良好的沟通能力、推动能力、统筹协调能力、自我驱动力、抗压能力，拥有强烈的责任心和团队合作精神。
-三、福利待遇
-1、用餐：专职厨师，免费提供美味可口中晚餐；
-2、住宿：宿舍配套空调、热水器、洗水机、无线WIFI；
-3、社保：依法享受养老、医疗、失业、工伤、生育五险；
-4、活动：每月优秀员工表彰、每年旅游活动，下午茶、生日会、部门聚餐应有尽有；
-5、娱乐：台球室、篮球场，K歌室；
-6、培训：完善的系统培训提升员工个人综合能力；
-7、节日福利...
-公司地址：广州市黄埔区光谱中路11号云升科学园C栋705，近科学城地铁站
-联系人：黄小姐15989082982
-“雷拓大家庭”欢迎你的加入', 'open', NULL);
-INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '产品经理' LIMIT 1), '宁波外客网络科技有限公司', '产品经理（高薪+高福利+双休）', '宁波-高新区', '1.4-2万/月', NULL, '1、推动和管理跨部门合作项目，协调公司内外资源；
-2、负责产品的规划、设计以及持续迭代，不断创新、挖掘、设计新的产品或功能；保产品进度和质量，保证产品功能顺利开发部署；
-3、分析用户数据、业务数据，及时发现并处理产品实施中各类问题，推动产品及业务系统自动化水平；
-4、对用户需求进行分析，时刻关注竞品动态与行业发展；
-5、负责产品功能的完整流程，完成相关需求分析、方案设计以及协调资源跟进项目落地；
-6、配合运营推广工作，协助内外运营推广策略实现，完成业绩目标。
-任职要求：
-1、3年以上产品经验， 熟悉产品设计方法及工具，能够独立进行产品定义、规划、设计和实施；
-2、有完整的产品设计经验，熟悉互联网产品实现流程；
-3、具备熟练的数据分析、总结能力，能够通过各种数据的收集，归纳，分析对产品的设计和运营进行及时的调整及改进；
-4、优秀的创新能力、逻辑思维能力，深度理解用户需求和市场现状；
-5、较强的用户同理心和洞察力，善于发现和解决问题。
-职业晋升：
-1. 双轨制晋升机制，每年提供两次晋升调薪机会；
-2. 晋升路径，专员-主管-总监；
-3. 部门主管可享受部门提成或奖金奖励，总监享受各部门总提成或奖金奖励；
-公司福利：
-1）工作休息：9:00-12:00，13:00-17:30,七个半小时工作制；周末双休；
-2）假期休假：国家法定节假日全休，并提前半天放假；带薪年假；
-3）保险福利：缴纳五险一金。住房公积金、养老保险，医疗保险，工伤保险，失业保险，生育保险。积极承担社会责任，对每位员工负责。
-4）补贴福利：夏季高温补贴，出差补贴，通讯补贴，带薪培训，过节红包+过节礼，春节红包+年货大礼包，全勤奖励，生日蛋糕，新婚红包，生育红包等；
-5）优秀奖励：优秀员工外部免费进修，购车免息贷款，购房免息贷款等；
-6）旅游福利：每年国外旅游一次；主管级国内外旅游二次；
-7）父母福利：按工龄，每月给父母发放孝敬工资；
-备注说明：最终解释权归公司人力资源部所有。', 'open', NULL);
-INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '产品经理' LIMIT 1), '优普泰（深圳）科技有限公司', '产品经理', '深圳-南山区', '1-1.5万/月', NULL, '一、产品规划及管理
-1、负责搜集和分析用户的新需求、竞争产品的资料，深入掌握并研究行业产品和相关技术的发展现状和趋势等；
-2、负责产品战略和产品平台规划；
-3、负责产品功能的定义、规划和设计；
-4、产品管理（价格体系/品类规划/款式审核和建议/面辅料应用/销售数据统计分析/库存数据统计及消化/定单数据分析）。
-二、市场规划
-1、负责市场情况调研工作，掌握市场变化趋势；
-2、结合公司情况，根据市场变化趋势制订相应市场策略及产品定位，并编制《市场需求报告》 。
-三、市场渠道拓展
-1、制定和执行年度／季度／月度销售计划和市场拓展计划方案；
-2、代理经销商政策设定及开发作业，客商规范；
-3、项目投标的组织实施/总结；
-4、目标采购客户的拓展公关，客户相关信息档案的建立和跟进；
-5、重点客户的走访作业；副品牌批发业务的规划和实施；
-6、线上业务的规划和实施；
-7、网店/体验店的筹划和实施；
-8、业务人员工作的开展/分配/指导/跟进/考核；
-9、招商工具/方案的计划和实施。
-四、品牌管理
-1、负责企业/品牌形象的推广，公信力、美誉度和影响力的塑造强化；
-2、官网/画册/微信/等宣传工具的规划整合及运用；
-3、内部及外部相关活动类（培训/展会/公益/交流/行会等等）的策划/筹备和执行；
-4、对销售/外贸业务的技术背书及支援；
-5、公司和产品相关资质类（检测/供应商入围/IP申请等等）工作的预筹和执行；
-6、本行业市场各类信息（采购/竞品/法规动向等等）的收集整理和分析；
-7、信息类档案的分类整理/存档作业；
-五、其他工作
-1、完成上级交办的其它工作 。
-岗位要求：
-1、熟悉了解和掌握市场营销基本原理，善于把握市场需求变化趋势
-2、具有很强的市场策划能力，市场敏感度高
-3、具有较强的组织、计划、控制、协调能力和人际交往能力
-4、具有出色的谈判能力和语言表达能力
-5、市场营销类相关专业 ，或受过市场营销、团队管理、服装知识等方面的相关培训人员优先考虑。', 'open', NULL);
-INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '产品经理' LIMIT 1), '常州锐进企业管理咨询有限公司', 'ERP产品经理', '上海', '1.5-2.5万/月', NULL, '公司已经完成1亿的A轮融资。
-岗位职责
-1、结合B端业务的整体需求，完成ERP整体规划，制定系统蓝图、实施计划等，对业务的整体运营效率和体验负责。
-2、深入业务端、运营端、合作伙伴端业务场景，分析业务方需求与市场竞品，并结合使用场景与业务方沟通，完成需求梳理、优先级管理以及业务逻辑规划设计。
-3、与业务部门深度沟通，深度挖掘影响公司运作效率的工作流程，并将其规划落地为产品。
-4、评审产品经理输出的PRD文档，并对业务逻辑负责。
-5、关注产品上线后的业务数据，持续迭代优化产品，从而不断提升业务效率；
-6、积极协调内部资源，及时解决项目遇到的问题，保证项目的进度按时完成项目计划；
-7、负责ERP使用人员的产品培训和宣导、根据产品规划策略不断优化产品、提升产品质量和用户体验。
-8、带领团队，快速、高效推动产品设计、研发、运营及推广；
-9、复盘及迭代产品模型，梳理业务规模化流程
-岗位要求
-1、本科及以上学历，3年以上供应链（OMS、进销存、CRM等）相关系统规划/设计/开发经验，熟悉供应链整体流程，对资产、采购、供应链业务流程熟悉；
-2、具有敏锐的观察力，清晰的商业判断，能够协助业务一起制定业务产品策略，逻辑思维清晰 ；
-3、具备较强的逻辑思维，能从业务长期规则着手，满足用户需求的同时兼顾各阶段产品的前瞻性和灵活性；
-4、较强的数据分析能力，善于从数据角度驱动业务产品创新；
-5、具有较强的沟通能力，能够有效地与合作团队及客户沟通；
-6、具备较好的学习能力和自驱意识，思维清晰、逻辑性强，抗压力强，对工作充满激情；
-特邀有才华、敢于挑战的您加入 ，我们将为您提供有竞争力的薪资，优厚的福利待遇和良好的发展空间！
-有意者请速与我联系：
-中英文简历以word附件形式发至：ruijincz@qq.com 或 Eric@ruijincz.com ，邮件主题格式请设为：应聘姓名－职位.
-我们承诺，对来自于客户及候选人的任何资料，都将仅在招聘范围内进行交流。', 'open', NULL);
-INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '产品经理' LIMIT 1), '上海栖盟科技有限公司', '金融产品经理', '上海-杨浦区', '1.2-2万/月', NULL, '岗位职责：
-1、研究私募证券基金产品，研究宏观市场，分析产品发行的可行性，设计符合市场环境，公司战略方向的金融创新产品；
-2、负责产品发行前的研究分析、包装、策划及文案；支持基金产品的销售，制作销售工具包，并开展相关产品培训及协助产品推介工作；协助投后管理及反馈信息收集，并建立产品档案；
-3、负责项目计划书、招募说明书、合伙协议等文书的撰写及排版；
-4、根据财富端需求尽职尽责做好宣讲工作；及时高效解读相关领域最新行业动态；
-5、完成上级领导临时交办的其他工作。
-任职要求：
-1、国内外重点院校本科及以上学历，金融、经济、财务管理、投资、法律等相关专业；
-2、三年以上银行、证券、私募基金及公募基金等金融机构资产管理部门工作经验；
-3、熟悉国内私募基金环境，精通私募基金业务各个环节；
-4、熟悉产品路演流程；
-5、具备较强的逻辑思维、学习创新、数据分析和语言表达能力；专业细致、责任心强；
-6、有基金从业资格证书。岗位职责：
-1、研究私募证券基金产品，研究宏观市场，分析产品发行的可行性，设计符合市场环境，公司战略方向的金融创新产品；
-2、负责产品发行前的研究分析、包装、策划及文案；支持基金产品的销售，制作销售工具包，并开展相关产品培训及协助产品推介工作；协助投后管理及反馈信息收集，并建立产品档案；
-3、负责项目计划书、招募说明书、合伙协议等文书的撰写及排版；
-4、根据财富端需求尽职尽责做好宣讲工作；及时高效解读相关领域最新行业动态；
-5、完成上级领导临时交办的其他工作。
-任职要求：
-1、国内外重点院校本科及以上学历，金融、经济、财务管理、投资、法律等相关专业；
-2、三年以上银行、证券、私募基金及公募基金等金融机构资产管理部门工作经验；
-3、熟悉国内私募基金环境，精通私募基金业务各个环节；
-4、熟悉产品路演流程；
-5、具备较强的逻辑思维、学习创新、数据分析和语言表达能力；专业细致、责任心强；
-6、有基金从业资格证书。', 'open', NULL);
-INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '产品经理' LIMIT 1), '辽宁视讯达软件有限公司', '产品经理', '沈阳-浑南区', '0.6-1.5万/月', NULL, '岗位职责：
-1、负责公司产品平台的规划、设计与产品实施管理；
-2、制定产品的规划方案，与研发部门共同进行技术需求分析，负责相关业务建模；
-3、协调技术团队及项目管理，日常进度跟踪以确保产品功能特性和交互符合产品需求文档的要求；
-4、以产品为核心驱动，高效地推动和协调UI、技术、测试、运营等部门紧密合作，以确保产品准时、高质量的上线；
-5、负责市场竞品分析和产品数据分析，做出产品建议书及产品优化建议；
-6、负责对规划产品的需求分析、设计、开发和测试阶段性过程进行指导和监控；
-7、参与年度规划，制定产品的短期及长期发展规划，运营目标与策略，持续改善产品及功能。
-8、协助业务部门的售前、实施工作。
-任职资格：
-1、5年以上工作经验，3年以上IT或互联网产品经理经验，具有至少2项产品经验，完成从0到1产品实现；
-2、具有软件、系统集成等行业售前咨询、产品设计、售后技术支持、项目经理等相关经验；
-3、有出色的产品规划能力，具备产品运营能力、数据分析能力、主导产品方向和制定长期规划，并拆分为可实施方案；
-4、有良好的产品策划、设计能力，熟悉产品设计工作流程，对数据敏感，具有较强的产品运营思路；
-5、具备良好的PPT制作、产品原型制作、需求文档PRD撰写能力，熟练操作office、Axure等软件；
-6、具备较强的逻辑能力和学习能力，能适应短期出差。
-7、富有团队合作精神，善于与人沟通，能及时响应和处理产品或用户反馈的问题；
-8、有政府项目经验者优先考虑。
-加入我们，共同开启全新未来。
-你收获的不仅仅是一份工作，更将收获一个不一样的自己，创造不一样的未来；
-发展和职业机会从来都没有终点，有的是无限可能；
-这是我们对每一位应聘者的期待与承诺。
-加入我们，你能得到的是：
-－早九晚五，-七小时工作制；
-－每周双休，享受国家各项法定假日；
-－五险一金，完美福利保障；
-－完善的工资体制；
-－一流办公环境，激情的工作状态。', 'open', NULL);
-INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '产品经理' LIMIT 1), '深圳市颉沃创新科技有限公司', '产品开发 产品经理 精品电商硬件项目管理', '深圳-龙岗区', '0.8-1.3万/月', NULL, '我们是一家主张精品+ 数据化运营，自有模具及外观设计，单人负责SKU不超过20个，货物100% FBA，拒绝铺货。2个运营配1个产品经理，团队创始成员有多年产品开发、供应链管理、品牌营销管理经验。
-寻求务实有激情的小伙伴，协力一起打造爆款，深耕供应链，经验丰富者亦可合作启动新项目享受额外项目分红，希望您可以加入我们。
-【岗位职责】
-1.负责手游类、车载类、电子产品规划从定义到终止周期各环节管理；
-2.产品调研、分析及产品设计；分析产品的发展趋势，结合用户需求提出产品优化及创新方案，持续对产品实施优化和升级，监控设计至测试发布的全过程；
-3.与技术团队紧密配合，快速、高效推动产品设计、研发、运营及推广；
-4.配合相关的团队，在产品层面对项目予以支持;
-5.参与、指导所负责产品的重要活动和产品推广。
-【岗位要求】
-1.本科以上学历，有3C产品3年以上开发经验；（有亚马逊经验优先）
-2.了解3C数码产品的基本结构，性能，使用方式，常见问题的处理方式；
-3.对项目管理流程熟悉，并能快速灵活 ，高效的运用项目知识优化管控流程；
-4.能从消费者角度去发现产品机会，对产品分析、数据分析、竞争分析等有见解；
-5.强烈的责任心和敬业精神，结果导向型思维。
-【公司福利】
-1、保险：统一缴纳五险，人身意外险，协助办理深户；
-2、交通：地铁直达出站即（杨美地铁A出口2分钟）；
-3、假期：国家规定的法定节假日，10天以上的带薪年假；
-4、娱乐：不定期的下午茶活动、生日活动、外出旅游；
-5、培训：全流程一对一培训，岗位专业培训，技能培训以及管理者培训；
-6、环境：优越的办公环境，年轻的工作团队；
-7、福利：加班奖励、年假奖励、200元/月全勤奖、节假日福利、月度季度奖励、年终奖等；
-8、晋升：拥有内部晋升加薪机会，股权激励和分红机制；
-9、其它：福利健全，人性化管理，工作氛围好，效益佳，丰厚的奖励和绩效奖励。', 'open', NULL);
-INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '产品经理' LIMIT 1), '深圳桑椹电子商务有限公司', '电商产品经理（智能硬件）', '深圳-龙华新区', '1-1.5万/月', NULL, '技能要求：
-智能硬件，APP，汽车电子，改装
-【岗位职责】
-1、产品规划工作，包括用户调研，竞品分析，行业技术趋势分析等，输出PRD；
-2、负责跨部门协调研发、测试、运营等多部门工作，推进产品上线及运营过程；
-3、产品售后问题跟进，数据分析等；
-4、参与不同渠道/平台的产品销售策略制定，在产品端保障销量目标的完成；
-5、收集信息，深入了解行业，持续优化产品/产品线；
-【任职要求】
-1、两年以上智能硬件（APP）产品工作经验，有氛围灯工作经验优先；
-2、较强沟通协调能力，逻辑性强；
-3、本科及以上学历，良好的英语阅读能力，英语四级以上；
-【福利待遇】
-1、工资待遇：每月有500元的餐补；
-2、员工培训：提供入职培训，同时也会不定期为员工组织相关培训；
-3、人才培养：公司对工作表现优秀的员工不定期的给于薪酬调整机会和晋升机会；
-4、社会保险：入职即购买；
-5、节日福利：公司在传统佳节等重大节日为员工发放节日慰问品或过节费；
-6、假期规定：依法享有国家规定的各种法定节假日；
-7、其他团建：公司或部门不定期组织各项文娱活动。
-【公司简介】
-Suncent（深圳桑椹电子商务有限公司）成立于2016年，致力于打造垂直细分领域直接面向消费者的全球品牌。秉承消费者至上的价值观，专注于垂直细分类目，不断了解消费者需求，通过持续的创意创新和探索，将最符合消费者需求的创新产品带向世界。基于对北美汽车消费需求的不断深入了解，桑椹成功打造了专注于汽车照明领域的的 SEALIGHT，Torchbeam，Marsauto 等品牌，并且于2018年在汽车照明领域实现亚马逊北美市场占有率***。
-【欢迎加入我们】
-我们拥有年轻的团队、共同的梦想、和谐的氛围，如果您具备越挫越勇的气势，如果您拥有不甘平庸的抱负，我们将会因您的到来而更加迅猛发展，您会因为有桑椹的土壤而成就自己的未来！真诚期待您的加入！', 'open', NULL);
-INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '产品经理' LIMIT 1), '深圳腾飞科技管理有限公司', '电商产品经理', '深圳-南山区', '1-1.6万/月', NULL, '岗位职责：
-业务产品线（1人）
-1、负责官网、电商、支付、服务等电商相关功能的产品规划和产品方案设计，支撑品牌、电商和物流，服务等业务全球化、本地化产品架构；
-2、结合品牌的战略和业务目标，制定品牌官网的产品线的发展规划和路标，协调内外部资源，确保业务和产品目标达成；
-3、以用户为中心，深入用户场景，关注用户反馈和运营数据，不断完善业务流程和平台能力，提升用户体验；
-4、积极组织内外部沟通，主动挖掘需求，推动项目进展；
-运营工具产品线（1人）
-1、负责用户会员体系、活动系统等前后台运营工具的产品线长期规划、产品设计及跟进落地工作。
-2、评估业务前台提出的需求的合理性，并给出对应的解决方案。
-3、关注业务前台各项目线的发展动态，并结合业务发展情况，调整产品线规划，提升运营效率及效益；
-4、根据日常数据运营和监控，分析提出优化方案。
-任职要求
-1、全日制本科及以上学历，3年以上互联网产品相关工作经验，英语流利者优先；
-2、对互联网和电商行业有较深理解，具有良好商业价值分析以及用户洞察能力；
-3、具备结构化的思维，能把事情向上下游陈述清楚，提供产品经理核心价值，而不是传话筒；
-4、熟悉互联网产品设计和研发项目流程，良好的跨团队沟通、项目管理和执行力；
-5、有0到1独立搭建产品的经验，有扎实的产品规划，较强的产品交互能力；具有较大规模电商或平台类产品的成功实践的优先；
-6、数据驱动，结果导向的思考模式，具备高度责任心，良好自驱力和抗压能力，能够适应快速变化的过程。
-7、有供应链、商品管理、运营平台等相关产品经验者优先考虑；具备数据库和数据分析能力者优先。
-关于我们：
-1、弹性上下班，完美避开高峰期，周末双休；
-2、不定期下午茶，吃到饱；
-3、扁平化管理，上下级关系超nice；
-4、外企式氛围，外籍同事给你提高英语好机会~', 'open', NULL);
-INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '产品经理' LIMIT 1), '广东乐从钢铁世界有限公司', '网站产品经理', '佛山', '20-30万/年', NULL, '岗位职责：
-1、协助部门领导落实产品的设计和规划；
-2、能够快速深入理解用户的问题和关注的焦点，快速设计梳理出核心业务流程；
-3、前期调研，原型设计，编制需求分析、需求规格说明书、需求报告、并参与评审工作；
-4、负责对需求业务梳理、需求变更、需求生命周期的跟踪和管理；
-5、可尽快学习与掌握项目/产品需求内容，并指导或协助开发人员对需求的完整理解；
-6、了解用户心理，分析自身产品数据，密切关注竞争对手，持续完善和优化产品功能和用户体验；；
-7、了解公司产品，搜集市场/用户需求，协助产品人员分析提炼出产品改进的方向和细节。
-8、跟进产品上线后运营及用户反馈，数据分析和效果追踪，并持续优化产品，提升用户体验；
-9、协调技术开发人员，跟进产品开发进度，完成产品的开发、测试、产品上线等相关工作；
-10、负责产品高保真设计评审，对UI设计，界面布局有很好的审美判断；
-任职资格：
-1、大专或以上学历，计算机或相关专业优先；
-2、至少有3年以上产品设计，需求文档编写工作经验，有云计算行业产品设计经验者优先；
-3、对互联网软件产品有很深入的理解，了解互联网最新趋势。能把握用户体验合计的关键点，和互联网产品设计的演变趋势；
-4、熟练使用office办公软件，如Word、Excel、Visio、Axure，有互联网或软件项目经验为佳；
-5、熟悉需求分析理论，掌握产品需求分析、设计技巧，对交互设计与用户体验有良好的了解；
-6、具有较强的交流、表达能力，善于并喜欢与人沟通；
-7、具有良好的逻辑思维能力、文档编写能力，能过将业务需求通过文档清晰地表达出来；
-8、良好的工作态度及较强的工作责任心，能够承受工作压力、具有团队合作精神。
-9、有一定的创新能力，执行力强、团队意识强；
-10、有不锈钢、管件、五金类线上交易项目经验者优先', 'open', NULL);
-INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '产品经理' LIMIT 1), '深圳唯尚塑胶电子有限公司', '亚马逊产品经理', '深圳-宝安区', '0.8-1万/月', NULL, '1. 负责Amazon平台产品的市场信息的调查和分析，根据公司的产品需求，开发具有市场潜力、适合在Amazon平台销售的热销产品。
-2. 了解一些开发分析工具的使用，并能独立把握产品定位，进行数据分析、评估、总结和调整，提炼产品卖点，了解生产工艺，能正确判断产品的性价比。
-3. 熟悉Amazon等相关跨境电商的法律条款以及新品的开发策略，有敏锐的眼光，并对产品周期与价格能有比较准确的趋势判断与预测，能有效的规避侵权、相关认证、产品周期、产品严重质量等风险。
-4. 沟通能力强，能与运营、美工等相关工作人员配合协调，制作高质量有竞争力的Listing：提供初步销售建议，协助同事完成销售；并跟踪新产品销售状况。
-5. 搜集、考察及评估供应商信息，积极发掘国内优质供应商，搭建并优化供应商体系，合理控制成本，确定产品稳定供货。
-1. 本科以上学历，英语CET4或以上，3年以上的亚马逊产品开发经验，有精品爆款开发经验者优先。
-2. 熟悉Amazon产品的分析，开发和采购；并有优秀的产品理解能力及总体规划能力，对产品和数据敏感，思维清晰而有条理，能够独立规划产品线。
-3. 较强的语言表达能力及协调沟通能力， 及时有效的协调设计与运营的工作，优秀的供应链管理能力。
-4. 出色的风险规避能力，熟知亚马逊等相关跨境电商的法律条款。
-5. 目标感强，有责任心，品行端正。
-(1)薪资待遇：提供具有竞争力的薪资待遇，薪资采取综合薪资+全勤+奖金，购买社保；
-(2)带薪休假：除了享受国家法定节假日以外，工作一年以上的员工均额外享有超长5天带薪年假；
-(3)舒适办公环境，免费公司午餐，丰富下午茶，并配备微波炉，冰箱；
-(4)合理的工作时间，上班时间（9:30-18:30,中午休息1.5小时），大小周轮休，不强制加班；', 'open', NULL);
-INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '产品经理' LIMIT 1), '南京紫米网络科技有限公司', '产品经理（偏商务、产品售前）', '南京', '0.9-1.2万/月', NULL, '岗位职责：
-1、全面负责产品的定位、发展策略以及各阶段的产品规划、设计与实现；
-2、基于用户体验设计方法，结合用户需求和产品技术架构，完成产品设计和原型展示；
-3、根据产品需求，撰写详细的产品流程设计文档、产品界面及原型设计文档；
-4、负责与研发、设计、测试等部门沟通，确保协作部门对产品文档的有充分的理解；
-5、引导设计师完成产品的界面设计，协调开发人员进行开发工作，推动及协调产品的开发进度，把控项目质量；
-6、收集用户反馈，分析用户行为及需求，对产品进行持续的优化和改进。
-7、对产品数据进行监控，提供客户支持，提升整体产品的用户满意度；对数据进行分析和统计。
-8、此岗位偏售前，要有销售的思维。
-岗位要求：
-1、专科及以上学历，2年以上产品经理经验者优先；
-2、有互联网产品技术开发经验者优先，有无线产品运营经验者优先
-3、熟悉移动互联网产品整体实现过程，包括从需求分析到产品发布，深刻理解用户需求；
-4、精通互联网产品交互设计的相关流程，包括功能分析、用户分析、原型设计、界面开发、易用性测试等；
-5、具备较强数据分析、创新设计、项目管理及跨部门沟通协调能力，性格开朗乐观，能够承受压力和挑战；
-6、具备良好的职业素养及团队合作精神，有敏锐的市场触觉和洞察力、具备营销思维、较强的创新精神和开拓能力；
-【工作时间】
-五天工作制，周一至周五。 弹性工作时间：上午8：30-9：30上班， 下午17：30 -18：30下班，中间休息一个半小时，周未双休
-【社会保险】
-公司为员工缴纳五险（工伤、综合医疗、养老、失业、生育保险）一金（公积金）
-【员工假期】
-按照国家规定实施假期制度，同时可根据工作年限享用有薪年假。
-【公司地址】
-公司在鼓楼高新技术开发区幕府创新小镇，靠近地铁3号线五塘广场站，35路直达。', 'open', NULL);
-INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '产品经理' LIMIT 1), '沈阳聚兆达商贸有限公司', '产品经理', '沈阳', '6-8千/月', NULL, '1、负责公司产品平台的规划、设计与产品实施管理；
-2、制定产品的规划方案，与开发部门共同进行技术需求分析，负责相关业务建模；
-3、协调技术团队及项目管理，日常进度跟踪以确保产品功能特性和交互符合产品需求文档的要求；
-4、以产品为核心驱动，高效地推动和协调UI、技术、测试、运营等部门紧密合作，以确保产品准时、高质量的上线；
-5、负责市场竞品分析和产品数据分析，做出产品建议书及产品优化建议；
-6、负责对规划产品的需求分析、设计、开发和测试阶段性过程进行指导和监控；
-7、参与年度规划，制定产品的短期及长期发展规划，运营目标与策略，持续改善产品及功能。
-1、5年以上工作经验，3年以上IT或互联网产品经理经验，具有至少2项产品经验，完成从0到1产品实现；
-2、具有软件、系统集成等行业售前咨询、产品设计、售后技术支持、项目经理等相关经验；
-3、有出色的产品规划能力，具备产品运营能力、数据分析能力、主导产品方向和制定长期规划，并拆分为可实施方案；
-4、有良好的产品策划、设计能力，熟悉产品设计工作流程，对数据敏感，具有较强的产品运营思路；
-5、具备良好的PPT制作、产品原型制作、需求文档撰写能力，熟练操作office、Axure等软件；
-6、具备较强的逻辑能力和学习能力。
-7、富有团队合作精神，善于与人沟通，能及时响应和处理产品或用户反馈的问题；
-8、有政府项目经验者优先考虑。
-福利：
-1.薪资结构：五险+底薪+绩效+满勤+工龄工资+提成
-2.为您缴纳保险：养老保险、医疗保险、失业保险、工伤保险和生育保险
-3.录用后公司将提供系统化的带薪培训
-4.丰富的员工活动：员工聚餐、旅游活动、节日晚会、优秀员工大会、员工生日福利等
-公司地址：沈阳市沈河区五里河街道茂业中心16楼
-联系电话：15040172119', 'open', NULL);
-INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '产品经理' LIMIT 1), '华中科技大学鄂州工业技术研究院', '产品助理工程师 （湖北深紫科技）', '异地招聘', '3.5-5千/月', NULL, '岗位职责：
-1、ERP物料管理；
-2、产品文件及台账管理；
-3、竞品、样品、客诉台账管理；
-4、产品常规数据汇总和分析；
-5、协助产品经理处理临时交办事务.
-任职要求：
-1、1年以上产品开发或PIE经验；
-2、具有较强的数据分析和处理能力;
-3、大专以上学历;
-4、有较强的沟通能力，细心，耐心。
-此岗位为我院代入孵企业湖北深紫科技有限公司招聘。
-湖北深紫科技有限公司，坐落于梁子湖畔的东湖高新科技创意城，是国内高品质深紫外LED核心芯片、器件及其应用产品解决方案的的核“芯”科技企业。
-湖北深紫科技有限公司专注于深紫外LED芯片、模组及产品的研发、生产和销售，产品主要针对于水、空气的杀菌净化、食物保鲜、计测光源、光学医疗、保密通讯等领域的需求。公司拥有近千平的千级净化厂房，拥有包括外延生长、芯片制备及封装老化测试在内的完备的深紫外LED生产线，国际领先的技术研发能力和成熟的生产工艺。
-湖北深紫科技有限公司在高温MOCVD设备、材料生长、芯片制备、器件封装等方面拥有多项核心知识产权。公司拥有一支由归国博士、博士后、高级工程师及资深技术人员组成的高水平研发技术团队，具有丰富的深紫外LED技术研发和生产实践经验。公司与国际知名实验室协同开发，具备持续的技术创新能力，保证了公司产品的高品质和技术的先进性。 凭借优秀的研发团队、丰富的行业经验，公司已自主研发出高效率深紫外LED（波长范围260nm-310nm）芯片器件及其相关应用产品系统。深紫科技以振兴民族高新技术产业为己任，秉承创新、开拓、超越、追求卓越的工作精神，致力于成为全球深紫外LED核心器件及其应用产品解决方案顶尖供应商。
-公司主营产品或业务：深紫外LED芯片、灯珠、高密COB封装光源模组、深紫外LED光源组件及深紫外应用解决方案。', 'open', NULL);
-INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '产品经理' LIMIT 1), '深圳市音络科技有限公司', '产品经理', '深圳-宝安区', '1-1.5万/月', NULL, '岗位描述：
-全面负责所管理的类目的产品规划、项目执行的工作，为公司销售提供强有力的供应链。
-产品线规划和跟进：产品线的规划和生命周期管理。定期分析市场占有份额，进行产品的进一步规划布局，提高市场份额，跟踪新产品的销售情况和质量情况，并及时做出相应的调整。
-项目管理：负责设计、立项、选型、研发改进、测试、试产及量产等阶段的管理；负责开发进度跟进，各阶段的时间节点的过程管理，对进度过程中工作安排进行查漏补缺，有风险预警能力；
-竞争对手和新品信息输入：定期收集与产品有关的信息，输出竞争对手的行业信息及动态，收集各个渠道对产品的意见和建议，不断发现总结细分市场用户的特征；
-公司新品的产品体验及报告，竞争对手的产品体验及报告；
-文案资料输出：产品说明书等文案知识的整理及输出；
-对公司相关人员进行产品知识的培训。
-供应商搜索：寻找合适的供应商，安排样品测试，考察工厂，最终确定要做的产品。
-招聘要求：
--经验要求：
-有知名品牌、知名公司同类岗位工作2年以上者优先。
-指定品类1年以上工作经验：电子消费品/安防/无线蓝牙产品/会议产品
--学历和语言要求
-本科以上学历（特别优秀者可以放宽要求）
-英语读写能力优秀（过四级）
--技能要求：
-1.项目管理能力：拥有项目管理经验，可以独立完成产品的市场分析、产品定位及包装、销售跟进、数据分析等工作；跨职能跨部门的组织协调能力。
-2.业务能力：精通指定类目的品类结构、产品的内部结构，熟悉蓝牙上游供应链，熟悉该品类的行业发展趋势；
-3.沟通能力：表达能力强，熟练使用word、excel、ppt等工具，良好的写作能力和文案宣讲能力；有从用户角度思考问题的能力，能抓住产品最核心的用户需求的能力；
-4.数据分析能力：对产品和数据敏感，思维清晰而有条理；', 'open', NULL);
-INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '产品经理' LIMIT 1), '重庆逆转教育科技发展有限公司', '考研数学产品经理', '重庆-渝中区', '0.6-1.1万/月', NULL, '1、负责研究用户需求和使用习惯，创造性地提出交互和界面设计方案，提升产品品质，提高用户活跃度；
-2、负责相关产品的功能设计、业务流程设计；
-3、控制项目周期和进度，确保产品顺利上线运营；
-4、负责相关产品数据分析及统计工作，收集整理用户反馈，形成产品分析报告，并给出改进建议。
-任职要求：
-1、数学、统计学等相关理工科专业硕士毕业，数学优秀者可不限专业亦可放宽至本科
-2、普通话标准，表达能力超强
-3、有较强的亲和力，性格开朗，有良好的团队协作能力和沟通能力
-3、热爱教育事业，积极进取，具有创新意识及独立研发能力，具有较强的学习能力
-其他福利:
-1、丰富的工作福利：转正后享受五险、绩效奖金及年终奖励、法定节假日休息、不定期团队活动；
-2、快速的发展平台：公司正处在快速发展壮大的阶段，我们致力于内部培养，内部晋升渠道透明，公正；
-3、和谐的办公环境：交通便利、无烟工作环境、轻松的团队氛围、聚餐等。
-重庆逆转教育科技发展有限公司旗下品牌——惊呼教育，是一家专门做在线考研的教育企业，目前有河南和重庆两个分公司。我们是一个年轻的团队，带着热情和冲劲为自己的目标奋斗，我们不是***的，但也不是最差的，我们是一群平凡但希望自己能变得更优秀的人！如果你也希望自己能成长，希望自己有更高的上升空间，对自己有要求有目标，那欢迎加入我们！公司现正处于高速发展的阶段，可以给大家提供很多的机会，而且非常注重对员工的培养，相信这对成长中的你是***的选择！工作地点地理位置优越，交通餐饮娱乐等设施十分便利，期待最美的你的加入我们！
-工作时间：9:00-12:00 14:00-18:00
-工作地址：渝中区龙湖时代天街D馆10号楼6-8
-乘车路线：地铁1号线到石油路站下车，从2A出口出，往D馆方向', 'open', NULL);
-INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '产品经理' LIMIT 1), '广东新拓计算机科技有限公司', '产品助理', '江门', '0.6-1万/月', NULL, '工作内容：
-1、充分调研并规划出产品发展方向，制定产品的长期竞争策略；
-2、负责产品实现的管理职责，对完成进度和质量负责，确保进度于质量优秀；
-3、把控产品研发节点、控制研发成本，对产品成本负责；
-4、管理产品开发、定价、上市的全过程，监管产品发展情况，处理产品问题，确保产品市场接受度高；
-5、负责设计产品的功能特性和交互，撰写市场需求文档、产品需求文档，商业需求文档、产品原型，产品实现跟进，上线效果跟进及调整优化，有计划的实现产品，确保产品可持续发展；
-6、负责对现有产品推陈出新，打造产品创新点、爆点；
-7、负责对产品的目标客户群进行分析，定期开展用户调研和数据分析并输出有针对性的分析报告，并制定有效的解决方案改进产品；
-8、开展市场调研，对相关行业的发展及竞争对手进行调研、分析，定期输出有针对性的分析报告，对产品整改提出建设性意见并实现；
-9、负责制定产品工作规范，整理、完善产品文档、业务流程及相关内容；
-10、完成领导安排的其他工作任务。
-任职要求
-1、全日制本科及以上，市场营销专业及计算机相关专业优先
-2、两年以上相关工作经验，有产品经理的工作背景***
-3、熟悉产品调研、产品开发、产品推广工作
-4、具备很强的洞察能力和分析能力，很强的沟通理解力
-5、有前瞻性的业务规划能力，团队管理能力
-福利待遇：
-1、带薪内部专业培训，良好的发展空间和晋升机会；
-2、科学、优越的薪酬及考核机制；
-3、完善的员工社会保险体系；
-4、人性化的休假制度：双休、法定节假日、带薪年假、婚假等假期；
-5、年终奖金、项目提成等；
-6、多项津贴：如岗位津贴、出差津贴等；
-7、丰富的培训项目与团队活动（如户外拓展、项目培训、员工定期活动、郊游、聚餐、卡拉、文体活动等）。', 'open', NULL);
-INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '产品经理' LIMIT 1), '广州市卓创教育信息科技有限公司', '产品经理', '广州-天河区', '1-2万/月', NULL, '【职位职责】：
-1、负责APP产品规划构思，产品调研与需求收集；
-2、负责APP产品具体功能设计、产品原型，撰写产品需求文档；
-3、跟进UI设计师完成产品高保真图；
-4、熟悉项目管理流程和方法，有效跟进保障项目进度，把控项目整体质量；
-5、紧密跟踪竞品动态、行业热点，定时分析用户行为及反馈建议，对产品进行持续迭代升级和用户体验优化。
-【职位要求】：
-1、本科或以上学历，3年及以上APP产品策划或设计经验；
-2、熟悉IOS、安卓等系统特性，熟悉产品交互设计、功能逻辑设计流程；
-3、具备敏锐的市场洞察力，具备丰富的策划及创新能力，具备互联网思维，能洞悉用户心理；
-4、具有良好的数据分析、逻辑分析能力，良好的文字表达与文档编写、沟通协作能力，能进行跨部门团队协作；
-5、较强的抗压能力，沟通协调能力及问题处理能力；
-6、富有团队协作精神、责任心强，工作积极主动；
-7、对数字校园（如迎新、离校、教务、财务、学工、科研）、一卡通、大数据、BI有一定的理解及从事过相关工作经验者优先；
-【员工福利】
-六险一金：入职即买六险一金，养老保险、医疗保险、工伤保险、失业保险、生育保险、商业保险、住房公积金；
-带薪假期：入职满一年员工享有5-10天的带薪休假、国家法定节假日、加班可以申请调休；
-薪酬调整：公司每年将结合市场薪酬水平、岗位调整、个人绩效考核的结果相应进行薪酬调整；
-年度旅游：每年会组织1-2次公司员工集体出游；
-员工活动：固定周二、周四有羽毛球、蓝球等健身活动；不定期组织员工活动，如文体活动、聚餐等；
-上班时间：五天八小时工作制，周末双休， 9：00-12：30 13：30-18：00；
-工作地点：广州市天河区中山大道西307号东岳财富广场C座403室', 'open', NULL);
-INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '产品经理' LIMIT 1), '武汉睿翼智翔科技有限公司', '产品经理', '武汉-洪山区', '0.8-1.5万/月', NULL, '一、岗位职责：
-1、根据用户需求进行市场和产品分析，提炼产品开发需求，搭建产品规划、产品立项、产品项目开发及供应链链路;
-2、制定产品市场推广计划，进行新客户开发，老客户新产品导入，并管理产品销售渠道;
-3、制定产品整体销售策略，产品卖点规划、产品定价以及标准产品资料技术支持方案的审核;
-4、完成产品线常规预测、订货、销售计划、利润指标和销售目标达成;
-5、收集市场和用户的反馈、跟进产品关键数据指标，制定后续迭代发展计划。
-二、任职要求：
-1、3-5年相关产品项目经验;
-2、关注行业及用户，有很强的市场敏感度，主动关注竞品动态并能独立完成市场分析工作;
-3、具有相关车联网类运营工作者优先;
-4、擅长大数据分析，用数据驱动产品及运营.
-三、福利待遇：
-福利待遇：1.每日8小时工作制，午休1.5小时，包午餐、加班餐；
-2.国家法定节假日薪资福利；
-3.每逢国家传统节假日，发放节日礼品或慰问金；
-4.五险一金：养老、医疗、工伤、失业、生育、住房公积金；
-5.享受年假、婚假、产假、病假等各类带薪假期；
-6.不定期组织各类培训，工作期间带薪培训，助力员工成长与发展；
-7.不定期组织各类户外活动，参与公司组织的集体活动，如：拓展、旅游、运动等；
-8.每月按时上下班且无迟到早退请假者，获得月度全勤奖；年度全勤；
-9.公司根据每年经营情况和员工年度绩效表现，发放丰厚年终奖金； 如果你是一个生活工作有激情有目标的年轻人，如果你是一个希望专注于工作不愿受太多外物打扰的程序猿，我们的团队将为你提供本地为数不多的适合你成长的土壤。在睿翼，有与能力成正比的待遇体系、多种多样的发展渠道、眼花缭乱的福利和假期、温馨舒适的办公环境、简单快乐的同事关系。我们期待您的加入！', 'open', NULL);
-INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '产品经理' LIMIT 1), '北京墨尔法勒医学研究院（有限合伙）', '软件产品经理', '北京-朝阳区', '1-1.5万/月', NULL, '软件产品经理：
-参与制定用户端产品标准，监督执行，对接外包。
-主要工作职责：
-1、熟悉web、服务号、服务号后台、小程序、APP开发流程。了解数据库（Mysql，SQLserver）查询与一定的数据分析能力；
-2、熟悉软件产品的整体实现过程，包括从需求分析到产品发布；
-3、深入了解公司产品核心价值，根据市场的态势和用户群体分析，参与产品交互界面和流程原型设计，确保产品功能满足用户的需求；
-4、分析业务需求，定义产品功能，负责用户端产品的迭代，策划及统筹产品的开发规划，编写产品需求文档；
-5、负责管理内部团队、协调外包团队等参与各方，推进项目进展；
-6、负责产品测试、体验、评审发布相关工作；
-7、配合运营分析产品/运营数据，从数据中发现问题，不断改进产品；根据业务需要持续改进产品，不断提升用户体验。
-岗位要求：
-1、全日制本科以上学历；互联网产品工作经验，有一定量级成功产品经验者优先；
-2、有产品设计工作经验；有微信服务号后台、小程序工作经验优先；
-3、具备良好的需求分析能力和产品设计能力；
-4、具备良好的文档编写能力；
-5、良好的沟通能力和团队协作能力，善于并乐于沟通，充满激情，能够承受工作压力，有开拓和创业精神；前期可能会有临时加班工作需求；
-6、有产品运营思维，结果导向、逻辑清晰、业务抽象能力强，对数据足够敏感，对用户心理和操作行为有感知和判断；有同理心对用户体验敏感，有创新思维；
-7、思维敏捷，性格开朗，责任感强，工作积极主动，有团队管理经验优先；
-【岗位要求都可视个人情况放宽，能力要求大于学历要求。】
-【大健康产业创业公司（有研究院进20年的自主知识产权技术支持、近几年内市场上可能都不会有竞品出现，很可能以后都不会有竞争。）】', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 5, 'dict', TRUE);
-INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '产品经理' LIMIT 1), '广东东为信息技术有限公司', '产品助理', '佛山', '6-8千/月', NULL, '1） 产品能力：产品策划，竞品分析，数据分析，需求分析，用户研究，决策能力。
-2） 沟通能力：具备良好的沟通能力，具备配合产品经理沟通并完成最终需求调研及分析的能力。具备与开发团队协调沟通的能力。
-3） 技术能力：熟悉软件开发流程、编码和数据库常识、能够独立绘制软件原型。
-一、市场分析
-（1）负责配合产品经理完成研发部产品的市场分析、竞争分析，形成市场需求分析文档；
-（2）负责配合产品经理收集行业及竞争对手信息，协助确定产品发展目标及战略，开拓新客户；
-二、产品分析
-（1）配合产品经理完成市场调研评估及产品生命周期管理；
-（2）配合产品经理提出新产品的立项方案，不断完善产品功能；
-三、产品管理
-（1）配合对项目相关产品知识、市场和竞争信息的培训
-（2）协调项目相关部门，组织公司相关资源，进行项目立项实施；
-（3）进行产品验证及产品销售活动发布后的用户反馈信息收集；
-四、产品销售
-（1）配合营销计划，协助团队完成公司布置的销售任务。
-一、具有公安行业、大数据分析行业或者产品外联等相关工作经验的优先考虑；
-二、具备基本的产品分析能力，洞悉行业信息，并为营销提供思路；
-三、配合产品经理整合公司内产品，提供全方位的产品解决方案；
-四、配合产品经理进行市场调研和产品分析，对产品进行研究与监控；
-五、配合产品经理完成产品管理。
-六、本科以上学历。
-上班地点：佛山市南海区桂城街道简平路1号天安数码新城四期1704-1706室
-上班时间：7小时，大小周休息
-联系电话：0757-81850289
-联系人：李小姐
-联系邮箱：lisj@donwait.com
-福利待遇： 社保，年度旅游，年度体检，法定假期，工龄奖，全勤奖，员工生日会，每月一到两次活动', 'open', NULL);
-INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '产品经理' LIMIT 1), '深圳市杰麦科技有限公司', '产品经理', '深圳-龙岗区', '1-1.5万/月', NULL, '职位描述：
-1、负责公司产品线的规划、设计以及持续改进优化，不断创新、挖掘、设计新的产品或功能；
-2、负责产品需求收集、整理、撰写，进行用户需求分析，了解竞品动态与行业情况；
-3、负责推进与各部门紧密合作，并协助开发团队理解和掌握需求共同推动产品研发发展；
-4、跟进产品的开发，测试，监督产品质量，掌握产品的开发进度；
-5、分析产品数据，并优化产品，提高用户的体验感。
-岗位要求：
-1、大专及以上学历，两年及以上的互联网产品策划经验；有APP、微信公众号产品经验者优先。
-2、热爱互联网，熟悉多种类型互联网产品，对不同类型的互联网产品有一定的感悟和认识；
-3、具有丰富的产品想象力和优秀的逻辑思维能力，产品设计时能预先考虑用户使用中遇到的各种情况并提供可行的解决方案；
-4、具备熟练的数据分析、总结能力，能够通过各种数据的收集，归纳，分析对产品的设计和运营进行及时的调整及改进；
-5、有全局观念，能把握优化整体系统框架；
-6、出色的文字和口头表达能力，善于沟通；
-7、具备优秀的团队合作能力，有强烈的责任心。
-公司福利：
-1、薪酬：基本工资+绩效奖金+全勤，提供优于市场平均水平的薪酬福利，优秀员工享受股权激励；
-2、社保公积金：公司购买五险（养老、医疗（综合保险）、生育、失业、工伤）及公积金等；
-3、员工活动：每月有定期与不定期的运动、聚餐、唱K、等活动；
-4、员工福利：公司提供免费下午茶、零食、节日礼品、生日会、公司旅游、加班餐补、带薪年假等；
-4、 员工培训：用共享形式进行例行培训、部门培训、岗前培训、专题培训等提供全方位的培训；
-5、工作时间：9：00—12:00 13:30—18:00 ，一周六天工作制，节假日按国家法定执行；', 'open', NULL);
-INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '产品经理' LIMIT 1), '湖南遥昇通信技术有限公司', '互联网产品经理', '长沙-宁乡县', '0.6-1万/月', NULL, '职位描述：
-1、负责项目前期的市场调研和分析工作并深入了解市场，搜集行业动态和相关政策信息，研究和拟定营销线新项目的开发 ；
-2、深度挖掘用户需求，根据公司产品战略独立完成产品规划 、产品需求文档 ；编制市场规划 、设计方案；编写方案设计报告、实施方案报告；
-3、根据客户需求对项目硬件产品的成本核算进行评估 ，编写提交评估报告；
-4、与客户保持良好沟通，实时把握客户需求，定期与公司技术人员对接，全程对项目需求分析、设计、开发、测试等进行指导和监控，确保按时交付项目，为客户提供主动、热情、满意 、周到的服务，建立良好的长期合作关系；
-5、能独立完成数据分析、数据报表的整理、数据占比分析，拓宽市场渠道，督促解决产品实施过程中可能出现的功能、性能、稳定性问题；
-6、不定期收集市场销售信息、新技术产品开发信息，分析及跟踪竞争对手，定期进行产品分析，吸取行业发展优点；
-7 、负责公司现有项目产品的完善和开发、合作洽谈、合同签订、售后服务等相关工作；
-8、完成公司下达的年度、月度经营目标任务 ；
-9、完成领导交办的其他临时性工作 。
-岗位要求：
-1、 大专以上学历， 具有程序开发经验，了解计算机硬件相关技术，计算机技术与科学等相关专业，做过电子硬件产品项目的优先。
-2、 熟练使用办公软件，工作认真细致，对数据敏感，具有较强的数据分析能力。
-3、 有较强的文字功底，可以起草项目推广方案。
-4、 具备良好的客户意识以及业务拓展能力，性格开朗、积极主动、讲效率、乐于接受挑战、 具有较强的沟通能力及交际技巧，具有亲和力，具有较强的学习能力。
-5、有较强的市场感知能力，敏锐地把握市场动态、市场方向的能力。
-6、 有独立工作能力和团队合作精神。', 'open', NULL);
-INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '产品经理' LIMIT 1), '福建鑫诺医疗股份有限公司', '产品经理', '福州-鼓楼区', '0.8-1.5万/月', NULL, '1、负责医疗、健康类等产品功能规划、需求分析及设计工作；
-2、负责挖掘并分析行业市场信息及内外部用户需求，形成结构性的需求分析成果；
-3、输出完整的产品需求与设计分析文档、产品原型图、功能逻辑图、流程图、数据分析方案等；
-4、独立完成跨职能的沟通与协调，推动设计方案的上线，保证产品达到预期要求；
-5、持续提供前瞻性规划与设计建议，优化产品体验。
-6. 具备入院宣讲、产品演示和介绍、项目招投标、业务培训、项目验收等工作的能力；
-7. 具备项目实施进度跟踪推动，收集与分析客户需求，提供业务指导和咨询服务；
-8. 具备项目相关文案编写的能力，包含招标建设方案、招标参数、验收材料等文档；
-9. 负责收集行业动态和竞品信息。
-任职条件：
-1、具有医疗信息化某个领域（HIS/EMR/PACS/平台/智慧医院/互联网医院）的实施交付/需求分析/开发/售前支持工作经验者；
-2、热爱设计策划类工作，有强烈的创新意识与自发的进取心；
-3、良好的自我管理、学习及独立思考能力；
-4、逻辑分析能力强，善于提炼与总结；
-5、抗压能力良好，能够自我驱动追求更高质量的设计成果；
-6、医疗、计算机相关专业本科及以上学历；
-7、良好的客户沟通能力，逻辑思维能力和语言表达能，能较好将公司的产品与客户进行无障碍沟通交流；
-8、较强的文案功底，能够根据客户需求和招标文件快速形成有效的方案和应标文件，包括PPT、WORD等形式档；
-9、对产品和相关领域的技术有一定了解；优秀的口头表达能力和沟通技巧，善于独立解决问题；适应经常性出差
-10、有团队协作精神，服从领导，吃苦耐劳，适应频繁加班和出差工作强度，有很强的抗压性；
-11、符合岗位要求的应届毕业生优先考虑。', 'open', NULL);
-INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '产品经理' LIMIT 1), '本无网络科技有限公司', '产品经理', '重庆-沙坪坝区', '0.8-1.3万/月', NULL, '岗位职责：
-1、依据公司产品发展战略，负责产品需求调研、梳理、审核、系统分析和方案设计，确保需求实现。
-2、根据要求编写产品需求书、产品原型；组织产品计划实施，负责和研发、测试、运营部门协调，保障产品项目如期上线。
-3、对公司现有的产品需求调研和用户行为分析、客户调研、用户体验，撰写相关需求文档，持续迭代改善产品。
-4、负责产品项目进度跟踪及落实，对产品的市场推广、外观等进行总体把控；按里程碑节点发布产品版本及所有配套资料。
-5、负责跨部门的协调沟通，收集线上、线下反馈和数据分析，持续产品迭代，推动各部门紧密合作达成产品目标。
-6、通过市场调研、用户反馈、数据分析及用户行为分析等手段，挖掘教育领域对智慧社区的潜在需求。
-7、负责互联网教育应用产品，B端、C端产品经验丰富，有辉煌成就。
-8、领导交办的其他临时任务。
-任职要求：
-1、统招本科及以上学历，计算机、心理学、设计等相关专业优先；
-2、5年以上产品工作经验；
-3、对UE、UI敏感，了解iOS／Android／Web各平台的交互设计规范。
-4、对用户需求敏感，有从需求分析到产品发布全流程的经验，能独立设计产品。
-5、 熟练使用Google Analysis 产品，熟悉Google Marketing Platform 优先。
-6、熟练运用制作产品原型及产品流程图工具（Axure , Visio等）。
-7、有企业级SaaS、平台类产品经验者优先。
-8、具有一定的英语水平、文档编写、需求分析、产品设计能力。优秀的自我驱动力、缜密的逻辑思维能力、良好的沟通能力及较强的学习能力， 对工作有责任心。喜欢挑战新事物，抗压能力强。
-9、熟悉教育行业或社区产品设计经验者优先。', 'open', NULL);
-INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '产品经理' LIMIT 1), '四川凤图科技有限公司', '互联网产品经理', '成都-高新区', '1-1.5万/月', NULL, '岗位职责：
-1、产品规划：负责公司产品线的需求规划，针对内外部竞品进行定期分析；并能根据项目及业务需求、市场环境变化进行适时调整。
-2、产品设计：负责产品的功能规划，通过用户需求分析、竞品调研等对功能进行具体定义和设计，注重产品用户体验；
-3、项目推进：组织、协调内外部相关资源，跟进产品各个阶段的落地情况，快速、高效推动产品的设计、研发、上线及推广等进度；
-4、产品优化：根据公司市场人员及用户反馈信息、市场竞品分析，不断对产品进行优化升级；
-5、产品运营及数据分析：负责公司产品的运营规划，并定期对运营数据进行分析，不断优化运营方案。
-任职要求：
-1、全日制统招大学本科及以上学历，5年以上互联网产品经验或运营经验，有作为产品负责人带领团队实现产品0-1过程经验，有区块链、数字货币实践相关经验者优先；
-2、具备敏锐的产品嗅觉，对数字货币、数字经济行业市场方向有敏锐的观察和分析判断能力；
-3、能独立完成产品线调研及规划，撰写合乎业务需求、逻辑缜密的产品需求文档，推动整个产品研发过程；精通产品设计及交互设计的相关技能，方案展示及原型表现力强，擅长数据分析；
-4、能组织制定产品运营规划、策略，并负责运营计划的落地执行和不断调整优化、达成运营目标；
-5、良好的沟通能力、优秀的执行能力和项目推动能力，能胜任复杂合作式项目，可以与多方团队密切和谐合作。
-福利待遇：
-1、 福利：健全的养老、事业、医疗、生育、工商保险，带薪年假等
-2、 发展：公司为区块链云算力挖矿行业，发展行业前景好，发展空间大
-3、 其他：节假日福利，年终奖，员工活动等
-4、 上班时间：9：30-18:30，周末双休，法定节假日正常放假，让你的生活元气满满！', 'open', NULL);
-INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '产品经理' LIMIT 1), '广州凡拓数字创意科技股份有限公司', '产品经理', '广州-天河区', '1.5-2.5万/月', NULL, '岗位职责：
-1. 负责公司文博产品的调研、规划、设计，在软件开发前，完成交付给开发和测试团队产品需求文档，功能定义，业务流程、业务状态和时序定义，用户界面原型，交互设计等详细设计文档；
-2. 关注并调研行业动向以及竞争对手产品并提出产品改进方案，合作渠道开拓及建立，与合作伙伴对象达成良好、有效的合作；
-3. 进行文博类产品与运营模式的内外部调研分析，收集用户反馈并进行数据分析，为产品迭代提供核心依据，工作范围包括业务调研、需求梳理、流程设计，产品规划、数据整理、系统培训与推广应用；
-4. 负责公司内部产品规划设计、产品推广应用，持续优化，资源整合等工作；
-5. 与项目、研发团队沟通、业务团队对接，确保产品设计满足业务和管控需求；
-任职要求：
-1. 本科以上学历，具有5年以上系统集成产品规划、项目实施相关工作经验；
-2. 独立负责过产品的立项、规划设计、开发跟踪，上线运营及优化迭代，能独立把控整个产品；
-3. 有成功的软件系统产品规划设计案例，有较强的文案能力和工具使用能力（Word、PPT、Visio、Project等）；
-4. 熟练掌握 Axure、XMind、Photoshop等，能够提供高质量的产品原型、流程图、线框图等，清晰表达设计方案；
-5. 擅长数据分析，善于有效地收集用户反馈，挖掘用户需求，并根据数据指导产品优化，对技术前沿有敏锐的洞察力、数据敏感、逻辑思维严谨、对用户产品体验敏感；
-6. 较强的逻辑思维能力、团队协调及跨部门沟通能力，业务理解能力强有项目管理经验，能够推进项目的开展及产品的持续迭代；
-7. 理解力强，有较强的求知欲、进取心和学习能力，积极乐观，自我驱动，抗压能力强。', 'open', NULL);
-INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '产品经理' LIMIT 1), '追创科技（苏州）有限公司', '产品经理-小米生态链', '苏州', '1.5-3万/月', NULL, '1. 负责公司智能清洁业务线下产品的管理工作；
-2. 理解公司的战略与业务规划，协助上级制定清洁机器人品类的产品路线图，基于对市场、用户、竞品的分析，形成产品需求文档（BRD/MRD/PRD）并主导推动产品开发立项；
-3. 与市场用户研究团队合作，深入理解提升用户体验的机会点，定义产品解决方案；
-4. 与项目团队（项目管理，产品营销、研发与工业设计、制造与采购、品质管理及 ODM/OEM供应商）协作，深度参与到端到端（从产品概念批准到量产）的新品开发过程中，确保产品成功量产铺货，最终量产产品符合最初确定的产品需求定义；
-5. 与销售和市场团队协作，共同讨论确定产品营销策略与产品上市计划。为销售和市场营销提供支持
-6. 监控分析产品市场表现与用户之声，提出并推动落实产品生命周期管理决策，确保产品的商业成功；
-7. 协助上级推动公司产品管理流程的不断优化。
-任职要求：
-1. 7年以上自主品牌或自主研发、定位中高端的家电、消费电子行业从业经验（小米生态链工作经验），5年以上产品管理方面管理经验，了解产品开发标准流程与理念；
-2. 有较强的项目管理能力，有外部先进供应商合作技术、产品开发经验者优先，在原有行业排名前三公司或者细分市场隐形冠军工作经验者优先，有海外市场产品管理工作经验者优先；
-3. 对UCD用户为中心的设计研究、创新产品设计方法有了解和自己的想法，喜欢尝试新产品和新服务，研究新技术；
-4. 优秀的逻辑与批判性思维，善于进行数据分析并具有较好的演讲能力；
-5. 良好的沟通技巧与倾听理解他人的能力（尤其面对工程技术人员）；
-6. 良好的口语及优秀的书面英语（能把英文作为书面工作文字）。', 'open', NULL);
-INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '产品经理' LIMIT 1), '贵州国台酒业销售有限公司', '产品经理（工作地点贵阳）', '异地招聘', '1-1.5万/月', NULL, '岗位职责：
-1、根据公司信息化战略，完成需求采集、需求分析、用户体验研究，编制需求方案及计划；
-2、根据需求方案，输出竞品分析文档及PRD文档；
-3、负责系统研发及测试的跟踪，阶段性成果汇报，负责发布前的验收及版本管理工作；
-4、进行市场调研和系统优化，提出优化需求及改进建议，提升系统操作用户体验；
-5、具备中台需求沟通能力，有过中台产品PRD文档输出经验；
-6、负责需求管理相关制度流程编写及更新；
-7、熟悉社群交互营销产品规划，社群、电商、大数据相关成功项目经验者优先。
-任职要求
-1、销售行业任职产品经理职位三年以上，至少独立完成三份以上相关管理信息化、财务信息化、实体销售、电商销售、大数据、数字中台等方面的完整产品文档输出；
-2、对腾讯微体系有深入了解，精通WEB、WAP及HTML5产品设计规范，有一定的UE/UI的表达能力和设计能力;
-3、优秀的产品需求分析、规划和系统分析能力,能独立完成前端到后台的需求及原型设计工作;
-4、较强的沟通能力，思维敏捷、逻辑性强,有项目管理经验，能够推进项目的开展及产品的持续迭代;
-5、擅长数据分析，善于有效地收集用户反馈，挖掘用户需求，并根据数据指导产品优化，对技术前沿有敏锐的洞察力、数据敏感、逻辑思维严谨、对用户产品体验敏感;
-6、强，工作积极主动，具备良好的团队协作意识，以结果为导向，擅长目标分解，确定里程碑，多任务并行执行；
-7、关注新零售市场，对竞品有自己的见解，并可提供相关产品发展的决策，熟悉白酒行业优先考虑;
-8、能熟练应用AXURE、VISO、XMIND以及其他office办公室软件，PRD文档结构思路清晰、书面表达能力强。', 'open', NULL);
-INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '产品经理' LIMIT 1), '深圳市创富港商务服务股份有限公司', '产品经理', '深圳-福田区', '1.2-2万/月', NULL, '【岗位职责】
-1、通过产品调研、数据分析、竞品分析，深入了解用户需求，规划产品方向（办公平台）。
-2、根据用户需求及规划，完成业务流程设计、功能设计、交互设计等产品设计工作。
-3、负责项目管理与运营，与内外部进行有效沟通，确保产品开发上线运营进度质量。
-4、持续监控和分析产品上线后的用户数据及反馈，完成产品持续优化与迭代。
-【任职要求】
-1、全日制本科及以上学历，2年以上互联网办公产品设计和管理经验，精通产品设计相关工具。
-2、具有敏锐的市场预见能力和产品定位能力，能够把握市场现状、用户需求和竞争规则。
-3、具有跨部门、跨职能的组织协调能力，能够承受高强度的压力，具备团队管理经验。
-4、熟练掌握Axure、Visio、Office等常用办公软件。
-5、有相关办公平台、财税系统、人事系统规划工作经验者优先。
-【工作地址】：
-【我们提供】：
-1、薪资待遇：底薪+奖金+福利；
-2、福利保障：入职就享受五险一金，还有通讯补贴、高温工龄补贴、年度旅游、节日补贴（元旦、春节、妇女节、中秋节、生日等）；
-3、健康体检：健康检查基金；
-4、假期组合：带薪年假、带薪旅游假、国家法定假期（婚育假、产假、陪产假等）；
-5、工作时间：一周五天班，周末双休，朝九晚六，午休两小时；
-【方圆间】是一款专业为中小企业提供一站式办公和商业服务的平台软件，由新三板上市公司创富港投资打造，创富港成立于2008年，是
-，其几十万家入住的优质企业，为方圆间的快速成长提供了肥沃的土壤，方圆间未来将紧扣
-的需求，不仅为其提供公司注册、办公空间、办公沟通、股权融资、财税等服务，还将在
-成为中小企业一路上成长的坚实后盾。', 'open', NULL);
-INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '产品经理' LIMIT 1), '广州市凝智科技有限公司', '充电桩产品经理', '广州', '1-1.5万/月', NULL, '充电桩产品经理
-一、岗位职责：
-1.负责公司产品需求的调研、规划、分析，输出需求文档、产品交互设计文档，设计解决方案；
-2.对运营中的产品，持续收集需求、用户反馈跟进、项目进度跟进，持续对产品进行改进创新；
-3.通过各类数据分析工具，深度挖掘产品数据价值；
-4.对产品线的全生命周期进行管理，推动产品相关工作，包括产品定义、设计、研发、上线、迭代、运营、推广等工作；
-5.策划符合公司发展要求的应用及系统产品，并输出完整的产品方案。
-二、任职要求：
-1.自动化或计算机相关专业，大专及以上学历。熟悉充电桩产品或拥有相关工作经历者优先；
-2.具备需求调研、产品策划、原型设计、数据分析等产品相关的工作能力，熟练使用Axure、Visio、MindManager等常用工具； 3.逻辑思维强，有较强的调研、分析能力，能够独立完成产品调研、分析和总结；
-4.具备至少两个以上从0-1的产品管理经验； 5.具备良好的业务理解能力、沟通能力和文档写作功底；较强的自我驱动力，强烈的责任心和团队合作精神。
-备注：工资与总经理面议；
-公司福利
-1、五天八小时工作制，双休，员工均可享受国家法定假期、带薪假期（婚假、产假、护理假、丧假、病假）；
-2、享受下午茶、员工生日会，经常组织体育或休闲、聚餐活动；每年公司会组织全体员工至少一次的集体旅游或户外拓展，突出贡献表现员工享受公司的带薪公司出资的旅游奖励；
-3、遇中国传统节假日，公司为员工发放品质优异的福利礼品；
-4、根据员工职业发展需要提供各种专业培训与晋升发展机会；
-5、公司办公环境舒适、交通便利。
-工作地址：广州市萝岗区科学城科汇金谷三街10号8楼', 'open', NULL);
-INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '产品经理' LIMIT 1), '安徽波士信息科技有限公司', '互联网产品经理', '合肥-政务区', '0.8-1.2万/月', NULL, '电商产品，互联网，产品
-B2B，B2C，O2O，B端产品，功能产品，社交电商
-没有电商平台产品项目经验的（要懂产品端开发，会和研发人员沟通），没有产品开发经验本公司一律不考虑，请不要乱投，谢谢！（有大牛，待遇1万+）
-1、有电商平台产品项目经验，参与过全流程产品开发，懂得和研发团队沟通，懂技术语言，参与过产品迭代及后续运营工作。
-2、开展市场调研，收集产品需求，参与产品需求定义，设计产品原型，编写文档；
-3、和技术开发团队合作，跟踪产品开发进度，协助产品上线等相关工作；
-4、负责收集整理客户需求反馈，通过定性和定量的分析，持续改善优化产品，提升用户体验;
-5、统计产品运营数据，进行业务数据分析，定期完成分析报告或产品竞争战略计划，及时改进与优化；
-6、对手产品的分析和研究，准确把握同类产品发展趋势；
-任职要求：
-1.大专及以上学历，3年以上产品经理相关工作经验；
-2.具有良好的产品规划经验、产品规划、方案写作、项目管理经验；
-3.具有前瞻性思维，对软件开发行业发展有深刻理解和认识；
-4.思路清晰、逻辑思维能力强，具有良好的学习能力和文字表达能力；
-5.熟练掌握Excel/PPT/word/Visio/project/AXURE等软件
-福利待遇：
-1、公司办公地点在中侨中心A座9层，办公环境高档优雅，办公面积近千平，工作氛围轻松活跃。
-2、试用期1-2个月，根据个人能力来转正，转正后即购买五险。
-3、工作时间：早9晚6，做五休二。
-4、年终奖。
-5、生日庆生。
-6、公司定期聚餐、一年一次免费旅游、拓展培训等。
-7、法定节假日按国家规定休息。
-8、公司提供完善的晋升机制。', 'open', NULL);
-INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '产品经理' LIMIT 1), '北京国研数通软件技术有限公司', '产品经理', '北京-东城区', '1-2万/月', NULL, '工作职责：
-1 根据公司战略规划产品目标及建设规划，对公司现有项目、客户需求、产品及技术发展、行业产品进行深入的调查分析和研究，把握市场变化，洞察业界动态，参与制定产品规划；
-2 负责公司通用产品组件以及行业产品的需求分析，完成产品需求规格说明书的编写，以及产品原型的绘制；
-3 在产品的整个生命周期过程中，负责产品需求及管理的相关工作，分析确定需求的可行性及优先级；
-4 用户需求，市场需求，公司内部需求的挖掘分析；
-5 负责公司产品的设计及开发实施，保证业务目标的实现；深入研究产品数据，结合公司平台业务需求进行产品设计；并与业务部门进行业务需求沟通，整理相应的需求和流程文档，并确定开发目标；
-6 负责部分售前项目的售前支持工作，包括：售前方案编制、售前PPT制作、现场交流等；
-7 组织、协调、利用内外部资源落实产品建设目标；
-8 完成公司交办的其他工作。
-任职资格：
-1 全日制综合类大学本科及以上学历，计算机类相关专业（如有特殊经历者酌情考虑）；
-2 具备大中型IT产品经理5年以上工作经验，有互联网产品设计、数据平台或大数据分析应用等经验者优先；；
-3 具有较强需求分析、市场调研和产品设计能力，有较好业务战略理解与配合执行能力，有较高市场敏感度和产品规划能力；
-4 良好的技术领悟能力，优秀的商业分析能力（结构化思维）、敏锐的数据洞察力，对分析数据背后隐藏的知识有强烈的兴趣；
-5 较强的文字表达、方案编写、PPT制作等能力，较强的倾听、表述、理性沟通等能力。
-6 正规统招本科毕业生', 'open', NULL);
-INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '产品经理' LIMIT 1), '湖南省国元信息工程有限公司', '软件产品经理', '长沙', '0.8-1.5万/月', NULL, '1、负责完成产品的需求分析和应用场景分析，组织市场调研，产出产品规划和需求定义文档，负责组织产品设计，技术调研，产出系统设计方案；
-2、参与产品研发项目，输出对应的原型和功能规格说明书；并实时检视产品开发与初始规划的偏移，输出需求跟踪表，在产品发布前进行需求验证；
-3、负责产品生命周期管理，跟踪产品上线后的市场表现，用户反馈、数据跟进分析，并定期对自身产品、整体行业、竞争对手等进行数据分析并评估，不断优化改进产品规划；
-4、根据产品市场和运营反馈，结合公司业务发展状况，不断改进，优化产品，增强产品的竞争力。
-5、欢迎有实际经验，并乐于从事IT咨询、策划、系统架构的硕士、博士加盟。
-1、 大学本科及以上计算机或相关专业，3年以上软件产品设计经验；
-2、 负责公司产品的调研分析，用户体验设计，需求撰写规划、 实施及产品的持续优化改进；辅助市场人员对产品的推广营销。
-3、能敏锐把握用户需求，有较好的的产品设计感和用户体验理解，能熟练使用Axure、Visio、Powerpoint、XMind、墨刀和UML等工具，熟悉B端和C端产品设计；
-4、较强的协作沟通能力，参与项目计划，能与UI设计、技术开发及测试团队进行良好的沟通协作；对内能够与研发人员进行良好的沟通协作，对外能够了解客户的需求和向客户传达设计理念并引导客户；
-5、思维敏捷性格开朗，执行力强，有团队意识。
-6、有政府、CRM、OA、ERP应用需求经验，熟悉CMMI文档规范者优先
-工资8k-15k双休制，转正后购买社保五险，过节费，出差津贴，带薪年假，年终绩效奖金+项目奖励，优秀和核心员工参与员工持股计划。', 'open', NULL);
-INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '产品经理' LIMIT 1), '无锡鸿正信息技术有限公司', '互联网产品经理（周末双休）', '无锡', '1-1.5万/月', NULL, '1)根据公司的战略目标及市场行情和既定的公司产品的发展方向，做好产品的需求梳理、产品策划、产品流程设计，撰写相关的需求文档；根据业务需求和用户研究的结果完成界面的信息架构设计、流程设计和原型设计；
-2)负责商户营销需求收集，竞品分析；把业务需求转化为合理的产品方案；规划营销产品并对接各产品线，实现各系统整体闭环，有效助力商户实现营销转化
-3)通过数据和用户反馈，进行监控与分析，进行产品功能优化，提升产品的用户体验；
-4)协助设计、开发、测试团队理解和掌握产品需求，对产品易用性负责。协助开发团队理解和掌握需求，跟进UI，开发，运营等人员的工作；
-5)关注产品相关信息，探索市场需求和业务需求，定期跟踪，整理产品的用户反馈，根据用户反馈改进产品体验；
-定期进行行业分析，提出建设性的产品创意提案；
-6)完成领导安排的其他工作任务。
-任职要求：
-1)3年以上工作经验，3年以上Saas产品或移动互联网产品策划经验；
-2)精准把握大众消费心理，具备一定的营销技能，熟悉微商城、团购、优惠券、会员体系、分销裂变营销业务，有微信公众号、小程序营销产品设计经验及成熟上线产品。
-3) 分析经营环境分析，规划产品路线图；负责搜集和提出产品需求，制定产品规范，对产品进行全面设计，对软件产品的易用性设计和用户体验有良好的直觉，注重细节。 熟练使用Visio，xmind，Office，Axure等相关工具软件
-4）具备较强的逻辑思维能力、学习创新能力、数据分析能力、语言和文字表达能力；
-5）具备产品运营及项目管理能力，具备良好的沟通协调及团队合作能力，良好的沟通协调技巧和团队合作意识。', 'open', NULL);
-INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '产品经理' LIMIT 1), '湖南和美顺电子商务有限公司', '亚马逊产品经理', '长沙-雨花区', '0.8-2万/月', NULL, '1. 负责Amazon平台市场数据的收集和分析，根据市场需求，开发市场潜力的产品。
-2. 调研Amazon平台热卖产品，结合公司的总体形势，寻找适合公司的产品以及改造新的产品，同款产品进行优劣势分析并提出改进方案。
-3. 市场信息和竞争对手信息的搜集、整理、分析及跟踪，开发有竞争力的新产品。
-4. 产品生命周期的管理，产品升级，产品停产，产品价格调整等产品生命周期管理；
-5. 与各部门沟通协调，完成新产品的开发，备货，包装设计，直至产品上线。
-6. 清楚平台规则政策，懂得辨认侵权产品，能把握好开发出的新产品不会有侵权违规等问题，及时了解平台政策变化和竞争对手信息，熟悉每款所开发产品的特性，提取产品卖点。
-任职要求：
-1、本科及以上学历，专业不限，2年以上相关工作经验；
-2、具备较强的沟通协调能力、全局把控能力、数据分析能力及对应产品的规划能力；
-3、熟悉外贸电子商务的商业模式，对行业的发展格局与趋势有明晰的了解与把握， 并熟悉国外市场用户购物体验及产品发展方向；
-4、有激情，能承受一定的工作压力。
-福利待遇：
-1. 国家重大传统节日（端午、中秋、春节等）都有现金红包
-2. 双休，五天7.5小时工作制+国家法定节假日
-3. 行业内具有竞争力的薪酬体系，完整的晋升和调薪体系
-5. 定期团建+半年旅游+带薪年假+年终奖
-在我们这里：
-高薪不是问题，没有严格死板的考勤制度！
-没有996，只有真实的朝九晚六！
-不谈梦想，只谈发展，知道你们的梦想是不上班！
-我们需要的是年轻有激情，有想法，努力且上进的人！！
-如果你敢拼，敢做，敢想，就加入我们吧~', 'open', NULL);
-INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '产品经理' LIMIT 1), '武汉侏罗纪技术开发有限公司', 'B端产品经理', '武汉', '0.9-1.5万/月', NULL, '1、以现有产品为基础，结合石油勘探行业应用需求，编制产品规划文档、产品需求文档；
-2、负责产品规划、产品功能、产品需求的定义和管理；
-3、参与客户需求沟通，收集、整理并分析客户的需求，为客户提供个性专业化的解决方案、规划方案、建设方案等；
-4、将产品功能、机制、流程用恰当的工具设计为产品原型，制订产品需求文档，以供设计、开发、测试人员明确产品需求和进行开发、测试；
-5、跟进UI设计人员的设计和技术人员的开发，确保产品功能特性和交互符合产品需求文档的要求；
-6、持续收集、整理和分析用户需求和反馈，完成产品的规划与持续改进；
-7、参与软件开发和维护过程，制定产品迭代计划，提出合理化建议。
-8、配合市场及销售部门输出产品推介材料，负责相关部门的产品培训事宜。
-9、参与重要招标文件中关于产品部分的编写，并参与重要市场活动中的产品讲解。
-10、分析行业及竞品产品，跟踪最新发展趋势，竞争对手调研。
-任职要求：
-1、本科以上学历，2年以上B端产品工作经验；
-2、精通产品交互设计的相关流程，包括功能分析、用户角色分析、原型设计，保证界面可开发、易用性；
-3、具有较强的沟通能力、逻辑能力和产品设计能力，对数据敏感，具备较强数据分析能力；
-4、熟练掌握Axure、Visio、XD、PD等原型搭建与表达工具。
-5、有较丰富的产品规划方案编写经验，良好的文字、语言表达能力；
-6、具有强烈的责任心和上进心，具备良好的团队合作精神，积极主动，能承受较大的工作压力，能够接受出差。
-7、有石油、地质、市政、管网等类型国有企业和政府方向的产品管理经验者优先。', 'open', NULL);
-INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '产品经理' LIMIT 1), '安徽同济建设集团有限责任公司', '互联网产品经理', '合肥-瑶海区', '5-7千/月', NULL, '1、负责产品规划及产品发展方向的整体把握和工作部署，结台公司发展战略，全面策划及统筹产品的发展规划，明晰定位、目标、策略并落实实施；
-2、制定产品需求计划，进行可行性分析及设计，撰写产品需求说明书，负责需求的跟踪和控制；
-3、制定产品业务规范，整理，完善产品文档，业务流程及相关内容；
-4、负责日常业务数据分析，设计产品商务模型，推广营销模型，跟进产品销售，客户反馈；
-5、把握移动互联网发展趋势，分析跟踪竟争对手，定期完成分析报告或产品竟争战略和计划；
-6、负责搜集和提出产品需求，制定产品规范，对产品进行全面设计，如功能、特性，使用流程，UI、性能要求等，并与技术人员一起综合优化利用各种技术手段，完成产品硏发；分析上线产品的运营数据，定期组织分析，撰写产品运营分析报告，提出产品改进意见，不断完善在线产品，持续改善用户体验。
-任职要求：
-1、大专及以上学历，计算机、软件等相关专业，两年以上工作经验；
-2、了解互联网行业产品发展动态及竞争对手的最新动态
-3、有深厚的产品设计经验，如互联网，移动互联网，手机应用等；
-4、有敏锐的市场洞察力，知识范围广阔；
-5、具备熟练的数据分析，总结能力，能够通过各种运营数据的收集，归纳、分析对产品的设计和运营进行及时的调整修改；
-6、良好的书面表达、人机沟通能力和团队合作精神；
-7、有求职APP或第三方支付行业从业者优先。
-特别提示：
-本岗位为瑶海区国资委与同济集团联合招聘，工作地点在安徽建筑农民工创业孵化园，工作压力较大，经常加班。
-软件功底不扎实者勿投！抗压能力差者勿投！工作效率低者勿投！', 'open', NULL);
-INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '产品经理' LIMIT 1), '上海乐刚供应链股份有限公司', '产品经理', '上海-宝山区', '1-2万/月', NULL, '岗位职责：
-1、具有良好的身体与道德素质、爱岗敬业，做人做事做到不笨、不傻、不懒、不膨胀、不矫情；
-2、定期做产品数据分析和竞品分析；
-3、充分熟悉掌握乐刚平台产品的功能及使用，熟练掌握乐刚平台的整个交易流程；
-4、协调研发、产品设计、测试等各环节，产品生命周期管理，确保产品保质保量上线；
-5、精通各类产品设计工具，并能够对产品专员进行培训和指导；
-6、具备大型项目管理能力、跨职能、跨部门的组织协调能力，思路清晰，自律性强，抗压能力强；
-7、管理、指导、布置及培训下属的各项工作，做好部门人员梯队建设，督促本部门职工有序高效工作，并进行指导、考核、有效沟通。
-任职要求：
-1、985,211重点院校全日制本科及以上学历，毕业院校统招本科前两百以内，研究生优先；
-2、3年及以上web产品工作经验，参与并组织过产品从0到1；；
-3、有大宗商品互联网产品相关经验者优先；
-4、抗压能力强，自律，逻辑思维能力强；
-5、良好的管理组织能力，沟通能力，推动部门团队合作，保证项目计划按时完成；
-6、良好的竞品分析能力，写作能力强。
-员工待遇：
-①独特的人才快速提升通道，特岗特薪 ；
-②免费提供住宿（酒店式公寓，三星级酒店标准）；
-③高标准餐厅，提供餐补，餐厅食品全部自供，保障食品安全；
-④提供车辆补贴，实行电话及手机费定额报销；
-⑤每日有班车接送（途径地铁轨道1号线）；
-⑥每年为员工进行健康体检；不定期举办形式多样的员工活动；
-⑦为符合条件的人员办理人才户口引进；
-⑧为员工提供创新基金和实践平台，确保个人潜能充分发挥。', 'open', NULL);
-INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '产品经理' LIMIT 1), '湖南火炬易捷汽车配件连锁有限公司', '汽车养护产品经理', '长沙-长沙县', '4-6千/月', NULL, '【任职要求】
-1、大专以上学历，具有3年及以上汽车养护用品从业经验；
-2、对汽车养护产品有较清晰的认识，具有非常专业的产品知识和系统认识；
-3、熟练使用常用办公软件，如EXCELL等，数据分析能力强；
-4、熟悉该产品的生产制造过程、基本工艺流程、使用性能、市场行情等；
-5、良好的职业道德水平和职业素养。
-【岗位职责】
-1、负责该产品的采购及销售数据分析，在不同销售阶段，不断对系统数据（定价、库存、适配等）进行优化工作；
-2、负责该产品的市场调研和同类竞品分析，不断优化该产品结构，提出并执行该产品改进计划；
-3、制定提交该产品的销售方案，负责该产品的促销活动的监督执行；
-4、对该产品的销售数据实时跟进，协助完成该产品的总体销售回款指标和利润指标；
-5、如有新进品牌，对该品牌的包装、渠道、定价、上市等过程进行全程监控及跟踪，完成上市过程前的配合工作；
-6、负责与该产品工厂之间的对接协调工作，及时了解工厂的阶段性促销政策和市场支持方案；
-7、组织该产品的销售培训工作，负责协调解决该产品在业务销售过程中上报的问题；
-8、负责对该产品投诉的处理，与投诉客户进行有效沟通，及时与上游供应商就投诉事项进行沟通与协商处理；
-9、衔接该品牌供应商对销售团队进行定期培训，对该产品的培训课件进行搜集、整理与编辑。
-10、对产品库存进行管理，避免产生滞销、过期产品，并对原有滞销、过期产品进行清库工作，对瑕疵产品进行修复或处理；
-11、执行完成上级领导交代的其他各项任务指标。
-薪资：4-5K（无责任薪资）+提成（面议）', 'open', NULL);
-INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '产品经理' LIMIT 1), '广州凯园教育投资有限公司', '产品经理', '广州-黄埔区', '1-1.5万/月', NULL, '1、了解产品功能和运营策略，围绕着营收与市场运营，设计产品功能；
-2、负责移动端公众号、小程序产品和PC端产品规划和设计；
-3、承担产品流程、需求及原型等具体功能的设计，并协调、推动研发团队按时完成产品开发、高质量上线。
-4、研究行业竞品动态；
-5、持续进行产品细节的打磨，通过迭代更新，提升产品用户满意度。
-6、在项目推进过程中的主动进行跨部门沟通；能制定合理、清晰的产品迭代节奏；
-7、负责线上用户及营运数据分析，监控和跟踪数据异常波动情况，并深入分析和定位问题。
-任职要求：
-1、全日制本科毕业，计算机等理工科专业优先；年龄32岁以下；
-2、热爱教育行业和互联网技术,熟悉TOB互联网产品模式；
-3、有2-3年大型互联网产品设计经验，1年以上的线上运营经验和运营背景；
-4、有较好的行业敏感度和需求整理能力、产品规划能力；
-5、熟悉产品调研、规划、设计、开发、产品化以及产品上线等各环节。
-6、具备良好的创新能力、执行力，沟通协调能力及逻辑性，书面表达和口头表达能力良好，性格外向；
-7、熟悉产品工具的使用，对技术实现的可行性、技术成本等有一定的评估能力。熟悉iOS、Android、Web设计规范，有移动端设计经验和后台设计经验。
-8、熟悉敏捷开发的流程和产品规划要点；。
-其他：
-1. 公司属于集团项目筹备期，面试地点在萝岗香雪地铁站附近
-2. 工作地点：广州市黄埔区科学大道33号视联科技园内。
-3. 公司福利：五险一金 节日福利 团队活动等
-4. 工作时间：9：00-18：00 .周休双休', 'open', NULL);
-INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '产品经理' LIMIT 1), '图创集团', '产品经理', '广州-黄埔区', '0.8-1万/月', NULL, '工作职责：
-1. 对用户心理和深层次需求有强烈的好奇心和探究的行动力，根据用户调研和数据分析进行产品判断，抽象用户需求，设计解决方案；
-2. 对接客户及业务部门，及时收集需求，对需求进行汇总、分析、筛选，并列入产品改进计划；
-3. 负责设计产品的功能特性和交互，撰写市场需求文档、产品需求文档，产品原型，项目跟进，上线效果跟进及调整优化；
-4. 对产品的场景进行分析并输出策略，推动设计、技术、测试等相关团队及合作部门按时完成产品研发、高质量上线；
-5. 协调内外部资源，对接技术团队，设计团队以及运营市场团队，推进产品运营方案，并分析运营效果；
-6. 完成产品市场调研，及时反馈市场新动态，并应用于产品中，把握产品定位与发展趋向；
-7. 关注数据、收集用户反馈，提升用户满意度，不断优化产品体验并跟踪效果；
-任职要求：
-1、本科学历（统招），3年以上软件或互联网产品的设计、运营经验，有经历过完整的产品生命周期（设计-研发-上线-运营-优化）
-2、逻辑严谨，表达能力强，善于对产品提练亮点打造新概念，并能独立对外完成产品讲解与培训；
-3、思维活跃、逻辑清晰，善于通过数据分析发现业务痛点、发现问题本质；
-4、善于业务需求分析并且合理转换为系统需求；
-5、善于与人沟通，听取他人意见与建议但不盲从；
-6、具备良好的学习能力，熟练掌握Axure、Office、Xmind、Visio等工具，可独立完成产品需求设计，并具备一定的UE交互技能。
-7、抗压能力强，以目标为导向，适应在快节奏中冷静开展工作。', 'open', NULL);
-INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '产品经理' LIMIT 1), '苏州和融智慧信息技术有限公司', '产品经理', '苏州-工业园区', '1-1.8万/月', NULL, '岗位职责：
-1、带领团队，完成公司要求的产品生命周期工作；
-2、完成产品定义和原型设计工作；
-3、研发团队的管理，负责开发团队的人员管理和资源管理等工作；
-4、参与产品讨论，给出开发可行性建议, 完成相关文档的编写和维护工作
-任职要求：
-（一）基本要求
-1、负责公司PC端和移动端的产品规划、产品设计、API接入接出、提升转化率；
-2、负责公司整体用户体验改善与用户运营，完成需求分析并撰写产品文档；
-3、负责协调开发人员进行开发工作，推动产品的开发进度，把控项目质量，完成产品上线；
-4、提供产品原型设计文档和商用文档，包括MRD、PRD流程图、白皮书、产品使用手册、FAQ等；
-5、通过市场调查和运营数据分析，对产品发展情况给予评估，优化流程，对各阶段的产品功能和特性进行取舍。
-（二）技术要求
-1、对用户体验、运营数据敏感度高，逻辑性强，善于数据分析并挖掘到有价值的用户体验改善点，良好的用户分析、竞争对手产品分析；
-2、对市场发展趋势有敏锐的洞察力，创新意识，良好的分析、研判能力，提供有竞争力的产品并能进行有效推广；
-3、高度的责任心，主动能动性强；优秀的沟通能力，能够与需求方进行高效的沟通，了解对方的诉求并且能够从 PM 的角度思考问题；
-4、本科及以上学历，3年以上产品经理经验，经历过完整的产品生命周期，有云计算产品验者优先；
-5、熟练使用Visio、Project、Axure等软件，能独立完成产品PRD文档。
-6、产品质量控制，能严格的控制产品质量，具有软件测试能力。', 'open', NULL);
-INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '产品经理' LIMIT 1), '合肥开鼎信息技术有限公司', '产品经理+高新区双休五险', '合肥-高新区', '0.8-1.2万/月', NULL, '岗位职责：
-1、负责公司安全类产品的规划、设计、实施、运营；
-2、参与用户调研，根据用户需求规划产品特性，持续对产品进行优化改进；
-3、与研发、设计协调沟通，把产品需求在技术端实现，执行并推进产品开发工作，并根据产品开发进度及时进行调整和优化；
-4、根据用户反馈不断优化产品，提高用户体验；
-5、负责产品的迭代和更新；
-6、负责模块需求规格说明书与概要设计说明的编制工作。
-任职要求：
-1、本科以上学历，计算机相关专业，2年以上产品经理工作经验；
-2、深入了解产品的研发和运营流程；熟悉用户体验、交互设计理论知识；思维开放、善于进行创新；较强的逻辑分析能力和数据分析能力；
-3、熟悉使用建模UML工具，参与用户设计；
-4、有很强的沟通表达能力和团队合作精神、具有创业激情，能承受一定的工作压力；
-5、熟悉使用xMIND思维导图工具、Axure RP原型制作工具、Visio业务流程设计工具，以及WORD等常用办公软件、熟悉设计文档、技术方案等相关文档的编写；
-6、有产品意识，具有互联网思维，从产品以及用户需求、痛点角度出发对产品进行升级与优化；
-好福利：
-节日礼品+工作餐+定期团建+免费体检+带薪休假+年终奖+带薪培训等福利；
-双休+不加班+七小时工作制（9:00-17:30午休1.5h）+国家法定节假日均正常享受假期；
-职场内设有员工活动室（台球桌、乒乓球桌、PS4游戏机）、员工休息室（配套饮水机、冰箱、微波炉等）
-公司氛围积极向上，具备人性化的工作环境和良好的团队文化。', 'open', NULL);
-INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '产品经理' LIMIT 1), '深圳市博思迪科技有限公司', '亚马逊产品经理', '深圳-宝安区', '1-1.5万/月', NULL, '岗位职责:
-1、 根据公司发展战略，能够独立完成产品的选品与开发（
-2、 负责产品项目的执行和效果评估以及后续改进工作，对整个产品线进行生命周期管理；
-3、 负责市场调研，收集行业最新讯息，提炼客户需求，熟悉竞品分析方法；
-4、 协助供应链完成新供应商开发及供应商管理；
-5、 协调各方资源，保证产品开发和实施阶段的进度与质量。
-任职要求:
-1、 本科及以上学历，3年以上
-2、 熟悉相关产品的选品、验货及成本分析，需求分析，竞品分析，产品生命周期管理；
-3、 具有数据思维，梳理并沉淀不同业务场景下的数据分析思路；
-4、 具备良好的工作态度与责任心，沟通能力、学习能力和独立工作的能力，具有敬业精神，抗压性强，具有团队合作精神；
-1、上班时间：大小周
-周一至周五早上9：00至12：00，下午13:30至18：00，早上9：30之前签到不算迟到，下班后可补回
-小周：周六早上10：00至12：00，下午13:30至17：00。
-大周：双休
-2、为员工购买五险，提供基本保障，享有国家法定有薪假期及带薪年假；
-3、薪资结构：基本工资+高额提成（上不封顶）+双薪(逐年递增) + 年终奖+ 带薪年假。
-4、冰箱、微波炉俱全，咖啡，茶，零食点心，水果常有
-5、国内外节日都有主题聚餐或活动。国内传统节日送上节日祝福及礼品（或红包）
-6、同事都是年轻人，工作期间播放氛围音乐，也可选择耳机听歌，减少沉闷，轻松上班。
-电商外贸行业，老板超nice，无障碍沟通，年轻活力的团队，值得您加入！', 'open', NULL);
-INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '产品经理' LIMIT 1), '苏州车云信息科技有限公司', '产品经理', '苏州-工业园区', '1.3-1.8万/月', NULL, '岗位职责：
-1、进行产品全流程管理，包括制定产品规划、设计系统功能、收集用户/客户需求、进行市场和竞争分析、升级产品组合等；
-2、规划产品发展路径，在项目推进过程中的跨部门协调沟通工作，并推进执行；
-3、设计产品具体功能，组织协调其他部门高效完成产品开发；
-4、深度研究竞争对手，把握产品和运营现状，判断机会和潜力点，切实有效地采取行动；
-5、对业务运营给予支持，通过数据分析定位业务发展的问题，挖掘业务发展潜力；
-6、从整个产品研发的各个环节中，负责与开发人员、UI、市场等相关人员沟通协调
-任职要求：
-1、本科及以上学历，3年以上产品相关工作经验，2年以上B端产品管理经验优先；
-2、熟悉iOS或Andorid手机客户端产品，熟悉移动互联网行业，对发展规律和未来趋势有一定认识；
-3、善于倾听用户声音，对数据敏感，具备较强的逻辑思维及分析能力，能有效地确立产品策略、市场定位和产品核心价值；
-4、优秀的原型设计能力、文档撰写能力；
-5、沟通、协调、组织能力好，具备高度的责任心及较强的执行力、抗压能力与团队精神，有很强的产品规划能力和问题解决能力；
-6、对手机客户端软件UI、UE有一定的经验认识，会用Axure、墨刀、Sketch、Processon等设计工具，熟悉目前主要的各类客户端产品特点；
-7、有较强的学习能力，能够独立负责项目规划、推进需求落地及上线后数据分析优化等产品全流程，对项目中的各种风险有较强的管控能力；
-8、有CRM系统设计经验者及熟悉汽车行业者优先。', 'open', NULL);
-INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '产品经理' LIMIT 1), '广州天源迪科信息技术有限公司', '产品经理', '广州-天河区', '1.5-2万/月', NULL, '1.根据公司战略规划和项目需求，主要负责大数据或数据中台相关产品、项目的整体设计，规划产品的中长期演进方向，制定产品的长期竞争策略，推进产品化进程；
-2.配合项目主导大数据应用产品的需求调研、需求分析，独立完成上述产品/项目的策划、原型设计、Demo制作、产品/项目流程和交互设计，完成BRD/MRD/PRD/FSD文档撰写和管理；
-3.协调相关人员按时保质完成产品开发、测试和发布；
-4.跟踪产品/项目的使用反馈，密切关注和分析用户需求变化、业务场景及使用体验、数据及场景变化，持续完善和优化已有的产品/项目功能，提出改进计划；
-5.与项目经理一起负责在项目推进过程中的跨部门协调沟通工作，能够协调各资源以确保项目/产品顺利实施和发展 。
-任职要求
-1.3年以上数据分析或产品建设经验，敏锐的数据敏感度、调研分析能力，互联网行业背景优先；
-2.具有3年以上B端大数据产品设计经验，熟练使用Axure、Visio、Mind Manager等工具；
-3.熟悉大数据产品设计理念及方法，熟悉大数据产品整体实现过程，包括从需求分析到产品实施，了解大数据技术特性和系统构架，了解hadoop、hbase、spark、kafka、paas、saas等大数据技术；
-4.具有良好的文档撰写能力，能根据行业客户的需求快速制定大数据解决方案、设计产品；
-5.具有较强的语言表达能力、沟通能力、团队协作能力、学习创新能力；
-6.有航天行业、运营商行业大数据项目或数据中台相关项目实施经验者优先；', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 3, 'dict', TRUE);
-INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '产品经理' LIMIT 1), '浙江创建科技有限公司', '产品经理', '杭州-江干区', '1-1.5万/月', NULL, '岗位要求：
-1、进行用户需求与市场调研，包括核心用户需求分析、产品市场前景分析、竞争产品分析等；
-2、参与产品定位、产品架构、用户体验流程定位等工作，负责部分交互原型设计；
-3、编写产品需求文档，能清晰、明确地表明产品核心功能、内部业务逻辑、流程、规则等；对需求的生命周期的管理与跟踪，保证需求在各个环节的一致性和完整性，不遗漏。
-4、协调开发、测试、视觉、营运等部门，并与关联资源进行协调、对接，确保对整个产品生命周期进行跟踪，保证产品从概念设计到开发到上线能如期顺利完成；
-5、跟踪产品研发的项目进度，协调项目各方（主要是各模块开发主管、测试部门），推动项目进度，确保完成项目按计划完成；及时向上级领导及相关部门沟通反馈项目进度；
-6、制定所负责产品线的发展规划和阶段性目标；把握用户需求和动向，持续改进产品；7、配合产品相关的日常运营工作，产品运营数据分析等。
-职位要求：
-1、本科以上学历，理工科背景，CET-4，1年以上互联网或相关产品/平台软件产品相关工作经验；
-2、敏锐的市场洞察力，关注IT行业最新动向，对互联网产品创业创新有充分的热情及好奇心；
-3、极佳的行业视野，有很强的需求分析及产品规划能力，良好组织能力和问题解决技能，熟练使用各类设计工具；
-4、较强的时间管理能力及优秀的沟通技巧，责任心强、重视团队合作，能承担较大的压力；
-5、热爱有挑战性的工作，具有较强的主观能动性；
-6、具有成熟的项目管理及协调能力，具有优良的责任心、敬业精神及职业操守；', 'open', NULL);
-INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '产品经理' LIMIT 1), '莘菁英（深圳）教育科技集团有限公司', '产品经理', '深圳-南山区', '1.2-2万/月', NULL, '岗位职责：
-1、独立完成产品的策划、原型、产品流程和交互设计，包括定义、设计、推进等工作，独立完成产品需求文档（PRD），业务或功能流程图，产品原型图等文档；
-2、与开发团队密切协作，把控需求，控制变更，协调进度，对结果负责；
-3、负责在项目推进过程中的跨部门协调沟通工作，能够协调各资源以确保产品顺利发展；
-4、整理和分析用户需求和反馈，完成产品的规划与持续改进；
-5、深刻分析和整理用户需求，完善产品闭环，提升整个产品群用户体验；
-6、组织产品内测，收集数据与问题，并整理和总结产品运营策略。
-任职要求：
-1、统招本科及以上学历，计算机相关专业，5年以上App产品经理经验，有优异的产品纪录，一定要有K12行业工作经验，如果没有请慎重投递；
-2、清晰的产品思路，熟悉互联网产品从0-1整体实现过程，包括从需求分析到产品上线，深刻理解用户需求，对产品设计和交互有丰富的经验积累；
-3、优秀的文档撰写能力，熟练掌握和使用各种系统工具，如AXURE 、GUI Designer、Visio、 Mindline、Mockplus、墨刀等需求管理及界面原型工具；
-4、对APP用户体验和运营生态体系有准确的理解，并有与各环节沟通的渠道；
-5、有较强的数据分析能力，能够独立完成营销活动的策划制定、组织执行、评估改进；
-6、优秀的沟通协调能力，具备团队意识，有组织能力，工作积极主动，具备高度责任心，能承受较强工作压力。
-上班地点：深圳市福田区中洲圣廷苑酒店3楼精英教育城', 'open', NULL);
-INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '产品经理' LIMIT 1), '欧梯恩智能科技（苏州）有限公司', '软件产品经理/项目经理', '绍兴-上虞区', '2-3万/月', NULL, '岗位职责：
-1、负责调研收集客户需求、制定产品规范，撰写产品需求文档；
-2、负责软件产品的系统架构与核心模块的设计开发；
-3、组织项目组成员开展产品测试、现场运行部署和优化；
-4、根据业务方需求，不定期做用户调研、市场洞察与竞品分析；
-5、分析上线产品的运营数据，定期组织分析、撰写产品运营分析报告，提出产品改进意见，持续改善用户体验；
-6、收集并分析用户意见反馈，挖掘用户真正需求，不断改进产品。
-7、对竞品、行业相关信息收集整理和深度分析，对优化公司现有产品用户体验给出合理化改进建议。
-任职要求：
-1、本科及以上学历，有3年及以上软件产品设计、开发、测试等相关工作经验；
-2、具有环保监测、机器学习、大数据分析等相关产品的设计、开发、测试经验是一个加分项；
-3、具有软件项目的管理经验，成功带领完成过2个以上软件项目管理经验，软件项目规模达到10人月以上；
-4、具有良好的文档撰写能力，能独立完成产品需求规格、项目计划、项目章程、产品测试计划等文档编写工作；
-5、能够熟练使用Microsoft Visio、Rational Rose、Power Designer等软件开发设计工具；
-6、能够熟练使用Mirosoft Project、禅道等相关的项目管理工具，开展项目管理工作；
-7、具备优秀的沟通及协调能力，具备较强的团队意识和执行力，能承担较大的工作压力；
-8、精通Java、C#、Python等一种或多种编程语言，能独立完成核心软件模块设计开发。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
-INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '产品经理' LIMIT 1), '广州三晶电气股份有限公司', '云平台产品经理', '广州', '1.5-2.5万/月', NULL, '岗位职责：
-1、负责公司物联网云平台产品的规划与设计，综合物联网行业技术发展前沿、当前用户的需求与团队情况的把握，有重点的进行产品规划并执行落地推进；
-2、敏锐准确把握并引导用户需求，提出产品设想和解决方案，输出需求文档和原型设计；
-3、参与项目计划，能与业务部门、开发、测试团队进行良好沟通，管理把控项目进度和达成阶段性目标；
-4、协调团队内外部相关资源，带领团队完成产品的体验优化以及产品运营等工作；
-5、跟踪并分析产品的相关运营数据以及用户反馈，根据分析结论优化产品 ；
-6、关注行业和竞品动态，了解分析行业动态及公司产品，撰写同类产品分析报告，提出有效的改进措施并实施以产品负责人心态推动产品的向前发展。
-岗位要求：
-1、 全日制本科以上学历，计算机、软件、通信等相关专业，优秀的英语表达能力；
-2、三年以上产品规划设计经验，如具备SAAS平台产品规划设计经验者优先，有成功大型平台系统产品经验的优先；
-3、 良好的数据分析能力和文字功底，良好的项目策划和执行能力，能独立完成从市场调研、需求分析、用户定位、产品策划、实施落实等一系列工作；
-4、 熟悉产品开发上线迭代流程，熟悉项目进度管理；优秀的产品规划设计能力，熟练掌握Axure、XMind、Photoshop、Visio、磨刀、Project、蓝湖等工具；
-5、 具有强烈的责任心和上进心，具备良好的团队合作精神，积极主动，能承受较大的工作压力；
-6、有APP及小程序产品设计经验优先考虑。', 'open', NULL);
-INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '产品经理' LIMIT 1), '荣科科技股份有限公司', '医疗产品经理', '沈阳', '1-1.5万/月', NULL, '岗位职责：
-1） 负责产品原型设计及产品生命周期管理，能够对客户的需求进行调研和分析；
-2） 负责撰写竟品分析报告、商业需求文档、市场需求文档、产品需求文档、产品手册/PPT、维护手册；
-3） 对行业竞争对手发展情况，市场变化情况，用户全生命周期方面有较好的敏感度和总结能力，能够针对情况变化提出可执行策略。
-4） 负责产品原型设计、交互设计、UX体验设计，能够把控VI视觉成果，并对产品实施进行规划；
-5） 负责协调美工、技术、运维、测试等资源，促进开发/测试/维护工作的有效执行；
-6） 负责产品和业务相关的数据分析、用户行为分析；
-7） 完成公司KPI及各项考核；
-任职要求：
-1） 本科以上学历，3年以上产品经理经验，熟悉互联互通、电子病历评级、HL7等行业相关政策；
-2） 熟悉UI、UX、VI设计理念；
-3） 熟悉 Web/大数据/C#/ETL等设计规范；
-4） 熟练掌握Word/Excel/PPT/Visio/Photoshop/AXURE/JustInMind/Mindjet MindManager；
-5） 具备界面交互行为和功能的改良能力，提高产品的交互性和易用性；
-6） 具有良好的沟通、协调能力，拥有强烈的责任心和团队协作精神；
-7） 具备较强的学习和理解能力，对产品所处环境、行业、市场和用户有独到见解；
-8） 具备较强的执行力和责任感，能够承担相应的工作压力；
-9） 良好的英语读写能力，有医院集成平台、DRGs等工作经验。', 'open', NULL);
-INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '产品经理' LIMIT 1), '南京铉盈网络科技有限公司', '智能硬件产品经理', '南京-雨花台区', '1.5-2万/月', NULL, '职责描述：
-1.负责智能硬件产品的需求分析、产品功能设计、交互设计；
-2.调研市场竞品情况，根据公司战略进行合作伙伴评估和系统集成；
-3.主持从初期的概念设计，到上线后的数据分析和用户反馈收集；
-4.负责相关产品开发项目周期和进度把控，确保对产品开发至最终上线运营；
-5.负责跨部门协调和沟通，推动设计、开发、测试等人员紧密合作达成产品目标；
-6、产品全生命周期管理，协调研发、供应链、生产、质量、售后等跨部门协调，及在产品开发生产过程中重要节点进行审查和监控，对产品成本风险周期负责
-任职要求：
-1. 电子、自动化、计算机或相关理工科等相关专业，本科以上学历
-2. 4年以上工作经验
-3. 有成功的智能硬件产品规划和执行经验；
-4. 熟悉电子电路和嵌入式产品设计，熟悉硬件产品的工艺、测试等制造全流程管；
-5. 具备工业类或消费类电子智能硬件产品的产品管理、或者项目管理相关经验和研发制造管理经验； 有音视频智能设备、视频会议终端、摄像机、会议平板或同类量产项目经验者优先。
-6. 熟悉电子电路和嵌入式产品设计，熟悉硬件产品的工艺、测试等制造全流程管理；
-7. 具备良好的原型制作、需求文档PRD撰写能力，熟练操作office、Axure等软件；
-8. 具备很强的沟通理解能力，善于分析市场和客户需求；
-9. 愿意加入团队，接受挑战，能承受较大的工作压力； 有智能硬件、有视频识别、智能家居、工业检测、人工智能（AI）、机器人领域产品项目经验者优先。', 'open', NULL);
-INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '产品经理' LIMIT 1), '东莞市奇索电子科技有限公司', '产品经理', '东莞-凤岗镇', '20-40万/年', NULL, '岗位职责：
-1.负责对市场调研和数据分析，确定新产品的开发定位及研究方向，包括产品的外观需求、功能需求、开发管理等；
-2.拓展产品线，并制定和执行开发计划、运营计划和销售目标计划，对产品线销售目标负责；
-3.寻找优质供应商，审核新供应商资质和条件，并配合采购做好供应链管理，优化供应商结构，确保产品稳定供货；
-4.对产品生命周期与价格有比较准确的趋势判断与预测，控制产品的库存和风险，保证产品质量与售后服务；
-5.创建及维护产品信息资料，市场调查数据整理和分析，成本利润核算及销售初期市场预测，并通过数据和用户反馈，分析用户需求及行为，不断改进和提升产品性能；
-6.负责进度跟进，各阶段的时间节点的过程管理，对进度过程中工作安排进行查漏补缺，对新品进行专利检索及侵权判断分析，防控风险。
-任职要求：
-1. 专科以上学历，国际贸易、电子商务、外贸、市场销售专业毕业。1年或以上开发3C类产品工作经验,平台不限；
-2. 对市场有很强的敏感度和洞察力，熟悉市场消费者行为，对产品和市场定位有一定的认知和理解力；
-3. 熟悉电商的商业模式，了解3c产品线产品属性和成本，并熟悉用户购物体验及产品发展方向；
-4. 对所负责产品线用户市场需求有敏锐的分析判断能力，对行业的发展格局与趋势有明晰的了解与把握，对于产品生产加工等行业 规范与认证体系了解；
-5. 对数据比较敏感，擅于通过数据分析，了解客户行为和需求，并不断运营创新的方法来实现客户需求。', 'open', NULL);
-INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '产品经理' LIMIT 1), '江苏三棱智慧物联发展股份有限公司', '智能硬件产品经理', '南京', '1-1.5万/月', NULL, '1.负责智能硬件产品的需求分析、产品功能设计、交互设计；
-2.调研市场竞品情况，根据公司战略进行合作伙伴评估和系统集成；
-3.主持从初期的概念设计，到上线后的数据分析和用户反馈收集；
-4.负责相关产品开发项目周期和进度把控，确保对产品开发至最终上线运营；
-5.负责跨部门协调和沟通，推动设计、开发、测试等人员紧密合作达成产品目标；
-6、产品全生命周期管理，协调研发、供应链、生产、质量、售后等跨部门协调，及在产品开发生产过程中重要节点进行审查和监控，对产品成本风险周期负责
-任职要求：
-1. 电子、自动化、计算机或相关理工科等相关专业，本科以上学历
-2. 4年以上工作经验
-3. 有成功的智能硬件产品规划和执行经验；
-4. 熟悉电子电路和嵌入式产品设计，熟悉硬件产品的工艺、测试等制造全流程管；
-5. 具备工业类或消费类电子智能硬件产品的产品管理、或者项目管理相关经验和研发制造管理经验； 有音视频智能设备、视频会议终端、摄像机、会议平板或同类量产项目经验者优先。
-6. 熟悉电子电路和嵌入式产品设计，熟悉硬件产品的工艺、测试等制造全流程管理；
-7. 具备良好的原型制作、需求文档PRD撰写能力，熟练操作office、Axure等软件；
-8. 具备很强的沟通理解能力，善于分析市场和客户需求；
-9. 愿意加入团队，接受挑战，能承受较大的工作压力； 有智能硬件、有视频识别、智能家居、工业检测、人工智能（AI）、机器人领域产品项目经验者优先。', 'open', NULL);
-INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '产品经理' LIMIT 1), '斯润天朗(无锡)科技有限公司', '产品经理', '无锡-无锡新区', '1.5-2万/月', NULL, '职位描述：
-1、负责车联网平台涉车业务的后台级产品规划、迭代升级；
-2、进行联网平台涉车业务的后台级产品规划、流程管理，包括制定产品规划、设计系统功能、收集用户/客户需求、进行市场和竞争分析、升级产品组合等；
-3、规划产品发展路径，在项目推进过程中的跨部门协调沟通工作，并推进执行；
-4、设计产品具体功能，组织协调其他部门高效完成产品开发；
-5、深度研究竞争对手，把握产品和运营现状，判断机会和潜力点，切实有效地采取行动；
-6、对业务运营给予支持，通过数据分析定位业务发展的问题，挖掘业务发展潜力；
-7、根据车联网产品市场及目标消费群体的需求，提出产品研发理念或参与提高已有的产品概念，掌控产品研发计划及产品研发的各种细节；
-8、从整个产品研发的各个环节中，负责与开发人员、UI、市场等相关人员沟通协调 。
-岗位职责：
-1、本科或以上学历，计算机、信息管理、社会科学等相关专业优先，有商业设计经验者优先；
-2、3年以上工作经历，有成熟产品或移动互联网/互联网/车联网相关经验者优先；
-3、熟悉项目管理流程、文档撰写能力出色；
-4、熟悉数据分析、效果评估方法；具备创造性思维、快速学习适应能力，对用户需求有很强的洞察力和判断力；
-5、优秀的创新能力、钻研精神，出色的执行能力和沟通协调能力，及独立解决问题的能力；
-6、对车联网、物联网有强烈的兴趣和爱好且敢于付出；
-7、对消费者有足够的理解和分析能力；
-8、有物联网、车联网产品经验者优先。', 'open', NULL);
-INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '产品经理' LIMIT 1), '武汉中瀚科技有限公司', '产品经理', '武汉', '6-9千/月', NULL, '1.负责相关产品市场及用户调研，发现并掌握目标市场和用户需求的变化趋势；
-2.负责相关产品规划及设计，对来自各方面的需求进行收集、汇总、分析、更新、跟踪，并据此编写产品需求文档；
-3.负责相关产品版本管理，制定并维护产品的每个版本的功能列表；
-4.负责相关产品开发及项目管理，组织协调研发、运营等部门，对需求进行评估及确认开发周期，跟踪项目进度，
-协调项目各方推动项目进度，确保完成项目计划；
-5.负责解决产品运营相关问题，协助产品运营经理工作，解决产品故障及问题，并总结分析并协调内部资源制定解决方案
-及产品改进计划；
-6.负责相关产品数据分析，对产品数据进行监控，分析产品运营效果、用户使用行为及需求，以便对产品进行优化，
-加强对客户的引导。
-1、有物联网、车联网相关经验者优先，有咨询相关工作者优先；
-2、具备创造性思维和快速学习能力，对用户需求有很强的洞察力和判断力；
-3、优秀的创新能力、钻研精神，出色的执行能力和沟通协调能力，能独立解决问题。
-公司福利：
-1、优秀员工带薪出国游；
-2、按照国家标准缴纳五险；
-3、每年5天带薪年假；
-4、工作满一年可享受工龄工资，每年持续递增；
-5、享受国家法定节假日和节假日礼品福利；
-6、免费专业培训，入职培训；
-7、定期员工体检，家属体检享受6折优惠；
-8、每月生日Party并发放精美礼品；
-9、定期组织文体活动、聚会、聚餐；
-10、舒适的办公环境，空调、冰箱、微波炉等设备齐全。', 'open', NULL);
-INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '产品经理' LIMIT 1), '杭州友声科技股份有限公司', '产品经理', '成都-高新区', '0.8-1.5万/月', NULL, '产品经理（偏数据分析、数据治理、数据挖掘）
-岗位职责：
-1、 负责大数据项目产品的规划、需求调研、需求确认、产品设计，制定产品相关的方案、产品手册、测试文档、功能说明书等产品文档，负责产品的演示和培训工作；
-2、 对数据进行分析、建模抽象和优化、监控和挖掘，与数据研发工程师配合搭建数据仓库；能独立完成项目的系统分析、设计及技术选型，并主导完成详细设计和实施落地，确保项目的进度和质量；
-3、 调研用户，跟进数据需求：结合用户需求和产品现状，梳理数据逻辑，进行数据定义，撰写数据需求文档(DRD)，推动数据方案的实施；
-4、 协助配合完成大数据项目中其他事宜，包括但不限于数据可视化设计、梳理各个项目业务数据指标和数据逻辑，建立数据指标体系等。
-5、 负责项目的需求调研、专题分析，通过对数据的挖掘分析给业务方输出高质量的分析报告。
-职位要求:
-1、本科及以上学历，3年以上相关数据产品落地工作经验；
-2、有良好的产品Sense和数据敏感度，对数据产品的交互与用户体验有深刻理解；
-3、能够熟练使用Axure、墨刀、MindManager、Visio等工具绘制数据产品原型；
-4、精通常见的数据分析和处理方法，熟练使用SQL进行数据的查询与处理分析，会Hive、R、Python、SPSS等分析工具者优先；
-5、具备良好的自我驱动力、文档写作能力、项目管理能力，强烈的责任心和出色的沟通能力。
-6、合作项目，驻客户现场办公，介意勿投！', 'open', NULL);
-INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '产品经理' LIMIT 1), '深圳市金辉教育管理有限公司', '课程设计产品经理', '深圳-福田区', '1.5-2万/月', NULL, '岗位名称：课程设计产品经理
-岗位职责：
-根据公司产品战略发展方向，市场需求，竞争现状，制定产品发展规划和对现有课程产品的整合、优化；
-产品体系的搭建，包括需求调研、产品策划、课程体系设计、产品包装、市场工具、销售工具、口碑建立、营销推广等；
-长期负责竞争对手分析、调研，长期负责用户反馈收集及用户调研，包括但不限于回访和数据分析，研究消费群体潜在动机并研究产品差异化定位，持续改进和优化产品，保持产品竞争力；
-负责对接品宣部对产品的上市计划、品牌宣传资料、整理卖点，改进产品包装策略等；
-搭建产品运营体系，对产品的推广、产品定价、产品策略做规划，打造产品口碑；
-任职条件：
-1. 本科及以上学历，管理学、市场营销、统计学、电子商务等相关专业优先；条件优秀者可适当放宽条件；
-2. 有较强的逻辑思维能力、数据分析能力，条理清晰；
-3. 有教育产品策划或课程设计与统筹及项目管理经验的优先考虑；
-4. 具有较强的沟通能力、协调资源，善于独立思考问题；
-公司福利：
-1.周末双休，法定节假日，5天7小时的工作制（9:30--12:00；13:30--18:00）；
-2.入职即购买五险一金；
-3.传统节日礼品及生日礼物（鲜花、蛋糕卡等）；
-4.不定期的公司团建及旅游；
-5.不定期的下午茶（肯德基的鸡翅、炸鸡、蛋挞、奈雪的茶等茶歇）；
-6.宽松的工作氛围，临近地铁口的CBD办公环境；
-公司信息：
-1.官网：www.ikingfan.com', 'open', NULL);
-INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '产品经理' LIMIT 1), '小马股份有限公司', '㊣ 寻 自虐型 产品经理 ㊣', '广州-天河区', '1-5万/月', NULL, '-------------------------------------------------------------------------------------------------
--------------------------------------------------------------------------------------------------
--------------------------------------------------------------------------------------------------
-任职资格：
-1. 本科以上学历，三年以上产品工作经验, 有从互联网产品需求分析到产品发布全流程的经验，有独立负责产品循环的项目经验；
-2. 主动性及责任心强，按时高质完成各项工作安排，跟得上版本快速迭代；
-3. 熟悉掌握互联网产品的需求分析、产品原型设计、交互设计，及产品项目流程，并具有很强的推动力和执行力；
-4. 对区块链及其经济模型有深入理解，对互联网金融行业及区块链技术有深入的了解，有金融衍生品经验优先；
-5. 有数字货币使用经验者加分（***进币圈半年以上）；
-6. 具备流程规划能力，有较强的逻辑思维能力、数据分析能力、沟通能力和执行力，有良好的沟通协调能力；
-7.适应互联网公司文化及工作节奏，积极主动，具备良好的抗压和执行能力', 'open', NULL);
-INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '产品经理' LIMIT 1), '试管无忧—互联网医疗服务平台', '产品经理（高级）', '重庆-渝北区', '1.5-2万/月', NULL, '1、负责公司就医平台（医生端与客户端）产品的需求分析，产品功能设计（网站及APP）；实施产品的任务流程设计、信息架构设计、页面布局以及原型设计；规划产品生命周期路线图以及产品市场推广协助。
-2、协调并推动UI、开发等人员产品研发进度，负责跟踪产品需求文档管理，负责开发、测试、版本的管理工作。
-3、负责与协助产品上线以后的改进，BUG 跟踪、收集改进意见、提供改进方案。
-4、对用户体验负责，根据用户反馈、数据分析对产品进行持续优化，提升用户体验。
-5. 负责对相关产品、相关体系进行研究，提出新产品设计思路和方向，组织立项，发展新产品；
-6、落实产品白皮书撰写，协助完成市场推广资料、公司内部培训等工作。
-任职要求：
-1、本科以上学历，3年以上产品经理经验，全程参与过或者了解产品的立项，需求调研，产品设计，产品开发，产品运营和推广工作。
-2、对需求敏感，对商业需求有良好的甄别能力，有带过项目团队经验优先。
-3、有初级BI分析能力，并且参与的产品有以数据为结果导向的案例。
-4、熟悉软件开发过程，掌握UML等系统分析方法、工具。
-5、熟悉网页端、移动端等用户各自的操作习惯，了解各平台下的设计规范及开发技术常识；
-6、熟练使用Axure、MindJet、Viso、PPT等产品设计工具，能够快速、高效地制作高品质产品设计原型；
-7、具有良好的口头和书面表达能力， 具备优秀的沟通、协调、推动能力，具备较强的分析与解决问题的能力。', 'open', NULL);
-INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '产品经理' LIMIT 1), '中电通商数字技术（上海）有限公司', '产品经理', '重庆-渝中区', '1.5-2万/月', NULL, '1、负责医疗相关行业平台化服务产品市场分析（产品线市场信息收集、调查、分析工作等）；
-2、深度挖掘用户需求，不断优化产品体验，确定产品定位，制定产品规划，输出逻辑缜密的产品文档；
-3、深刻透彻的了解业务需求，通过探索生态圈合作伙伴以及C端客户的需求，结合医疗大数据行业特征进行多维度的商业模式的产品探索及落地执行；
-4、与设计、开发、测试等团队紧密合作，驱动产品方案落地，达成产品目标；
-5、 分析产品上线后的数据及时发现问题，主动调优产品方向并持续优化；
-6、负责产品功能的设计，并协调、推动研发团队按时完成产品开发、高质量上线。
-任职要求：
-1、本科及以上学历，计算机、通信、医药等相关专业；
-2、两年以上相关工作经验优先（医药、医学、检验、病理、影像等）
-3、逻辑思维能力强，善于抽象和简化复杂问题，并给出可行性强的解决方案。工作责任心强，具备较高的执行力；能独立负责项目；
-4、敏锐的洞察力、良好的学习能力、沟通能力和团队合作精神，工作自驱性强；
-5、目标导向，逻辑清晰，有良好的沟通能力、推动能力、协调能力，拥有强烈的责任心和团队合作精神；
-6、善于洞察用户需求的本质，对用户的使用习惯、操作方式、场景、不同产品形态下的行为反馈有较为深入的洞察和思考；
-7、自我要求高，自我驱动能力强，能在较大压力下完成挑战性工作，能对新事物产生兴趣；
-8、熟悉医疗相关产品，较强的沟通表达能力、学习能力、数据分析能力和问题解决能力。', 'open', NULL);
-INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '产品经理' LIMIT 1), '上海丰之沃电子商务科技股份有限公司', '区块链产品经理', '上海-闵行区', '2-2.5万/月', NULL, '工作职责：
-1、负责公司相关区块链相关产品，能独立完成需求分析、原型设计、需求设计、开发推进和产品迭代等完整产品环节；
-2、负责进行产品原型设计和产品详细PRD文档撰写，与技术团队对接，主导功能的推进和验收，推进产品上线，配合运营和商务等相关部门工作；
-3、研究行业商业模式，提出符合业务目标和用户价值的区块链平台或产品规划；
-4、进行行业、目标客户和竞争环境的调研与分析，进行产品策略研究；进行必要的市场宣讲、内部培训以及方案文档输出；
-5、通过用户洞察和数据分析，进行产品优化，驱动运营推广，助力市场营销；
-6、结合公司业务和行业发展，有创新意识地挖掘新产品。
-岗位要求：
-1、本科以上学历，5年以上互联网平台产品设计工作经验，2年以上区块链产品设计经验者优先；
-2、对加密数字代币平台、钱包等互联网金融产品熟悉，以及精通交易支付流程，较强的风险控制能力者优先；
-3、熟练使用Axure、visio、MindManager等相关工具，有很强的逻辑分析能力、文字表达能力，能熟练编写产品文档；
-4、对比特币、以太坊、Ripple、EOS有较好的分析与洞察能力；
-5、有数字代币交易所、DAPP设计经验者优先。
-6、出色的表达能力及协作精神，良好的个人品行和团队合作精神，能承受较大的工作压力，能长时间处于工作状态；
-7、拥有创业激情，极强的责任心，对区块链、数字货币、Token经济有浓厚的兴趣和热情，英语沟通交流流利者优先。', 'open', NULL);
-INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '产品经理' LIMIT 1), '宁德时代新能源科技股份有限公司', '产品经理（韩语）', '宁德', '1.5-2.5万/月', NULL, '1. 作为产品经理，主要承担客户项目，主导所开发项目的技术风险评估，主导SFMEA，主导技术评审，跟踪产品设计验证；
-2. 负责与客户的技术对接、产品规格制定、技术方案设计与评审，产品样品的配置管理、性能评估；
-3. 负责将客户的需求转化为内部的工程技术规格、详细分析产品的能力边界，出货数据评审，测试样品数据分析和失效分析，性能提升和降本设计；
-4. 支持客户的现场认证、公告与测试工作；
-5. 作为公司对外的技术接口，配合营销部门开展技术交流和产品宣讲，并收集汇总客户和市场需求；
-6. 运用V型开发模式，对电池包、模块产品总体设计负责。
-7. 韩语中文的技术翻译工作。
-1. 本科以上学历，电子电气、机械或车辆工程、化学/电化学相关专业优先；
-2. 具备产品开发经历者优先，有新能源汽车或者电池系统项目开发经验者优先；
-3. 机械或电子背景，精通常规工程材料性能，和工程连接技术，包括焊接、铆接、粘接等；精通材料和连接技术的常见失效模式和设计制造要点；精通结构设计、了解传热技术和有限元结构性能仿真；能独立开展方案设计、性能评估和成本评估；熟悉汽车电气或电子系统；
-4. 3年以上工作经验，有现代起亚的工作经验或者现代起亚的供应商工作经验优先，需熟悉现代起亚的工作流程，尤其是研发阶段的工作流程；
-5. 韩语沟通流利，能达到母语水平，熟悉韩国人的工作方式及行事风格；且精通中文或者英文中的其中至少一种语言，可作为工作语言。', 'open', NULL);
-INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '产品经理' LIMIT 1), '文峰荟（广州）创业投资管理有限公司', '产品经理', '广州-越秀区', '1.5-2万/月', NULL, '工作职责：
-1、负责跨境出口平台销售渠道的品牌规划、产品款式开发、供应商开发、产品备货数量审核；并对产品质量、产品动销率、库存周转率负责；
-2、定期进行市场和竞品调研，收集欧美市场需求信息和竞争对手信息。
-3、按照公司战略和年度销售目标，结合市场走向和流行趋势，带领产品开发团队，提前制定每年、每季产品企划案（包括品类、风格、款式、颜色、SKU、产品定价等）。
-4、根据产品企划案与供应商对接每季产品开发方向，并要求供应商按产品企划案进行针对性开发，看版，改版，结合季节产品开发规划，确定样版，确保一盘货完整性和准确性。
-5、依据销售数据和市场信息，对每期各系列的快反下单，肩负开发畅销产品并参与新品下单；参与每季产品总结，为下期产品开发方向提出可行的提升计划。
-6、根据单品的生命周期，监控品类进销存变化，并及时做好产品订单备货，提升库存周转，降低断货概率。
-7、依据供应商评鉴标准，不断开发优质ODM新供应商。对产品的质量进行评审监管；根据供应商的合作意愿、账期、产品质量、性价比等进行分级管理。
-任职要求：
-1、对塑身衣产品的开发、质量、工艺、性价比等有深刻体会；
-2、有内衣、塑身衣行业的广泛的供应商资源；
-3、对电商内衣销售淡旺季有预见性和独到见解，有较强的时尚触觉和审美能力；
-4、具备产品开发采购知识、采购预算经验，以及数据分析能力;
-5 、28岁-48岁，5年以上内衣产品开发经验，有跨境出口电商行业经验者优先', 'open', NULL);
-INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '产品经理' LIMIT 1), '广州瑞修得信息科技有限公司', '产品经理', '广州-天河区', '1.5-2万/月', NULL, '岗位职责：
-1、负责本公司自有产品或项目产品规划、业务流程设计、功能设计、交互设计、产品优化等工作；
-2、研究用户行为习惯，把握用户的各层次需求，研究市场同类产品。
-3、撰写用户需求说明书、产品业务规范等，利用相关产品设计工具完成原型设计；
-4、负责现有诊修管端的产品优化项目周期和进度把控，确保对产品开发至最终上线运营，对进度质量负责；
-5、负责智能修诊技服务的产品，按需设计，侧重在数据分析；
-6、负责跨部门协调和沟通，推动界面、开发、测试、运维、运营等人员紧密合作达成产品目标；
-7、通过市场调查和运营数据分析，对产品发展情况给予评估，优化流程，对各阶段的产品功能和特性进行取舍；
-8、定期对产品及行业、竞争对手等进行数据分析，评估、优化用户体验和功能，了解竞争对手和潜在合作伙伴的情况，对产品战略进行适时调整。
-任职要求：
-1、本科以上学历，了解互联网产品发展趋势，项目实施管理经验；
-2、3年以上联物网平台或移动客户端产品策划设计工作经验；
-3、熟悉互联网产品交互设计，有一定运营知识；
-4、熟悉PRD/MRD文档编写，熟练使用产品设计类软件如：Visio、Axure、MindManager、office等，对技术研发环节有了解者优先；
-5、逻辑思维能力强，对新技术、新产品、新需求感觉敏锐，关注互联网络各大媒体网站信息发布趋势；
-6、较强的用户需求判断、引导、控制能力。有出色的合作能力，善于沟通协调，思维敏捷。', 'open', NULL);
-INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '产品经理' LIMIT 1), '海的电子科技（苏州）有限公司', '技术类产品经理', '苏州-工业园区', '1-1.5万/月', NULL, '任职要求：
-1、本科以上学历，5年以上电子产品设计及管理经验，有较强的团队组织能力；液晶显示行业优先；
-2、知识面广，思路开阔、逻辑思维清晰严谨，善于应对处理各种复杂问题；
-3.熟悉自动光学检测设备，具备一定的检测设备方案设计能力及检测系统分析能力；
-4、具有一定数据分析和处理能力
-5、优秀的团队合作和组织能力，表达及沟通能力强
-6、积极进取的工作进度，踏实上进责任心强
-工作职责：
-1.掌握电路板设计流程，掌握或者熟悉Altium design，ORCAD进行系统设计；有数字信号设计经验；信号电源设计经验优先；有过SSD2828IIC;FPGA设计经验者优先；
-2.对产品设计有空间感，能够了解产品整体设计流程，与机构设计辅助进行产品外观设计；掌握或者熟悉soilworks，AUTO CAD进行图纸查看及资料整理；
-3.精通单片机外围电路设计及单片机程序编写；主要为keill下的STM32程序编辑环境，IAR也可；熟悉使用片内自愿UART,AD,DA及标准通讯协议LAN,RA232,485,MOUDBUS,SPI,I2C等协议；
-4.掌握或者熟悉FPGA编程设计，Xilinx，alteration，两种品牌的FPGA程序编写经验，熟悉编程设计流程，了解FPGA外围硬件系统组成，了解FPGA基本供电设计；
-5.了解屏幕驱动信号MIPI，EDP,LVDS,V-BY-ONE,SPI,RGB标准协议及相关经验者优先。', 'open', NULL);
-INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '产品经理' LIMIT 1), '技创智能科技（上海）有限公司', '互联网产品经理', '上海-徐汇区', '1.5-2万/月', NULL, '岗位职责：
-1、负责项目前期调研及需求分析工作，深入了解机床销售和售后服务市场，搜集行业动态和相关政策信息；
-2、深度挖掘用户需求，根据公司产品战略独立完成产品需求文档（需求转为产品）；
-3、编制市场规划、方案设计报告和实施方案报告；
-4、根据客户需求，对产品成本进行评估和控制；
-5、与客户保持良好沟通，全程把握客户需求；全程对项目需求分析、设计、开发和测试进行指导和监控，确保按时交付项目；
-6、能独立完成数据分析、数据报表的整理，拓宽市场渠道，督促产品研发及使用过程中可能出现的功能、性能和稳定性问题；
-7、不定期收集市场销售信息、新技术产品开发信息，分析及跟踪竞争对手，吸取行业发展优点并融入到产品中去；
-8、负责公司现有项目产品的完善和开发等工作；
-10、完成上级领导安排的其他工作。
-任职要求：
-1、全日制本科以上学历，计算机专业，5年以上工作经验；
-2、5年及以上APP电商平台工作经验，3-5年及以上团队管理经验；
-3、熟悉机床工具市场，有工厂工作经验优先！
-4、具有2个以上从0-1的电商或服务类互联网平台项目经验；
-5、制定过三方支付功能的产品交互设计；
-6、具有完整的产品开发思维，熟练掌握UE；
-7、对产品模型和盈利模式有丰富经验，熟悉电商，社交，自媒体平台产品设计；
-8、善于分析出平台的优点和缺点，并给出迭代方向；
-9、对项目有强烈的认同感并希望积极参与。
-※ 对我司“鑫机缘”APP有一定的认识！', 'open', NULL);
-INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '产品经理' LIMIT 1), '上海有孚网络股份有限公司', '高级产品经理', '上海', '2-4万/月', NULL, '1. 参与制定公司产品战略，进行产品规划并执行产品研发；
-2. 根据既定产品战略，参与多个产品线的规划和创意过程，分析业务需求，归纳、分解出产品功能设计需求；
-3. 基于产品定位，设计完整的用户操作和业务流程、界面结构、产品原型，为技术开发团队提供明确的产品方案和文档；
-4. 负责与开发、设计、业务等团队进行沟通，确保各个协作部门对产品充分的理解；
-5. 协调设计和技术开发团队，协助解决产品开发和设计过程中出现的问题，推动及协调产品研发进度，协助产品测试，把控产品交付质量；
-6. 参与客户、市场研究，通过客户反馈和数据分析，发现产品问题，挖掘客户和市场潜在需求，规划产品优化和升级方案；
-7. 基于产品规划，为相关业务部门提供产品知识和应用解决方案的培训。
-1. 本科以上学历，5年以上产品设计经验；
-2. 熟悉产品需求分析、操作流程设计，可以独立有效地完成产品策划工作；
-3. 具有较强的逻辑思维能力和概念抽象能力，对产品设计有整体规划和细节梳理的能力；
-4. 熟悉视觉实现界面交互设计，熟悉H5，能够与UI设计师及前端开发人员沟通落实方案；
-5. 熟练掌握Axure、Microsoft Visio、Mind Manager等常用产品策划软件；
-6. 对IT领域和互联网行业有深入的理解，对企业信息化有深刻的认知；
-7. 有大型电商或云计算行业工作经验者优先；
-8. 具备良好的团队协作精神和积极有效的沟通能力；', 'open', NULL);
-INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '产品经理' LIMIT 1), '武汉市腾亚科技有限公司', '产品经理', '武汉-东西湖区', '0.8-1.2万/月', NULL, '岗位职责：
-1.负责教育信息化产品相关的需求分析与设计，并推动各实施环节确保按时、保质的上线运营；
-2.对所负责的产品能力持续收集用户反馈、答疑解惑，分析业务运营状况对产品进行持续的优化和改进；
-3、基于对客户需求的深度理解，提供产品分析结论和展望，并将研究的发现转变为可执行和可实现的功能需求；
-4、密切跟踪行业发展动态、积极思考产品的规划及发展方向，并能够提出建设性的建议。
-任职要求：
-1.IT相关专业统招本科及以上学历；至少6年以上教育相关信息化产品的研发、招投标及
-运维经验，并熟悉配套的需求分析、设计和运营工作；
-2.熟悉市面上教育信息化产品，并能有归纳、见解；
-3.具有系统化、缜密的逻辑思维与分析能力、敏锐的数据分析；
-4.熟悉教育信息化市场、并对行业的发展方向及动态有敏锐的嗅觉；
-5.有激情，优秀的沟通、团队协调合作能力；执行力强、能够认真、负责、细致按时提交高
-质量的工作成果。
-6、有软件厂商经历的优先考虑。
-福利待遇：
-1、补贴：工作日中餐补贴10元/天+出差补助+通讯费补助+免费提供住宿+节日福利。
-2、社会保险：购买五险一金（养老保险、失业保险、工伤保险、医疗保险、生育保险和住房公积金）
-3、员工活动：季度生日会+趣味运动会+茶话会+内外部培训。
-联系方式：
-1、公司座机：027-87863349
-2、邮箱：2059863512@qq.com，有意者可将简历发送至邮箱，谢谢。', 'open', NULL);
-INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '产品经理' LIMIT 1), '集韵化妆品（上海）有限公司', '产品经理/主管（护肤）', '上海-闵行区', '1-2.5万/月', NULL, '岗位说明：
-1、负责美妆护肤行业整体发展趋势研究分析；根据调研分析结果储备开发新的护肤产品；
-2、分析品牌所在渠道的市场趋势及竞争环境，洞察该渠道的消费者需求，针对渠道进行产品线整体规划，完成年度产品开发计划；
-3、负责产品的市场调查、用户研究、需求分析、竞争分析，根据调研分析结果制定产品策略；
-4、负责撰写产品需求文档，组织产品开发可行性评审，完成产品需求立项，制定项目开发计划，明确定义新产品的开发活动；
-5、参与内容物研发，负责新配方使用调研及分析体检报告，推进配方从试用到正式生产；
-6、参与包材开发，负责包材使用功能评价，以及评估是否符合产品定位；
-7、负责组织撰写及核对外包装、产品宣传类文案，提炼产品定位及设计理念文稿至设计部，并协同完成产品形象规划工作；
-8、负责对产品上市后的生命周期管理，包括产品的改进、产品线的伸、包装升级等工作。
-任职要求：
-1、大专以上学历，具有3年以上品牌化妆品行业的从业背景；
-2、熟悉产品开发流程，精通产品开发的全程管理，具有出色的产品策划能力及项目统筹能力；
-3、能够独立完成全套产品的开发，有独立开发产品项目的成功案例，对化妆品有灵敏的触觉和相关的专业知识；
-4、有较强的市场洞察，消费者调研和数据分析能力，好的项目统筹规划、文案策划和沟通能力；
-5、有丰富产品开发评估管理经验，需要熟悉从前期准备，到配方，包装开发设计评估，到后期产品上市相关准备等等。', 'open', NULL);
-INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '产品经理' LIMIT 1), '福州同力科技开发有限公司', '产品经理', '福州-台江区', '1.4-1.6万/月', NULL, '岗位职责：
-1、负责公司软件产品整体规划、业务流程设计、功能设计、产品优化等工作；
-2、制定产品需求计划，进行可行性分析及设计，撰写产品功能需求说明书，负责需求的跟踪和控制；
-3、制定产品业务规范，整理、完善产品文档、业务流程及相关内容；
-4、负责部门间的协调沟通，产品项目实施及推广；
-5、负责产品案例设计、产品培训及产品商务咨询、拓展等工作的支持和配合；
-6、负责日常业务数据分析，设计产品商务模型，推广营销模型，跟进产品销售、客户反馈；
-7、日常跟踪观察竞争对手产品、用户情况，定期进行分析，研究了解行业发展动态及客户需求及市场前景；
-8、参与新产品营销方案，协助营销部门推进产品的市场占有率。
-任职要求：
-1、全日制本科及以上学历，三年以上互联网或软件产品经理工作经验；
-2、有丰富的互联网及软件产品业务实操经验的优先；
-3、熟悉产品实施过程，包括市场分析、需求分析、产品功能设计、业务流程设计、界面设计、用户研究和可用性测试等；
-4、具有较强的沟通能力、逻辑能力和产品设计能力，对数据敏感，具备较强分析加工能力；
-5、熟悉互联网产品，熟练使用产品设计类软件，对技术研发环节有了解者优先；
-6、较强的用户需求判断、引导、控制能力，有很好的合作能力，善于合作协调沟通，思维敏捷，具有非常好的书面和口头表达能力；
-7、具有强烈的责任心和上进心，具备良好的团队合作精神，积极主动，能承受较大的工作压力。', 'open', NULL);
-INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '产品经理' LIMIT 1), '深圳市龙火科技有限公司', '软件产品经理', '深圳', '1.3-2万/月', NULL, '岗位职责：
-1、负责公司相关产品和产品链的设计和维护；
-2、负责互联网平台产品体验流程设计，包括电脑PC端和手机移动端；
-3、全程参与产品设计、研发、测试、验收等工作；
-4、从市场需求的角度，参与产品开发和技术开发，全流程的技术评审和决策评审；
-5、负责公司产品的市场调研、数据分析、用户行为分析；
-6、协调项目团队UI、前端、开发、测试等各种资源，确保项目按时保质完成；
-7、主动收集用户反馈与需求，对产品进行持续的优化和改进，通过快速迭代不断提升产品的质量和体验，并根据公司战略计划，给予建设性方案及相关方案执行计划；
-8、负责新产品策划，结合用户需求和产品技术架构，完成新产品/新功能的设计和原型展示；
-9、负责与研发部门、设计部门、测试部门沟通协调，确保各部门对产品的充分理解；
-10、市场与行业分析，技术调研，竞争对手和竞争对手产品分析等。
-任职要求：
-1、年龄20-35岁，统招大学本科以上学历，6年以上互联网产品经理工作经验；
-2、具有良好的组织能力、学习能力、理解能力和表达能力；
-3、对用户需求具有敏锐的洞察力，优秀的数据调查能力和调研访谈能力；
-4、具有强烈的上进心，能承受工作压力；
-5、熟悉互联网行业，对发展规律和未来趋势有一定认识；
-6、善于倾听用户声音，善于分析、逻辑清晰，能有效地确立产品策略、市场定位和产品核心价值；
-7、优秀的团队协调能力、项目管理能力、项目推动力。', 'open', NULL);
-INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '产品经理' LIMIT 1), '广州一诺教育技术有限公司', '产品经理', '广州-黄埔区', '1.4-1.8万/月', NULL, '1、了解产品功能和运营策略，围绕着营收与市场运营，设计产品功能；
-2、负责移动端公众号、小程序产品和PC端产品规划和设计；
-3、承担产品流程、需求及原型等具体功能的设计，并协调、推动研发团队按时完成产品开发、高质量上线。
-4、研究行业竞品动态；
-5、持续进行产品细节的打磨，通过迭代更新，提升产品用户满意度。
-6、在项目推进过程中的主动进行跨部门沟通；能制定合理、清晰的产品迭代节奏；
-7、负责线上用户及营运数据分析，监控和跟踪数据异常波动情况，并深入分析和定位问题。
-任职要求：
-1、大学本科，计算机等理工科专业优先；年龄30岁以下；
-2、热爱教育行业和互联网技术,熟悉TOB互联网产品模式；
-3、有2-3年大型互联网产品设计经验，1年以上的线上运营经验和运营背景；
-4、有较好的行业敏感度和需求整理能力、产品规划能力；
-5、熟悉产品调研、规划、设计、开发、产品化以及产品上线等各环节。
-6、具备良好的创新能力、执行力，沟通协调能力及逻辑性，书面表达和口头表达能力良好，性格外向；
-7、熟悉产品工具的使用，对技术实现的可行性、技术成本等有一定的评估能力。熟悉iOS、Android、Web设计规范，有移动端设计经验和后台设计经验。
-司属于集团项目筹备期，面试地点在萝岗香雪地铁站附近，工作地点：广州市黄埔区科学大道33号视联科技园内。公司福利：五险一金，周休双休，工作时间：9：00-18：00.', 'open', NULL);
-INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '产品经理' LIMIT 1), '南京果酱文化发展有限公司', '产品经理', '南京', '1-1.5万/月', NULL, '【岗位职责】
-1、迭代管理：参与产品迭代规划，实施产品迭代计划；
-2、需求输出：根据产品迭代规划，还原用户场景、分析用户需求，并输出合理的需求解决方案；
-3、产品设计：根据产品迭代，完成产品功能设计，输出原型和PRD文档；
-4、产品运营：根据产品迭代，参与运营工作计划，配合产品完成运营实施；
-5、数据分析：独立对用户行为数据进行分析，优化产品体验。
-【任职要求】
-1、本科及以上学历，计算机相关专业，有知名互联网公司产品经历或业内知名产品设计及实现经历；
-2、思维活跃、条理清晰，有较强的逻辑分析和理解能力；
-3、3-5年互联网行业产品工作经验，熟悉互联网产品整体实现过程，包括从需求分析到产品发布，深刻理解用户需求；
-4、熟练使用Axure、EA/visio、mind manager等工具；
-5、善于数据分析，擅长通过数据挖掘产品问题，通过数据验证策划方案的效果；
-6、有责任心，工作积极主动，勤恳踏实，能承担一定的工作压力。
-【公司福利】
-1、灵活性的上班时间，睡过头9点迟到这种事不用担心；
-2、开明大方的老板和***的同事，轻松的工作环境有益身心健康；
-3、国内外各种演唱会、音乐节免费看；
-4、下午茶、晚餐供应、无限量饮料零食；
-5、各种有趣的团建、拓展、电竞街机比赛让你玩到嗨；
-6、按实缴纳的五险给您更多的保障；
-当然，以上只是众多福利的一小部分，想了解更多，就来加入我们吧！', 'open', NULL);
-INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '产品经理' LIMIT 1), '四川科思精密模具有限公司', '资深产品经理', '成都-崇州市', '10-15万/年', NULL, '【岗位职责】
-1、产品开拓方向：3C电子产品，医疗产品、汽车饰品、小家电类产品、定制类工业产品。
-2、负责市场调研、行业分析，根据整个市场发展方向和趋势，规划产品方向；
-3、编制市场分析报告、产品需求说明，从市场可行性、经济可行性论证细分市场与产品的可行性，提出新品开发ID。
-4、研究、分析、开发新产品：与研发团队紧密配合，编写产品需求、产品设计、用户手册等文档，推进产品开发进度，与市场、运营等团队紧密配合，完成产品推广与运营，实现项目目标。
-5、负责产品生命周期管理，跟踪产品投放市场后的市场表现，对产品的销售和质量数据进行详细分析，并定期对自身产品、整体行业、竞争对手等进行数据分析并评估，不断优化改进产品规划；负责推动产品生命周期内的成本优化；
-6、产品开发类客户的业务开拓：与产品开发类公司进行商务洽谈，寻求合作机会，为公司制造中心导入产品的制造、组装业务。
-7、公司领导交办的其他事项。
-【任职要求】
-1、大学本科以上学历，理工科专业。
-2、5-8年工业产品设计、开发经验。
-3、对常见工业产品用材料、制程熟悉。
-4、对3C电子产品，医疗产品、汽车饰品、小家电类产品行业熟，有产品开发成功案例。
-5、思路清晰，眼界开阔, 洞察力强，市场敏锐度高。
-6、掌握产品管理、项目管理、市场管理、质量管理、研发管理方面的知识。
-7、具有组织协调、沟通能力，逻辑分析能力和问题解决能力。', 'open', NULL);
-INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '产品经理' LIMIT 1), '上海天坊信息科技有限公司', '电商产品经理（食品追溯）', '上海', '1.8-2.5万/月', NULL, '工作职责:
-负责阳光午餐食品安全追溯管理平台产品team的管理工作，负责具体产品工作；
-1.根据公司战略规划和部门业务目标，提供食品安全追溯相关产品的解决方案的设计；
-2.根据公司业务战略核心业务需求，负责公司核心产品业务线-阳光午餐智慧管理平台的产品工作；
-3.熟悉条码、二维码、RFID等溯源技术，对相关物联网技术有一定了解；
-4.与运营、研发、测试团队密切协作，把控需求，控制变更，协调进度，保质保量交付；
-5. 挖掘与把握用户需求、定义产品功能与交互流程，负责产品运营工作；
-6.对用户心理和深层次需求有强烈的好奇心和探究的行动力，根据用户调研和数据分析进行产品判断，制定产品迭代优化方案，不断优化用户体验和产品逻辑；
-7.时刻关注行业、竞品的新动态，思考产品发展路线及构思新的产品功能。
-任职资格:
-1、全日制本科及以上学历，5年以上相关工作经验;
-2、有食品追溯，生鲜供应链经营者优先;
-3、熟悉其他互联网产品系统，能够对现有系统进行整合优化，一体化产品设计能力者优先；
-4、具备良好的团队协作能力；抗压能力强，勇担当精神；
-5、有大局观，能从业务角度考虑问题，视野广阔，具有良好的前瞻性，思路清晰、逻辑性强、具备良好的沟通能力、理解能力和团队协作意识；
-6、具有敏锐的商业嗅觉，能较好的把握业务发展趋势，有成功产品策划案例优先。
-熟练使用Axure、X-mind、PPT等。', 'open', NULL);
-INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '产品经理' LIMIT 1), '浙江万德电气有限公司', 'IT产品经理', '宁波-高新区', '0.8-1.5万/月', NULL, '岗位职责
-1.负责IT运维软件产品和工业物联网数据分析采集平台产品项目整体落地解决方案规划和项目管理工作，能够主导运维或工业物联网产品解决方案的规划和落地。
-2.负责项目用户需求分析>挖掘>引导>设计转化>细化项目需求，对项目需求有一定的洞察能力。
-3.负责售后大客户关系维护和管理，通过个人专业性、业务专业性，积极响应客户，提升客户满意度，所负责客户能够持续产生生意机会。
-4.负责项目管理，可带领项目成员按时完成项目整体规划设计及交付工作。
-5.负责项目开发进程管理，能够组织项目组技术选型攻关，组织技术团队完成相关技术工作。
-6.负责各阶段大项目文档资料输出和汇报，较好的文档素材编辑功底，能够胜任售后阶段各项汇报以及会议组织协调工作。
-任职资格
-岗位要求
-1.本科及以上学历，至少3年以上软件或相关行业项目管理经验，具备百万级软件项目管理或咨询规划工作优先考虑。
-2.熟悉IT运维及智慧校园行业客户发展历程，有IT运维软件产品或高校智慧校园五大平台产品方案落地规划、项目管理、实施等相关工作经验者优先考虑。
-3.具备独立面向客户提供产品解决方案并推进项目落地能力。
-4.有软考，PMP，ITIL相关证书者优先考虑。
-5.对网络、Linux系统、数据库SQL中两项技能达到熟练程度，了解软件实施流程和项目管理基本规范等。
-6. 良好的沟通协作能力，能适应短期出差，能承受工作压力', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 8, 'dict', TRUE);
-INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '产品经理' LIMIT 1), '济南拓宇智能科技有限公司', '物联网产品经理', '济南-高新区', '1-1.5万/月', NULL, '岗位职贡:
-1、负责公司的物联网平台产品管理工作:
-a.负责公司所有物联网平台产品包括但不限于物联网平台等平台产品的的需求分析
-和传递工作;
-b.与客户进行需求沟通，充分理解客户的需求，结合市场竞争对手的情况，制定公司物联网平台产品定义和产品规划;
-c.根据产品的售后及客户反馈情况，汇总产品的问题，提出产品的改进方案;
-d.提炼产品的卖点，并且将这些卖点转化成销售宣传语言进行输出。
-2、负责物联网平台的需求文档的编写以及原型设计:
-a.与客户进行沟通，确保整理出来的需求真实准确。
-b.包括产品功能描述、功能流程及功能限制的详细描述;
-c.产品原型设计。
-3、关注竞争对手以及物联网行业的发展和动向，并作出应
-a.关注最新的发展，应用，需求等方向;
-b.协助公司制定未来物联网平台发展方向。
-任职资格：
-1、统招专科学历以上，电子、通信、市场等专业，物联网方向优先考虑;
-2、对物联网/产业互联网行业有一定理解，5年以上相关经验优先考虑，有软件开发经验优先;
-3、对电子、通信、物联网、数据分析等方向有强烈兴趣，并有一定的相关基础，有相应的专业背景优先考虑;
-4、对市场敏感，需要具备创造性思维，跨界思考的能力，对移动互联网有深刻的理解，擅长归纳总结用户和市场的痛
-点，并能找到对应的技术解决方案;
-5、善于沟通，愿意交流;思维活跃，热爱创新，看重创业团队未来，良好的团队精神。', 'open', NULL);
-INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '产品经理' LIMIT 1), '深圳市特思威尔科技有限公司', '产品经理（急）', '深圳-宝安区', '1-2万/月', NULL, '1、负责产品规划设计、编写产品文档、编写客户定制需求，产品测试文档建立。
-2、产品从无到有的规划，包括市场分析，竟争对手分析，用户分析等；
-3、负责产品上市后的数据跟踪，用户调研，并根据各项反馈完成产品改进及新版推出；
-4、搜索用户新要求，竟争产品（包括价格、功能、特点、技术等）以及研究市场上产品的发展趋势；
-5、建立公司产品目录，保证公司方案资料数据库的完整性和及时性；
-6、到客户现场进行技术交流及引导，宣传公司产品。
-7、此岗位软硬件都要懂。
-任职要求：
-1、本科及以上学历，计算机、电子信息类相关专业；
-2、熟悉产品设计全流程，包括：调研、市场分析、数据分析、项目规划等工作，并能协调各模块资源，最终推动产品上线达成业务目标；
-3、具备优秀的项目进度把控能力、跨部门协作能力、沟通能力；
-4、熟悉电子产品、了解营销管理的相关知识，有车载产品开发、设计、运营相关项目经验者优先；
-公司福利：
-1、五天八小时（上班时间：早上8:30-下午6:00）；
-2、按国家法律法规为员工社保、公积金；
-3、完善的福利（生日礼物、团建活动、婚假、产假、陪产假、带薪年假)；
-4、法定节假日将按国家规定休假，如特殊原因需要加班，另行发放加班工资；
-5、每年至少1次旅游；
-6、完善的职业发展规划和晋升空间；
-7、年终奖
-备注：请仔细阅读招聘要求，并了解公司所在地址，切勿盲目投递简历，谢谢！', 'open', NULL);
-INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '产品经理' LIMIT 1), '上海重耳信息技术有限公司', '全国产品经理-泌尿外科', '上海-浦东新区', '2-2.5万/月', NULL, '岗位职责：
-1、分析市场计划，评估市场重要事件影响。提供销售分析、竞争对手、市场活动以及客户反馈信息等市场相关报告以确定产品市场定位，建议和发展市场策略以增加销售业绩。
-2、对所负责领域内的国内外医学进展及竞争产品等信息进行动态监测，为公司决策提供产品的中长期/年度战略规划依据；
-3、负责制定产品行销方案及市场推广策略，并定期评估其可执行性；
-4、负责市场潜力产品评估，为公司决策提供有效并可靠的依据；
-5、负责公司新品导入项目，完成新品上市前调研，上市计划，并对计划的有效性负责；
-6、关注所涉领域疾病发展与治疗水平现状，具备一定的学术能力，编写产品资料及推广工具，负责内外部的产品知识等培训；7、定期进行管辖产品的市场销售评估，并周期性提供详尽评估报告。
-任职资格：
-1、本科及以上学历，临床医学、生物制药相关专业优先；
-2、5年以上医药、医疗器械领域工作经历，三年以上市场部产品（品牌）经理工作经验；
-3、有扎实的医学专业知识和技能，良好的组织、策划大型活动及会议的能力；
-4、熟练操作Excel、Word、PowerPoint等办公软件，市场数据分析能力，能够独立完成产品的市场营销计划；
-5、具有优秀的演讲技巧，能够独立、准确的进行与产品及市场营销活动相关的说明，出色的培训和演讲能力，亲和力强；
-6、有过独立或领导团队开展新产品上市、策划经验并成功推行工作经验者优先。', 'open', NULL);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '前端开发工程师' LIMIT 1), '江苏微盛网络科技有限公司', '前端开发工程师', '合肥-蜀山区', '1-1.5万/月', NULL, '岗位要求：
 1、参与移动小程序后台及应用web端开发项目，负责系统的技术架构和概要设计。
 2、能够独立完成详细设计及编码、进行代码检查，负责系统开发框架的搭建、改进，完成系统后台功能逻辑的代码实现；
@@ -3480,13 +1141,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 6、熟悉Redis、MQ、Nginx等中间件的使用、特性、及高可用方案，独立完成高并发场景架构设计及具备实战经验
 7、了解HADOOP/SPARK/FLINK/DRUID/等组件，具备海量实时数据处理平台建设经验，了解海量数据数据仓库体系建设，有相关项目经验优先
 8、该岗位工作地点在安徽省合肥市，需要到无锡培训1~2周', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 6, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 10, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 5, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 7, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 3, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '前端开发工程师' LIMIT 1), '上海钦文信息科技有限公司', '前端开发工程师', '上海-浦东新区', '1.3-2.5万/月', NULL, '1、开发、改进、优化Web/Desktop Web/Mobile H5/微信等HTML项目的前端页面和交互
 2、帮助公司积累前端技术，通过敏捷开发的方式高质、高效地完成任务；善于调研新技术，解决和优化性能、可维护性、用户体验等种种问题
 3、用技术、数据分析推动产品的持续改善，并适时地提出自己的见解
@@ -3505,9 +1159,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 2、有ES6/TypeScript的开发经验
 3、有javascript game框架使用经验
 4、提供 Github 账号、技术 Blog 链接等优先', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 9, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '前端开发工程师' LIMIT 1), '成都高新发展股份有限公司', '高级前端开发工程师', '成都-高新区', '1.8-2.5万/月', NULL, '1、基于前端框架技术和开发工具的研究，完成公司内产品前端框架和开发工具的设计；
 2、负责制定前端开发规范，承担前端核心模块的设计；
 3、实现工作主导、参与技术难题攻关，解决各类潜在系统技术风险，保证系统的安全、稳定、快速运行；
@@ -3521,8 +1172,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 5、有大型数据分析系统项目成功经验，对数据系统开发有丰富经验；
 6、优秀的团队合作精神，奋斗、担当、严谨，敢于接受挑战；
 7、有智慧城市领域相关经验者优先。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '前端开发工程师' LIMIT 1), '上海中金能源投资有限公司', '前端开发工程师', '南京-江宁区', '1.5-2万/月', NULL, '开发项目介绍：
 智慧能源平台是基于物联网的能源与设施管理平台，用户可以通过平台快速浏览系统的运行数据，进行数据分析并部署优化策略，规范设备设施管理，快速诊断现场故障及预防性的维护管理，从而提升系统运行可靠性，降低运行成本。平台服务于园区及建筑的综合能源运营项目，包括数据采集、自动控制、数据可视化、能源管理、设备管理、故障诊断、财务管理等多个应用模块。
 1、计算机、软件、GIS 或遥感等相关专业优先；
@@ -3531,8 +1180,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 4、熟悉 WebGIS （Leaflet、Mapbox、Cesium 等）有一定开发经验的加分；
 5、有大数据可视化开发经验的加分；
 6、热爱前端技术，具有良好的编程能力和代码习惯，具备良好的沟通和文字表达能力，有责任心，能独立解决问题。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '前端开发工程师' LIMIT 1), '广州市兆基仪表仪器制造有限公司', 'WEB前端软件研发工程师', '广州-番禺区', '0.8-1万/月', NULL, '学习能力较强、工作主动性较高，思维严谨，一定的分析解决问题能力。
 一.工作内容：
 1.参与项目程序的需求分析、编程、调试、文档，完成分项编程任务；
@@ -3546,8 +1193,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 4.有WEB组态开发经验者优先；
 2.会基本的数据库操作优先。如：SQL Server、SQLite。
 5.有智能水表自动化、水务系统行业工作经验者优先。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '前端开发工程师' LIMIT 1), '深圳市中讯合创科技有限公司', 'Web前端开发工程师（数据可视化工程师）', '广州-黄埔区', '0.8-1.5万/月', NULL, '职位要求：
 1.熟练掌握HTML、CSS、Javascript、jQuery、canvas等技术；
 2.熟练掌握css3，实现网页动效及页面交互功能;
@@ -3563,8 +1208,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 6.不定期的文娱、体育活动、下午茶；
 7.部门活动、公司旅游；
 8.国家规定的各种法定节假日、带薪年休假；', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '前端开发工程师' LIMIT 1), '广东畅视科技有限公司', '前端工程师（数据可视化工程师）', '广州-黄埔区', '0.8-1.5万/月', NULL, '职位要求：
 1.熟练掌握HTML、CSS、Javascript、jQuery、canvas等技术；
 2.熟练掌握css3，实现网页动效及页面交互功能;
@@ -3580,8 +1223,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 6.不定期的文娱、体育活动、下午茶；
 7.部门活动、公司旅游；
 8.国家规定的各种法定节假日、带薪年休假；', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '前端开发工程师' LIMIT 1), '湖南建研信息技术股份有限公司', '高级前端开发工程师', '武汉-东湖新技...', '0.8-1万/月', NULL, '1.负责企业级软件产品前端开发，PC、APP、H5页面UI设计工作。
 2.能够在数据分析系统前端里做可视化展示。
 3.负责整体设计风格、规范以及交互规范制定，关注及提高用户体验感。
@@ -3605,8 +1246,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 5、有微信公众号、微信小程序、H5等移动端项目开发经验；
 6、熟悉 Echarts、D3等交互可视化技术者优先；
 7、具有网络安全分析或大数据分析行业背景者优先；', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '前端开发工程师' LIMIT 1), '自在旅业集团有限公司', '前端产品经理', '上海', '1-2万/月', NULL, '1、针对市场定位和用户分析，负责旅游产品的开发，完成原型架构设计；
 2、规划和设计产品方案，对用户的体验和满意度负责；
 3、从旅游用户出行效率角度出发，抽象多样业务场景，合理设计复杂流程 ；
@@ -3625,9 +1264,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 3、熟练使用Git，熟悉一门服务端开发语言（如：PHP、Java、Nodejs、Go等）；
 4、计算机相关专业统招本科以上学历；
 5、良好的沟通能力、团队合作精神。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 9, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '前端开发工程师' LIMIT 1), '北京亿聘世纪管理咨询有限公司', '前端开发工程师', '北京-朝阳区', '2.5-3万/月', NULL, '主要职责
 1、负责数据分析产品的 Web 前端研发； 2、与产品设计师一起，优化整个产品的使用流程，为使用者提供更好的数据可视化效果； 3、负责前端新技术的探索与实践。
 职位必备项
@@ -3699,10 +1335,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 6、了解基础算法、统计学知识优先；
 7、扎实的独立分析问题、解决问题的能力，具备良好的需求理解能力、沟通协调能力和团队合作精神；有很强的数据设计抽象能力，善于从复杂的数据问题中找到关键路径，并且擅于跟业务团队就业务问题进行良好的沟通，能推动业务的指标化、量化；
 8、有较好的学习能力、团队协作精神，认真细心，有强烈的责任心，爱岗敬业，有较高抗压能力，有较好的工作稳定性。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 8, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 3, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '大数据开发工程师' LIMIT 1), '深圳市捷顺科技实业股份有限公司', '大数据开发（互联网智慧停车）', '深圳-福田区', '1.8-3万/月', NULL, '【此岗位为捷顺科技旗下子公司智慧停车业务（捷停车）的岗位招聘】
 捷停车JParking（深圳市顺易通信息科技有限公司）是A股上市企业捷顺科技（股票代码：002609）旗下智慧停车一体化服务平台，公司注册资本1.25亿元，2018年蚂蚁金服战略投资2亿元。
 主要业务包括智慧停车车场车位运营服务、通道流量运营服务、广告营销运营服务三大版块。其功能涵盖云托管服务、融合支付服务、车位运营服务、精准营销服务、本地生活服务等，致力于智慧停车场景的获取、运营和变现能力建设，构建以运营服务为主导的赋能体系，为车场端、商户端、车主端、政府端、生态端等多方提供价值赋能。
@@ -3735,8 +1367,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 5．具备大数据项目售前、实施经验，有良好的沟通表达能力，能够撰写方案标书；
 6．具备良好的团队协作精神和客户服务意识；
 7．熟悉民航行业的企业级IT解决方案、对大数据技术解决方案有一定的见解和掌握，熟悉民航数字化转型中遇到的问题，熟知民航行业的大数据技术在实际应用场景中的应用方式，有大数据项目建设经验，完整参与过整个大数据项目全过程者优先。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 3, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '大数据开发工程师' LIMIT 1), '广州壹豆网络科技有限公司', '大数据产品经理', '广州-天河区', '1.3-2.5万/月', NULL, '岗位职责
 1、负责数据智能营销产品的整体规划与设计工作，挖掘大数据在营销中应用场景和商业价值
 2、深入理解互联网、移动app、私域流量生态全产业链和用户画像，数据驱动分析三者的关联，洞察业务关键节点，给予业务决策支持，持续进行市场和竞品调研，产出行业报告；
@@ -3781,11 +1411,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 4. 节日福利：传统节假日（如中秋节、端午节）等，公司会发放相应的礼金或礼品；
 5. 娱乐活动：不定期组织户外活动，如春游、赏花、登山、球赛、烧烤等；
 6.集团筹备近期上市，优秀员工及技术等关键岗位配股权。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 8, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 4, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 3, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '大数据开发工程师' LIMIT 1), '北京华远信荣科技有限责任公司', '高级大数据开发工程师', '北京-东城区', '1.5-2万/月', NULL, '职责描述：
 1、负责大数据实时查询、离线计算、实时入库系统开发及设计；
 2、负责大数据流式计算、实时预警、实时推荐系统开发及设计；
@@ -3808,10 +1433,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 12、 有JanusGraph、TinkerPop开发经验者优先；
 13、 熟悉大规模图计算，有Giraph、GraphX经验者优先；
 14、参与过开源项目，为开源社区贡献过代码的优先;', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 8, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 3, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '大数据开发工程师' LIMIT 1), '如皋中软国际信息技术有限公司', '大数据研发工程师/讲师', '南通', '0.8-1.5万/月', NULL, '1、本科及以上学历，计算机、软件技术、数据挖掘/统计学/应用数据等相关专业；
 2、三年以上大数据开发/数据存储/数据平台/分析挖掘相关经验；
 3、熟悉Linux操作系统，掌握Shell/Python/Perl至少一种脚本语言；
@@ -3828,13 +1449,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 2、负责大数据/云计算课程案例及实训项目开发工作；
 3、负责大数据/云计算授课工作；
 4、负责大数据/云计算的内部培训任务。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 5, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 7, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 8, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 4, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 3, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '大数据开发工程师' LIMIT 1), '杭州顺网科技股份有限公司', '大数据开发工程师', '上海', '2-2.5万/月', NULL, '工作职责:
 1、负责基于Hadoop/Spark等生态系统的大数据平台的架构设计、技术选型、搭建、开发、管理、监控和性能调优，保证集群高效稳定运行，对数据应用提供数据存储、查询引擎、实时计算、元数据管理的架构设计；
 2、系统核心部分代码编写、指导和培训工程师、不断进行系统优化；
@@ -3848,9 +1462,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 对复杂系统的性能优化和稳定性提升有一线实战经验，具备相关产品（Hadoop、Hive、HBase、Kafka、ElasticSearch、Spark等）项目应用研发经验；
 4、熟悉数据挖掘相关算法，包括但不限于决策树、SVM、聚类、逻辑回归等；有实际生产项目应用经验；
 5、可以快速理解和适应相关业务，有良好的数据敏感度和自驱力，善于捕捉业务需求、架构设计存在的问题，并给出有效的解决措施和方法。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 3, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '大数据开发工程师' LIMIT 1), '鼎翰文化股份有限公司', '大数据开发工程师', '长沙-岳麓区', '1-1.4万/月', NULL, '1，计算机软件等相关专业专科及以上学历,具备5年以上大数据开发经验
 2、具备大规模实时数据处理实践经验，精通Spark streaming或Flink实时数据处理框架
 3、熟悉分布式系统设计原理，具备高并发高性能系统架构设计经验
@@ -3867,12 +1478,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 5、负责大数据相关先进技术的调研，并定期进行团队内分享
 6、负责跟据实际业务设计开发大数据应用组件或基于开源软件进行二次开发
 7、负责大数据平台功能的技术实现，核心代码开发及日常维护', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 5, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 7, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 8, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 3, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '大数据开发工程师' LIMIT 1), '深圳就位网科技有限公司', 'C# 大数据开发工程师', '深圳-福田区', '3-4万/月', NULL, '0、公司主要技术团队以C#为主，优先考虑C#经验丰富的技术人才
 1、负责根据企业发展战略制定短中长期技术规划，提升企业的IT竞争力；
 2、快速定义业务场景问题，组织进行技术需求分析，并带领技术团队协同业务部门完成公司各类技术需求；
@@ -3888,10 +1493,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 5、优秀的团队管理能力，具备相关的管理理念和管理技能；
 6、精通TCP/IP、Rpc、Http等编程，对多线程、异步、高并发技术有深入的理解；
 7、精通C#、Nodejs、Javascript，熟练使用数据库（MySql、MSSQL ），有分布式数据库设计和使用经验，有SQL（Redis或MongoDB）数据库经验；', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 5, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 7, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '大数据开发工程师' LIMIT 1), '长沙世速网络科技有限公司', '大数据开发工程师', '长沙', '0.9-1.4万/月', NULL, '职位描述：
 1、两年真实的开发经验；
 2、精通Java开发语言、熟练掌握idea eclipse等开发工具；
@@ -3918,13 +1519,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 6、 部门团建；
 7、全勤奖、加班餐补，车费补贴
 公司地址：芙蓉区五一大道人瑞潇湘国际大厦30楼3001', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 6, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 5, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 7, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 8, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 3, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '大数据开发工程师' LIMIT 1), '广西恒传数字信息设计院有限公司', '大数据规划设计师', '南宁', '1-1.5万/月', NULL, '1.负责政务大数据的项目策划及总体架构规划设计，负责政务部门的大数据项目需求分析、顶层设计、框架设计、发展规划、专项规划等工作；
 2.负责开展大数据项目的业务规划、功能规划，完成项目策划方案、总体建设方案等撰写工作；
 3.负责带领各系统设计人员协同完成大数据项目的概要设计、详细设计、造价估算等规划设计工作；
@@ -3938,8 +1532,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 6.具有良好的职业道德，保密意识强，工作细心，责任心强，处事灵活，具有良好的团队合作精神。
 1.薪资：年薪+奖金；（基本薪酬范围：15-20万年薪；）
 3.工作时间：五天制，周末双休；上午8:30-12:00，下午：14:00-18:00。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 3, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '大数据开发工程师' LIMIT 1), '四川曙光集团', '中级大数据开发工程师', '成都-高新区', '0.9-1.1万/月', NULL, '职责描述：
 1.基于Spark、Hadoop等大数据平台上的ETL建设、开发、维护与优化；
 2.协助对业务数据进行分析、建模，为业务部门的数据化运营提供支持；
@@ -3957,10 +1549,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 7.具备良好的团队合作精神，有较好的沟通交流能力，善于主动思考和行动，乐于解决具有挑战性的问题；
 8.有大型互联网、内容生态或者自媒体行业经验的优先考虑；
 9.具有海量数据处理、优化经验，有大型大数据成熟项目经验的优先考虑。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 5, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 3, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '大数据开发工程师' LIMIT 1), '北京中职物联信息科技有限公司', '大数据开发工程师（五险一金）', '武汉-武昌区', '1.2-2万/月', NULL, '1、参与物联网大数据架构的规划设计，参与业务建模及数据化运营平台的搭建、运维，对业务流程与大数据的结合提出建议和解决方案；
 2、完成基于物联网大数据平台的业务项目的开发、实施、和维护工作；
 3、负责解决大数据平台建设过程中的技术难点和性能调优工作；
@@ -3974,10 +1562,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 5、熟练掌握Spark、flink任意一种计算框架，掌握MapReduce计算框架原理，并有实际项目开发经验；
 6、熟练掌握Hbase、Cassandra任意一种存储技术，掌握大规模时序数据的存储技术，病有实际项目开发经验。
 福利待遇：五险一金、补充商业险、年底13薪、定期团建活动、下午茶、节日福利', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 8, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 3, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '大数据开发工程师' LIMIT 1), '深圳市巨龙科教网络有限公司', '大数据挖掘工程师', '郑州-高新区', '0.8-1.2万/月', NULL, '岗位职责：
 1、 负责大数据需求调研、数据分析、商业分析和数据挖掘模型等，对校园安全大数据进行挖掘分析；
 2、 运用大数据应用和方法论，分析校园安全行业数据，挖掘数据价值，并运用可视化技术展示数据；
@@ -3992,8 +1576,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 6、 项目经验方面：具有大数据建模或BI系统开发经验者优先，能够独立开发设计数据仓库、ETL设计、Cube建模、OLAP开发、报表开发等；
 7、 较强的沟通能力和逻辑表达能力，具备良好的团队合作精神和主动沟通意识。
 福利待遇：七险一金、双休、年终奖金、员工旅游、弹性工作、定期体检等', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 3, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '大数据开发工程师' LIMIT 1), '爱贝英语', '大数据总监', '上海-浦东新区', '3-6万/月', NULL, '数据总监
 【岗位职责】
 1. 深刻理解公司业务和业务数据，构建稳定可靠的数据仓库和灵活易用的BI分析系统和报表系统，保障对业务部门提供数据的正确性、完整性、一致性、及时性。
@@ -4011,9 +1593,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 6. 具备较强的数据分析能力，需求分析能力及快速学习能力，能深入理解复杂的业务逻辑；
 7. 工作认真负责，有良好的分析能力与沟通技巧, 注重团队合作，能承受较大的工作压力；
 8. 对数据敏感，较强的逻辑思维能力，有在线教育、互联网行业数据分析经验者优先；', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 5, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 3, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '大数据开发工程师' LIMIT 1), '江西省智能产业技术创新研究院', '大数据工程师', '南昌-南昌县', '1-1.5万/月', NULL, '1. 参与客户需求调研，熟悉业务逻辑及数据源表结构等；
 2. 参与大数据的架构设计、开发、部署、自动化运维和数据分析等工作；
 3. 负责大数据采集平台的搭建及相应功能的研发；配置环境及安装数据库，搭建目标数据仓库，进行维度建模；
@@ -4026,12 +1605,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 4. 熟悉数据开发及周边相关数据库系统Hive、Redis等；熟悉异构数据库间的增量获取方式和数据同步方式；
 5. 精通数据仓库模型，能够熟练进行事实表、维度表、汇总表的建模，具备大型数据仓库开发实际经验；有海量数据分布式存储/实时计算开发经验者优先；
 6.具备良好的沟通能力，做事认真、仔细，具有团队协作能力。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 7, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 8, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 4, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 3, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '大数据开发工程师' LIMIT 1), '深圳万顺叫车云信息技术有限公司', '中级大数据开发工程师', '深圳-宝安区', '1.6-2万/月', NULL, '职位诱惑：五险一金、晋升空间大、季度项目奖
 职位描述：
 深圳扩编4人，月休6天，7小时上班制
@@ -4049,11 +1622,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 4、精通MapReduce设计方法或者Spark、flink计算框架、对Hadoop、Spark、Hive等主流云计算大数据相关软件有充分的了解，并且有实践经验，能解决应用中负责问题；
 5、熟悉大数据处理相关技术Hadoop、Hive、Hbase、Spark、Kafka、redis 等；
 6、具有海量数据处理、数据挖掘、数据分析相关项目的工作经验者优先；', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 7, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 4, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 3, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '大数据开发工程师' LIMIT 1), '央广视讯传媒（上海）有限公司', '舆情产品销售经理（大数据/网络信息安全方向）', '上海-浦东新区', '1-2万/月', NULL, '1. 制定客户开发计划,有效的进行新客户开发,并寻找机会点,对机会点进行有效的跟进,并进行商务谈判及风险分析,完成新客户的合同签订及持续服务
 2. 全面掌握市场变化和竞品公司情况，了解客户对数据实际需求和使用习惯
 3. 根据部门总体策略，选择目标细分市场和客户，编制自己分管的数据销售计划
@@ -4081,10 +1649,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 4、至少主导参与了1个以上大数据产品（包括但不限于大数据研发产品、数据资产、决策/成效分析平台等相关产品经验）；
 5、具备优秀的团队意识和沟通能力、工作积极主动，善于思考钻研，有高度责任心和良好的团队合作精神，乐于接受挑战，能承受较大的工作压力 ，具有较强的创新和研究能力；
 6、熟悉政务、公安、交通等行业大数据业务优先考虑。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 5, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 7, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '大数据开发工程师' LIMIT 1), '国网思极网安科技（北京）有限公司', '产品经理（大数据安全）', '北京-昌平区', '1-2万/月', NULL, '业务方向：大数据建设、数据安全等
 职位描述:
 1.负责电力系统安全体系和数据安全产品的设计，协调安全架构师一起推进安全生产作业风险管控、感数数据监测等方向安全能力和安全产品的提升；
@@ -4115,11 +1679,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 5、熟悉 Oracle 、MySql等数据库，精通sql编程；
 6、掌握多线程及高性能的设计与编码及性能调优；
 7、有3年以上的产品设计与开发经验，有区块链技术应用、高并发应用开发经验、大数据分析处理，数据仓库建立经验优先。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 6, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 5, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 3, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '大数据开发工程师' LIMIT 1), '深圳市易佰网络科技有限公司武汉分公司', '大数据开发工程师', '武汉', '0.8-1.5万/月', NULL, '工作职责：
 1、负责大数据计算平台构建和大数据应用研发； 3年以上大数据平台和数据仓库建设经验，有数据治理、数据分析、数据建模、数据仓库的设计及实施经验优先；
 2、负责基于分布式计算框架的开发、处理、分析、统计、挖掘工作；
@@ -4133,11 +1692,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 6、具有较强的归纳总结能力和书面表达能力，能将项目过程中的实施经验转化成专业的文档。
 职能类别：大数据开发工程师
 关键字：大数据hadoopspark', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 5, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 8, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 3, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '大数据开发工程师' LIMIT 1), '广州龙骐贸易有限公司', 'Hadoop开发工程师', '广州-白云区', '0.8-1.5万/月', NULL, '岗位职责：
 1. 掌握 SQL 语言、Hive、ETL、等等，能独立编写语句；
 2. 具有优秀的分析问题能力，细心；
@@ -4161,11 +1715,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 8、朝气蓬勃的电商团队等着你哦~
 工作地址：
 广东省 广州市 白云区 黄石街道 江夏村芦石岗1号 红风创意园11栋2层201室（靠近江夏地铁口）', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 5, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 8, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 3, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '大数据开发工程师' LIMIT 1), '领猎网络科技（上海）有限公司', 'Z大数据工程师', '上海-徐汇区', '1.5-2万/月', NULL, '1、 根据项目需求，分析、设计、并实现可扩展的大数据平台架构方案；
 2、 负责开发大数据分析/查询、分布式存储、流式/实时计算等核心代码实现；
 3、 负责大数据平台的优化和改进工作；
@@ -4182,9 +1731,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 7、 了解Flink，能够通过Flink将数据存储进入HDFS文件系统优先；
 8、 掌握Python或Go语言优先。
 技能要求：能够搭建并熟练使用flume、sqoop、kafka、hive、hbase、spark，了解工作机制', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 8, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 3, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '大数据开发工程师' LIMIT 1), '四川智能视讯信息技术有限公司', '大数据开发工程师', '成都-高新区', '1.2-2万/月', NULL, '工作内容：
 1、负责大数据系统的设计、搭建，负责产品大数据应用核心功能开发；
 2、对数据进行数据处理、分析、统计工作，编写相应的技术文档；
@@ -4199,9 +1745,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 6、对解决具有挑战性的数据问题充满激情，具有良好的分析问题和解决问题的能力，能够胜任部分数据分析，挖掘，建模工作；
 7、有Flink/Greenplum/ClickHouse实际开发经验者优先
 8、有互联网产品数据分析实际经验者优先', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 3, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '大数据开发工程师' LIMIT 1), '北京鼎腾科技有限公司', '大数据开发工程师', '异地招聘', '1.5-2.5万/月', NULL, '1.具备5年以上的研发经验，并从事过大数据开发或者ETL开发工作,能够独立完成项目指标的设计、开发、测试、上线工作。
 2.有海量数据处理经验者优先，有电网业务能力经验者优先，有阿里平台使用经验优先。
 3.熟悉大数据离线、实时技术开发流程及技术路线，并给出技术路线的优化建议，具有扎实的大数据和数据仓库理论功底，有阿里中台使用经验优先。
@@ -4211,8 +1754,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 7.具备系统调优、性能调优等技能，对疑难技术问题具备较强的排查能力。
 8.具备极强的业务理解、数据分析分析、数据挖掘、方案设计等逻辑思维能力，对于项目中涉及的技术、业务和产品工具需具备高效的学习能力。
 9.有强烈的责任心、良好的沟通协调能力、团队合作精神、优秀的执行能力、能承受工作压力。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 3, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '大数据开发工程师' LIMIT 1), '成都科来软件有限公司', '大数据开发工程师', '成都-高新区', '1.3-2万/月', NULL, '工作职责:
 1、 参与系统需求分析和设计工作
 2、 负责系统的开发、测试工作
@@ -4228,10 +1769,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 7、 对数据敏感、对新技术敏感，具有良好的系统分析、架构设计能力；
 8、 有机器学习经验者优先;
 9、个性开朗，对技术钻研好学、逻辑思维能力强，沟通能力优秀，有团队合作精神。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 8, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 3, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '大数据开发工程师' LIMIT 1), '武汉智远软件有限责任公司', '大数据开发工程师', '武汉-江汉区', '0.7-1.2万/月', NULL, '工作内容:
 1、搭建和维护Hadoop集群，解决海量数据不断增长面临的挑战；
 2、负责海量信息分析处理，系统设计；
@@ -4248,10 +1785,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 *养老、失业、工伤、生育、医疗保险；
 *丰富多彩的员工活动；
 *完善的员工培训及职业规划。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 8, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 3, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 4, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '大数据开发工程师' LIMIT 1), '摩比可可（深圳）网络科技有限公司', '大数据工程师', '深圳-福田区', '2-3万/月', NULL, '您好，我司位于福田区，距离下沙地铁站C或D出口100米，交通方便，公司人员90后为主，领导超nice，我司销售提供无责任底薪是6K-10K，但需具备以下条件：
 岗位职责：
 1、负责公司大数据平台搭建工作；
@@ -4274,9 +1807,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 8、新人培训
 9、年会晚会
 10、开工红包', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 3, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '大数据开发工程师' LIMIT 1), '杭州半云科技有限公司', '阿里云大数据开发工程师', '福州', '1.5-2.5万/月', NULL, '岗位职责
 1、负责支撑业务中台、数据中台、能源大数据中心等项目的应用架构、技术架构、数据架构设计；
 2、负责大数据平台的系统架构和风险评估、性能优化；
@@ -4289,8 +1819,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 4、熟悉数仓建模理论，了解ER建模及维度建模理论，熟悉常见的数仓分层方法、原则、规范；
 5、具备一定业务敏感度，能够结合业务问题进行业务调研、总结、抽象，简单设计数据应用原型；
 6、逻辑思维清晰，沟通表达流畅，具备一定的领导力和项目组织能力，能够进行团队技术总控。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '大数据开发工程师' LIMIT 1), '北京中星微电子有限公司', '大数据软件工程师（数据库）', '珠海-横琴新区', '1-2万/月', NULL, '1. 基于安防行业需求，设计构建和维护以分布式数据库为核心的大数据分析产品，实现对行业内大数据的存储、分析、检索和共享。
 2. 完成产品功能的分布式数据库系统的搭建、测试、验证、调优和运维工作。
 3. 与团队成员紧密沟通，一起推动系统产品的最终实现。
@@ -4304,8 +1832,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 7. 了解机器学习、数据仓库、数据挖掘等应用，有实际项目经验为佳；
 8. 具有良好的人际沟通能力，乐于与团队成员一起分享传授技术学习成果；
 9. 具有独立解决疑难问题的能力并承受一定的工作压力；', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 5, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '大数据开发工程师' LIMIT 1), '安艾艾迪信息技术（上海）有限公司', '高级大数据讲师', '上海-长宁区', '1-1.5万/月', NULL, '工作职责:
 1)负责大数据课程产品开发与教学工作;
 2)负责大数据分析的数据开发工作；
@@ -4320,10 +1846,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 5)熟练使用SQL，熟练使用mysql、ms sql等其中一种数据库；
 6)责任心强，工作积极性高；能够和团队成员进行有效的沟通和协作；
 7)有团队管理经验者优先。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 5, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 3, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '大数据开发工程师' LIMIT 1), '筋斗云（深圳）实业有限公司', '大数据开发工程师', '深圳-龙岗区', '2-2.5万/月', NULL, '1 协助公司数据和数据仓库建设；
 2 负责Hive、Spark、flink、Kafka等系统的应用开发工作；
 3 协助基础平台开发，构建稳定高性能的处理流程；
@@ -4336,13 +1858,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 5. 熟悉常用算法和数据结构，HTTP协议、TCP网络编程、Web分布式架构设计、缓存设计中的3项以上技术；
 6. 熟悉流行的开源框架，如Springboot，Springcloud，Mybatis等；
 7. 良好的团队合作精神和深入专研的学习、工作毅力，敢于尝试和突破，并勇于承担责任。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 6, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 10, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 7, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 8, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 4, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '大数据开发工程师' LIMIT 1), '索菲亚家居股份有限公司', '大数据开发工程师', '广州-增城区', '1.2-1.5万/月', NULL, '1. 参与以下某一领域，包括但不限于大数据处理平台（如Hadoop、Spark等）、分布式存储、资源调度、数据分析工具、消息队列、流处理等方面的项目、运维落地；
 2. 能参与大数据团队进行新架构、新技术的攻关研发，并结合公司的业务实际进行应用；
 3. 能与数据分析师、业务人员进行合作，完成数据建模、技术实现等工作。高级级别应可以独立通过业务数据使用场景进行技术分析、规划设计、数据探查，完成数据建模，如用户行为数据、营销数据等；
@@ -4352,9 +1867,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 2、精通分布式数据处理，有三年以上的大数据平台项目相关开发经验（如Hive，Spark，HBase，Sqoop，Flume等）。
 3、熟悉Java、Python、Scale等至少一种开发语言。有推荐系统/自然语言分析/机器学习/用户行为分析项目工作经验者优先。
 4、熟悉数据仓库逻辑架构，熟悉ETL流程、元数据管理、数据质量监控等数据仓库主要环节。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 3, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '大数据开发工程师' LIMIT 1), '辛巴网络科技（南京）有限公司', '大数据开发工程师', '南京-栖霞区', '1.5-2.5万/月', NULL, '职位描述
 1、负责公司自研大数据平台开发，根据项目局点需求，利用spark、flink技术，接入异构数据源并进行清洗、转换、落地；
 2、参与基于大数据的数据集成、数据开发工具的预研和开发；
@@ -4369,9 +1881,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 7、思路清晰，有良好的沟通表达能力和跨团队协调能力；
 8、有大型分布式、高并发、高负载、高可用性系统设计和稳定性经验优先。
 9. 熟悉车联网业务优先；', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 3, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '大数据开发工程师' LIMIT 1), '成都熊谷加世电器有限公司', '大数据开发工程师', '成都-郫都区', '0.7-1.2万/月', NULL, '1、负责大数据应用平台技术开发，制定数据模型的统一标准规范；搭建系统开发环境，完成大数据产品框架和代码的实现；负责系统开发测试、部署和集成；
 2、熟悉数据治理、数据建模、数据分析/处理等；
 3、负责大数据分析、挖掘、建模方法和算法研究及技术实现；根据需求设计分析模型和算法，分析运行情况并调整、优化；
@@ -4382,9 +1891,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 4、熟悉MySQL/Oracle等数据库、 Hadoop/Spark/Hbase等技术组件；
 5、具有团队精神与敬业精神，学习钻研能力强，具有良好的协调沟通能力
 注：公司注重人文，满一年后每月给其父或母发200元孝顺金，享受公司经营利益分享，满三年优秀骨干享受激励股', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 5, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 3, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '大数据开发工程师' LIMIT 1), '上海卓易科技股份有限公司', '大数据开发工程师', '上海-徐汇区', '2.5-4万/月', NULL, '工作职责：
 1. 全面负责公司大数据平台的技术规划和实施，完成数据采集规范、数据仓库、离线和实时数据分析等基础设施建设及部分核心编码工作；
 2. 带领数据分析团队，与各部门紧密协作，根据需求及行业特点构建大数据解决方案，建立和完善日常业务报表体系和可视化运营支持数据平台；
@@ -4394,10 +1900,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 2. 精通CDH，精通Hadoop/Spark技术体系，熟练掌握Mysql/Mongodb/Hive/Hbase/Kafka/ES等主流数据库系统，熟练AIRFLOW等调度工具,熟练使用Java、Python编程语言；
 3. 对数据敏感，熟悉常用数据挖掘算法和推荐系统设计和实现方法，并有一定实践经验；
 4. 具有出色的抽象设计能力、组织协调能力和沟通交流能力。自我驱动能力和责任心强，良好的结果导向和抗压能力。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 5, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 3, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '大数据开发工程师' LIMIT 1), '江苏傲天数字科技有限公司', '大数据架构师', '南京-雨花台区', '2-2.5万/月', NULL, '1.负责企业级大数据平台的模型规划、设计和落地实施；
 2.能基于企业业务场景和大数据平台规划，进行从数据标准、数据主题域、数据模型拓展设计；
 3.具备数据资产管理理念，可以实现数据类目、数据资产目录等方面的实施。
@@ -4407,8 +1909,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 3.熟悉数据资产管理和数据治理体系，具备数据管理视角及知识广度；有数据领域的数据生命周期、数据治理、数据服务、数据架构、元数据、数据模型、数据标准、数据质量管理等相关分析或实施工作经验；
 4.熟悉关系型数据库，如Oracle、Greenplum等数据仓库，精通数据库应用开发；熟悉Hadoop相关技术，包括Hbase、Hive、SparkSQL等；
 5.具备较高水平的方案编制能力和交流沟通能力，良好的团队合作能力。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 3, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '大数据开发工程师' LIMIT 1), '音泰思计算机技术（成都）有限公司', '大数据开发工程师', '成都', '1.3-2万/月', NULL, '1、根据客户需求或公司要求，进行大数据平台及应用平台的搭建，技术选型、技术实现；
 2、理解业务，对多种数据源进行组合分析、挖掘和建模；
 3、进行数据的存储、分析、索引建立、实时查询功能设计和开发；
@@ -4421,10 +1921,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 4、了解Dubbo或Spring等框架，可进行相关的业务开发；
 5、熟悉Linux系统，熟练使用常用命令,熟悉 Oracle、MSSQL等数据库；
 6、有高并发应用开发经验、大数据分析处理，数据仓库建立经验者优先。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 7, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 8, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 3, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '大数据开发工程师' LIMIT 1), '广东泓胜科技股份有限公司', '大数据开发工程师(BI)', '佛山-南海区', '12-24万/年', NULL, '岗位职责：
 1.负责大数据基础平台、数据分析系统架构设计和开发；
 2.负责制定数据建模、数据处理、数据运维和数据安全等架构规范并落地实施；
@@ -4453,10 +1949,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 5. 熟练掌握大数据技术栈，包括Hadoop，Hive，Spark，HBase，Flink等；
 6. 熟悉数据分析技术栈，包括基本统计和机器学习等，有spark ml开发经验优先；
 7. 思维逻辑清晰，良好的自驱力，沟通能力和解决问题的能力。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 8, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 3, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '大数据开发工程师' LIMIT 1), '浙江碳银互联网科技有限公司', '大数据开发工程师', '杭州-萧山区', '1.6-2.3万/月', NULL, '工作职责:
 1、负责公司大数据体系建设，构建数据中台，赋能业务；
 2、负责数据仓库、实时计算、质量体系、智能归因等系统设计与研发；
@@ -4470,8 +1962,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 4、熟悉Hadoop/YARN、Hive、Spark、Storm、Kafka 等；
 5、优秀的理解沟通能力，能快速理解业务背景，责任心强，具有良好的团队沟通与协作能力；
 6、具有多个完整的数据分析平台的开发经验；', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 3, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '大数据开发工程师' LIMIT 1), '欧冶云商股份有限公司', '大数据研发工程师', '上海-宝山区', '1.2-2.5万/月', NULL, '1、基于大数据平台完成各类统计和开发任务；
 2、完成日常数据分析查询需求；
 3、数据仓库的设计，开发，维护。
@@ -4485,9 +1975,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 4、具有良好的学习和研发能力，针对大数据技术与应用场景相融合，推动应用研发落地、技术支持与创新；
 5、具有良好的团队精神，思维清晰敏捷，逻辑分析能力强，善于沟通，能承担一定的工作压力。
 6、以上技术掌握一项或多些皆可。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 5, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 3, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '大数据开发工程师' LIMIT 1), '北理新源（佛山）信息科技有限公司', '大数据开发工程师', '佛山-南海区', '1.1-2.1万/月', NULL, '岗位职责：
 1、负责公司华南大数据中心的规划、部署、管理和优化，保障平台稳定可靠高效运行；
 2、深入理解公司大数据平台架构，发现并解决性能瓶颈，支撑业务和数据量的快速增长；
@@ -4499,12 +1986,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 4.拥有扎实的编程能力，熟练掌握常见数据结构，熟练掌握常用框架思想，深刻了解多线 程、并发、异步，熟练掌握 Java8+ Scala2.11+ ；
 5.精通linux环境的排查工具和手段, 熟练掌握SSH/SFTP/VIM等工具的使用；
 6.有车联网相关背景或终端设备采集、监控系统开发经验优先', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 7, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 8, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 4, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 3, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '大数据开发工程师' LIMIT 1), '广州尚融网络科技有限公司', '大数据工程师', '广州-黄埔区', '0.8-1.2万/月', NULL, '岗位职责：
 1. 智慧工厂的大数据平台的搭建、开发、维护、优化
 2. 海量数据的清洗、加工、分析、应用
@@ -4522,10 +2003,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 9. 熟练使用各种存储组件，如Hive、HBase、Impala、Solr、ES等
 10. 熟练使用流式计算组件，如Spark Streaming、Flink等
 具有良好的沟通能力和团队精神，具有良好的抗压能力', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 8, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 3, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '大数据开发工程师' LIMIT 1), '深圳市中易科技有限责任公司', '大数据产品经理', '深圳-南山区', '1.1-1.7万/月', NULL, '岗位职责：
 1、负责大数据产品解决方案；
 2、负责数据产品的需求对接梳理和定义。与公司业务部门密切配合，并结合行业产品经验提炼出业务数据可实行方案；
@@ -4555,8 +2032,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 4、有扎实的数据挖掘能力，熟悉机器学习相关算法，能从数据中挖掘和提升产品能力；
 5、具有带领一个有使命感、结果驱动、高绩效团队的能力；
 6、有创业心，致力于在工业互联网领域深耕细作。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '大数据开发工程师' LIMIT 1), '深圳市都市交通规划设计研究院有限公司', '大数据软件工程师', '北京-朝阳区', '1.5-3.5万/月', NULL, '岗位职责：
 1.和产品经理沟通产品需求,深入理解业务,为业务部门提供有质量的数据支持；
 2.负责核心业务流程的数据分析模型建模,数据仓库架构设计等；
@@ -4573,10 +2048,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 5.熟悉Java/Python/Shell等开发语言.
 6.良好的团队精神和沟通能力；
 7.热爱交通事业，有理想有追求。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 4, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 3, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '大数据开发工程师' LIMIT 1), '广州远想生物科技有限公司', '大数据开发工程师', '广州-海珠区', '1-2万/月', NULL, '职位描述：
 1、负责Hadoop集群、数据分析平台、计算平台维护和开发；
 2、负责公司海量用户行为日志数据收集、ETL；
@@ -4593,9 +2064,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 先；
 7、有数据挖掘、机器学习、推荐算法、人工智能、数学建模项目经验者优先；
 8、良好沟通和团队合作能力，具备很强的问题分析及解决能力。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 3, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '大数据开发工程师' LIMIT 1), '弘扬软件股份有限公司', '大数据开发工程师', '异地招聘', '1-1.5万/月', NULL, '技能要求：
 大数据，数据仓库
 岗位职责：
@@ -4613,9 +2081,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 7.有基于CDH项目开发经验者优先，熟悉华为公有云服务者优先；
 8.至少有2年以上的大数据开发工作经验；
 9.熟悉医疗行业，有医疗行业数据仓库项目经验优先。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 8, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '大数据开发工程师' LIMIT 1), '上海铂仁软件系统有限公司', '大数据软件实施项目经理', '上海', '1-1.5万/月', NULL, '岗位职责：
 1、负责项目的指导、控制和管理，确保项目在指定时限、预算范围内成功完成；
 2、督促项目实施团队其他成员完成既定的工作任务目标；
@@ -4628,8 +2093,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 4、熟悉数据仓库系统建设过程，及项目过程中数据建模、mapping、ETL、前端展示等工作，有2个以上BI(数据仓库、ODS)项目的实施管理经验；
 5、良好的沟通、理解和表达能力，良好的协调现场和承压能力，性格乐观，工作踏实，积极上进；
 6、熟练掌握Cognos/BO/BIEE/Tableau任一BI工具者优先；', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 5, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '大数据开发工程师' LIMIT 1), '南京欣网通信科技股份有限公司', '大数据开发工程师', '成都', '0.8-1.1万/月', NULL, '岗位职责：
 1、 基于Hadoop进行MapReduce、Hive和HBase的应用开发；
 2、维护和管理大规模Hadoop集群，解决不断增长的海量数据带来的存储和计算挑战；
@@ -4643,10 +2106,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 6、 熟悉后端服务（Restful Api 服务实现）优先；
 7、熟悉使用sqlserver、oracle、mysql一种；
 8、良好团队协作和沟通能力。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 5, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 3, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '大数据开发工程师' LIMIT 1), '安徽七天教育科技有限公司', '大数据开发工程师', '合肥-新站区', '1.5-2万/月', NULL, '【工作职责】
 1、负责基于Hadoop框架的海量数据平台建设;
 2、参与大数据平台的数据架构设计，完成从业务模型到数据模型的设计;
@@ -4661,10 +2120,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 4、扎实的Java开发能力，能有Python / Scala经验尤佳，具备一些算法能力尤佳;
 5、业务理解力强，对数据敏感，有互联网行业产品数据分析经验者优先;
 6、具有良好的沟通能力和团队合作精神，优秀的分析问题和解决问题的能力，对技术有热情。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 4, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 3, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '大数据开发工程师' LIMIT 1), '数字广东网络建设有限公司', '大数据解决方案架构师', '广州-越秀区', '1.5-2.5万/月', NULL, '1、理解数字政府客户的业务需求、功能需求、流程需求，基于数字广东技术体系为政府客户信息化项目提供业务咨询、技术咨询、规划、设计等专业服务。
 2、为政府客户提供政务信息化解决方案，负责项目售前阶段的技术支持、方案设计整合、支持项目立项、招投标等工作（主要工作）。
 3、负责统筹省政数局的大数据相关业务的规划，为省政府提供大数据解决方案，包含但不限于数据架构、数据治理和数据运营等。
@@ -4686,9 +2141,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 3、Java基础扎实，有大型业务系统的架构设计和实施能力，熟悉分布式系统的设计和应用；
 4、有汽车行业的大数据平台落地经验，包括数据分析体系、数据指标体系、数据治理及数据产品搭建实施经验优先；
 5、具备很强的责任心，良好的逻辑思维和沟通表达、团队合作能力。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 3, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '大数据开发工程师' LIMIT 1), '南京君度科技有限公司', '大数据开发工程师', '南京', '1-2万/月', NULL, '1.负责数据仓库应用产品设计和开发
 2.负责数据仓库建模、数据预处理子系统的设计和开发。
 3.负责数据仓库ETL流程的优化及解决ETL相关技术问题
@@ -4703,11 +2155,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 8、有较好的逻辑思维能力，较强的抽象、概括、总结能力；
 9、对数据敏感、对新技术敏感、对数据产品设计有想法者优先。
 10、有时序数据分析、视频分析项目经验优先。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 5, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 8, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 3, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '大数据开发工程师' LIMIT 1), '重庆中航建设（集团）有限公司', '大数据开发工程师', '重庆-渝北区', '1-1.5万/月', NULL, '1、负责构建数据分析与数据挖掘业务分析体系，整体架构设计、规划。充分发挥数据的价值，提高数据质量。
 2、负责大数据平台基础架构，以及数据处理算法、模型、脚本的维护、监控、优化和升级。
 任职要求：
@@ -4721,8 +2168,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 6、熟悉liunx操作系统的相关部署及维护。
 7、***有物联网行业相关工作经验。
 8、有Spark ml经验者优先考虑。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '大数据开发工程师' LIMIT 1), '武汉极风云科技有限公司', '大数据架构师', '武汉-江夏区', '0.8-1万/月', NULL, '岗位职责
 1、负责公司大数据平台的整体架构设计，包含数据收集、数据存储、数据挖掘、数据输出；
 2、负责规划从数据源到数据应用的整体流程，并参与用户产品和数据产品的决策；
@@ -4737,10 +2182,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 5、熟悉基本数据挖掘方法和技术；
 6、强烈的敬业精神，良好的沟通与协调能力，能有效组织协调团队完成各类开发工作；
 7、热爱技术，相信数据的价值，对大数据有深刻的理解。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 8, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 3, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '大数据开发工程师' LIMIT 1), '上海大唐移动通信设备有限公司', 'Hadoop大数据开发工程师', '上海', '1.5-2万/月', NULL, '1、负责运营商流量分析云计算平台的基础架构的维护，监控，优化和升级等日常工作；
 2、负责处理数据平台Hadoop/Hive/Hbase/Storm/Spark等疑难问题的研究和解决；
 3、深入研究社区的各类大数据技术和产品，能够引入并实施；
@@ -4754,10 +2195,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 5、有良好的系统分析能力、故障诊断能力者优先；
 6、有大型分布式系统架构的实际经验；
 7、有人工智能相关开发经验优先、熟练使用python语言开发工具的优先、有通信企业工作经验优先。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 3, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 7, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '大数据开发工程师' LIMIT 1), '广东轩辕网络科技股份有限公司', '大数据开发工程师', '广州-天河区', '1.3-2万/月', NULL, '岗位职责：
 1、参与大数据产品的设计分析，系统设计；
 2、负责建立业务系统数据模型，对数据进行统计、分析、展示
@@ -4775,10 +2212,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 7、了解spring boot及其微服务周边中间件，有实践经验优先；
 8、有优秀的数据分析能力和需求分析能力，能较好的理解业务策略；
 9、有医疗行业项目经验者优先。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 6, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 3, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '大数据开发工程师' LIMIT 1), '福建锐华有限公司', '大数据开发工程师', '福州-仓山区', '10-30万/年', NULL, '1、负责大数据分布式应用系统技术支持工作，包括需求调研、开发、和性能优化等。
 2、负责承担数据抽取、清洗、转化等数据处理程序开发。
 3、负责完成数据分析应用开发，对数据进行挖掘、优化及统计。
@@ -4790,12 +2223,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 5、熟悉HBase、Hadoop、Spark、Hive、Kafka、Storm等开源大数据软件；
 6、至少熟悉一种数据库，例如 Oracle/MySQL/PostgreSQL/MongoDB/Redis/Cassandra 等；
 7、具备良好的团队合作精神，较强的沟通能力。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 5, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 7, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 8, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 3, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '大数据开发工程师' LIMIT 1), '广州华央电子科技有限公司', '大数据开发工程师', '广州-黄埔区', '6-8千/月', NULL, '岗位职责：
 1、协助设计和开发分布式网络采集系统，各个渠道的财经信息的抓取和分析；
 2、协助设计爬虫策略和防屏蔽规则，提升抓取的效率和质量；
@@ -4827,9 +2254,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 3、综合素质好，有良好的沟通、表达能力、语言及文字水平佳；
 4、具有团队协作精神。
 工作地点：', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 3, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '大数据开发工程师' LIMIT 1), '深圳市达熙科技有限公司', '大数据开发工程师', '深圳', '2-4万/月', NULL, '大数据开发工程师
 薪资范围：税后人民币 20-40K/月*13薪 +月度绩效，996工作制
 工作职责：
@@ -4845,9 +2269,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 精通JAVA、熟练掌握MapReduce原理及数据分析相关的二次开发；
 对新技术充满热情，具有良好的学习能力、团队协作能力和沟通能力；
 能承受较大的工作压力。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 3, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '大数据开发工程师' LIMIT 1), '深圳前海帕拓逊网络技术有限公司', '大数据测试工程师', '深圳-龙岗区', '1.2-2.5万/月', NULL, '岗位职责：
 1.测试公司亚马逊MWS接口数据以及爬虫等数据的完整性、准确性，并推动数据问题的解决。
 2.检验数据有无监控、监控指标是否正常，告警是否能正确触发。
@@ -4858,9 +2279,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 2.了解大数相关数据库，比如 Hadoop / Impala / Hive / HBase 等，至少熟悉一种常见数据库如 MYSQL、SqlServer 。
 3.对数据敏感，具有良好的逻辑思维能力、分析能力、理解业务的能力、沟通能力和表达呈现能力，主动性强。
 4.具有扎实的统计和数据挖掘、建模基础，对ETL过程、数据算法、数据分析有一定的基础。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 5, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 3, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '大数据开发工程师' LIMIT 1), '南京铭轩生物科技有限公司', '大数据开发工程师（资深）', '武汉-江夏区', '2-4万/月', NULL, '岗位职责:
 1、负责电信网络大数据等技术研究，推动相关技术在公司产品与应用中落地。
 2、负责电信网络告警、性能等海量历史数据的数据架构设计、数据分析与数据挖掘开发，并支持网络人工智能模型与算法的工程化实现。
@@ -4871,9 +2289,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 4、专业知识：熟悉大数据技术，能够实现PB级数据仓库处理存储架构，至少精通一种大数据和AI相关技术框架和应用（如：Hadoop、Spark、Storm等），具 备一定的数据挖掘经验。
 5、语言要求： 至少精通一种编程语言（C++、Java、Python）。
 6、个性特征： 具有很强的研究能力与学习意愿，具备良好的沟通能力和团队协作能力', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 3, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '大数据开发工程师' LIMIT 1), '杭州中软安人网络通信股份有限公司', '大数据项目经理', '北京', '1-1.5万/月', NULL, '岗位职责
 1、负责大数据项目的实施与管理工作；
 2、负责制定项目计划，组织开展项目的分析、设计、开发、实施等相关工作；
@@ -4898,12 +2313,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 4. 熟悉Java或scala开发，熟悉linux操作；
 5. 具有丰富的数据仓库系统的开发实施经验，熟练设计数据模型、ETL设计、Cube多维建模、OLAP开发、报表开发等；具有良好的编程习惯和文档编写习惯；
 6. 优秀的团队合作精神，对工作有热情，能够承受住压力。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 6, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 10, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 8, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 3, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '大数据开发工程师' LIMIT 1), '广东广宇科技发展有限公司', '大数据开发工程师', '佛山-南海区', '0.9-1.2万/月', NULL, '职位描述：
 1.依据客户需求完成大数据项目的数据分析、组织、建模
 2.参与项目的需求分析、系统设计、编码工作;
@@ -4917,11 +2326,6 @@ Storm开发经验者优先；
 5.熟悉Java或Python，有PostgreSQL、MySQL、Oracle或NoSQL相关开发经验者优先；
 6.具备良好的业务理解能力，有较强逻辑分析能力；
 7.有政府行业相关经验者优先。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 5, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 8, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 3, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '大数据开发工程师' LIMIT 1), '广州数说故事信息科技有限公司', '大数据开发工程师', '深圳-南山区', '2-2.5万/月', NULL, '岗位职责：
 1、 基于HADOOP的中台系统建设，参与完成企业级数据平台设计与实施；
 2、参与数仓、DMP、数据分析系统、推荐系统的应用开发。
@@ -4936,20 +2340,12 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 优先条件:
 1，具备数仓开发经验者优先。
 2，具备JAVA WEB开发经验者优先。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 3, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '大数据开发工程师' LIMIT 1), '上海辰仕科技发展有限公司', '大数据开发工程师', '南京-鼓楼区', '1-2万/月', NULL, '1、具备扎实的数据结构和算法功底，熟练掌握一种或多种离线数据处理工具；熟悉系统需求分析、设计、开发；
 2、熟练使用Linux操作系统，至少熟悉Java、Scala、Python任一中常用语言及框架；
 3、熟练掌握Infomatica、Kettle、OGG等数据集成工具。
 4、熟练使用teablue、Oracle BIEE、IBM Cognos BI、阿里dataV等报表开发工具，能快速呈现业务分析结果 ；
 5、有大数据开发经验，熟悉主流的大数据产品和数据分析技术并具有相关项目经验，熟练掌握大数据分析计算框架及相关组件，熟悉Spring Boot、Spring Cloud 等后端技术栈；熟悉整个大数据的处理流程（数据的采集、清洗、预处理、存储、分析挖掘、机器学习和数据可视化等)；
 6、有国网项目开发工作经验者优先。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 6, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 8, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 4, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '大数据开发工程师' LIMIT 1), '深圳市一应科技有限公司', '大数据架构师', '南京-雨花台区', '1.8-2.6万/月', NULL, '岗位要求：
 1、负责大数据平台（Hadoop，HBase，Spark等）集群环境的搭建，性能调优和日常维护；
 2、负责数据仓库设计，数据ETL的设计、开发和性能优化；
@@ -4963,10 +2359,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 2、熟练掌握Java，并熟悉Shell，Python等一种以上的脚本语言，并灵活运用到实际工作中及解决技术问题；
 3、熟练掌握Linux操作系统；
 4、有过海量数据系统开发经验者优先。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 8, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 3, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '大数据开发工程师' LIMIT 1), '向心引力（深圳）科技有限公司', '大数据后台开发工程师', '深圳-宝安区', '0.8-1.5万/月', NULL, '1、负责公司相关项目的大数据处理平台的设计及研发工作；
 2、负责数据架构的规划，并制定实施标准和规范，确保得到有效的执行，同时保障数据以及文档的质量达到预定的标准；
 3、研究跟进大数据架构领域新技术并分享。
@@ -4978,10 +2370,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 5、熟悉流式计算引擎，对相关框架（storm/spark streaming/flink）熟悉了解，有实际应用经验优先
 6、熟悉网络编程，精通TCP/IP协议及编程，熟悉互联网应用协议；
 7、熟悉Unix/Linux操作系统原理，常用工具；', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 8, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 3, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '大数据开发工程师' LIMIT 1), '西安合智宇信息科技有限公司', '大数据开发工程师', '西安-雁塔区', '6-8千/月', NULL, '岗位职责
 1、参与大规模数据快速查询系统的架构设计和开发；
 2、大规模数据挖掘和机器学习算法的实现；
@@ -4995,10 +2383,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 4、熟悉HDFS/Hive/MapReduce/Kylin/HBase/，能独自进行Mapreduce程序开发者优先；
 5、熟悉分布式系统概念、架构，有大规模分布式系统设计、实现、部署等经验；
 6、有较强的书面与口头沟通表达能力，独立分析、解决问题的能力。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 8, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 3, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '大数据开发工程师' LIMIT 1), '湖南玛塔科技有限公司', '大数据数据仓库开发', '长沙-岳麓区', '1.1-1.5万/月', NULL, '工作职责：
 1、负责提升数仓的性能，关注数据质量，设计数据稽核工具；
 2、负责ETL关键任务的优化设计，协助解决开发过程中的技术难题；
@@ -5010,8 +2394,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 4、具有丰富的企业级数仓设计和的建模经验；
 5、具有电力行业数据分析类产品的开发经验优先。
 公司福利：五险一金、周末双休、年终奖、弹性工作、团建拓展活动、下午茶、每年健康体检、交通补贴、通讯补贴、电脑补贴、餐补、节日福利、生日福利、项目奖金、每年员工旅游、不定期CEO午餐会。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '大数据开发工程师' LIMIT 1), '北京海格鸿睿数据科技有限公司', '大数据项目助理', '北京-昌平区', '5-6千/月', NULL, '1、负责协助项目经理完成用户需求分析、挖掘、细化出项目需求，负责项目相关产出物、文档、汇报材料的统筹和质量把控；
 2、负责项目团队日常管理，处理项目现场相关事务工作的处理及协调；
 3、负责跟进项目现场进程，及时掌握并记录项目进展情况及项目过程中的问题，落实问题处理情况；
@@ -5035,10 +2417,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 4、熟悉HDFS/Hive/MapReduce/Kylin/HBase，能独自进行Mapreduce程序开发者优先；
 5、熟悉分布式系统概念、架构，有大规模分布式系统设计、实现、部署等经验；
 6、有较强的书面与口头沟通表达能力，独立分析、解决问题的能力。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 8, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 3, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '大数据开发工程师' LIMIT 1), '浙江墨煌信息科技有限公司', '大数据开发工程师', '宁波-鄞州区', '1-1.8万/月', NULL, '岗位要求：
 1、全日制本科及以上学历，计算机相关专业毕业；
 2、熟悉数据仓库模型设计方法论，并有实际的模型设计经验，有智慧城市行业经验优先；
@@ -5052,8 +2430,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 3、五天工作制（8h/D），周六日双休；
 4、13薪，带薪年假、带薪病假、国家法定节假日、婚假、产假、陪产假等；
 5、一年两次调薪等。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 3, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '大数据开发工程师' LIMIT 1), '浙江正元智慧科技股份有限公司', '大数据开发工程师', '杭州-余杭区', '1.2-2.4万/月', NULL, '工作职责:
 1、负责数据仓库和数据集市模型的设计，整理相关文档并制定实现方案；
 2. 负责数据模型的具体落地实现和后续优化；
@@ -5065,10 +2441,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 3. 熟悉数据仓库实施方法论，有5年以上数据仓库建模经验
 4. 有良好的学习能力和沟通能力，具有教育行业大数据经验优先；
 5、具备大数据平台，数据质量、元数据管理、数据可视化、数据分析平台一种以上开发经验优先', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 5, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 7, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '大数据开发工程师' LIMIT 1), '广西尚食科技有限公司', '大数据开发工程师', '广州-海珠区', '1.5-2.5万/月', NULL, '1. 基于Hive离线数据分析模型设计，业务报表的开发，业务洞察数据分析等相关功能的开发
 2. 参与公司大数据的模型建设、实时数据仓库、大数据服务化和大数据价值体系建设
 职位要求：
@@ -5078,9 +2450,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 4. 沟通协作意识好，责任心，具备前瞻性意识，执行能力强。
 5. 熟练使用阿里云DataWorks等组件者优先。
 6. 熟练使用HBase者优先。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 3, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '大数据开发工程师' LIMIT 1), '苏州日升软件有限公司', '大数据开发工程师', '无锡-无锡新区', '0.6-1.2万/月', NULL, '1）熟练掌握Tableau、PowerBI、FineBi等主流BI工具；
 2）精通Mysql、Oracle等关系型数据库中的一种，有一定的SQL编写和优化调优经验；
 3)具有大数据和数据仓库的技术与理论功底，参与过大数据平台或数据仓库设计；
@@ -5088,9 +2457,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 5)熟悉常见机器学习算法，如：GBDT或随机森林，逻辑回归，神经网络等算法；
 6)熟悉使用python，了解包括pandas、sklearn、xgboost等框架，有Spark MLib使用经验者加分； 7)良好的团队精神和协作能力；
 8)能服从公司安排，有较好稳定性；', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 5, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 3, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '大数据开发工程师' LIMIT 1), '上海新东方教育培训有限公司', '大数据开发高级工程师(DATATHON)', '北京', '2.5-3.5万/月', NULL, '岗位职责：
 1、负责大数据核心业务需求开发。
 2、负责ETL任务的调度设计、配置和优化，实时数据需求的快速落地。
@@ -5103,10 +2469,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 4、熟悉FineReport和FineBI优先。
 5、责任心强，热爱开源技术、有较强的逻辑死亡和清洗的表达能力，具备团队协作意识。
 6、具有海量数据处理、数据分析等项目经验、互联网从业背景者优先。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 5, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 7, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 3, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '大数据开发工程师' LIMIT 1), '上海占域实业有限公司', '大数据开发工程师', '上海', '6-8千/月', NULL, '岗位职责:
 1.负责数据分析、加工、清理、处理程序的开发;
 2.负责数据相关平台的搭建、维护和优化;
@@ -5122,10 +2484,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 3、【涨薪与发展】年底2-6月奖金，并两个月调一次薪。
 4、【其他福利】定期体检，月度聚餐，节日旅游，生日奖
 5、【工作时间】五天工作制，早9点-晚18：00，周末双休', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 5, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 8, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '大数据开发工程师' LIMIT 1), '广州寄锦教育科技有限公司', '大数据开发工程师', '广州-天河区', '1.5-2.5万/月', NULL, '技能要求：
 数据分析，数据挖掘，数据库开发
 岗位职责：
@@ -5139,11 +2497,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 4.有mysql数据库备份、同步、调优及运维经验优先（重点加分项）
 5.有cdh、hue、es、flask使用经验及APP运营数据分析优先
 6.有数据分析与挖掘、机器学习与深度学习算法经验优先', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 5, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 8, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 3, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '大数据开发工程师' LIMIT 1), '广东康景物业服务有限公司', '大数据开发工程师', '北京-朝阳区', '1.5-2万/月', NULL, '岗位职责：
 1、将产品和运营的需求，转化成数据模型，并生成报表数据；
 2、监控业务指标运行情况，运营数据归纳业务变化的原因；
@@ -5166,9 +2519,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 4.熟悉至少一种常见数据库及存储过程开发，会postgresql者优先；
 5.熟悉异构数据库间的增量获取方式和数据同步方式；
 6.熟悉linux系统者优先；具备良好的沟通能力，做事认真、仔细，具有团队协作能力。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 8, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 3, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '大数据开发工程师' LIMIT 1), '武汉市瑞思信息技术有限公司', '大数据开发工程师', '武汉-洪山区', '0.6-1.2万/月', NULL, '1、全日制统招大学本科及以上学历（硬性要求），计算机及软件工程相关专业，熟悉LINUX，JAVA基础及python基础扎实，有一定的大数据系统分析、设计和实施经验,精通JSON、XML等数据交换格式，对ETL知识有一定了解；
 2、对hadoop生态圈主流技术及产品有一定了解；
 3、熟悉整个大数据的完整处理流程，包括数据的采集、清洗、预处理、存储、分析和挖掘；
@@ -5176,10 +2526,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 5、有深度学习、数据挖掘和算法优化经验者加分。
 6、需要有较强责任心、使命感，能积极主动与人沟通，有较好的执行力。
 7、能够承受较大的工作压力。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 8, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 3, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '大数据开发工程师' LIMIT 1), '深圳市同行者科技有限公司', '大数据开发工程师', '深圳-南山区', '1-1.5万/月', NULL, '职位职责：
 1、负责公司大数据平台的搭建、开发、维护、升级等。
 2、负责数据清洗，用户行为分析，数据仓库建模等
@@ -5192,9 +2538,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 4、有平台搭建、数据仓库建设、数据处理、数据建模、数据分析相关经验
 4、有较强的沟通、协调、组织能力，责任心强；
 5、具备较强的团队合作精神，能承受较大的工作压力；', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 3, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '大数据开发工程师' LIMIT 1), '河南艾茵斯物联网科技有限公司', '大数据开发工程师助理', '郑州', '4.5-6千/月', NULL, '岗位职责：
 1、大数据挖掘及应用开发团队技术指导、方案规划及模型设计；
 2、负责大数据挖掘新产品设计与开发。
@@ -5209,8 +2552,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 3、性格开朗，上进心强，敬业负责，勤奋好学，积极主动；
 4、公司提供住宿舍，环境舒适，有空调、热水器、等等；
 5、公司提供交通补贴、午餐补贴、通讯补贴，公司提供带薪休假、交付五险一金', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '大数据开发工程师' LIMIT 1), '南京嘉环科技股份有限公司', '大数据工程师 （平台、数仓运营，治理）', '异地招聘', '1.2-2.2万/月', NULL, '技能要求：
 Oracle，ETL，Hadoop，数据处理，数据仓库，数据分析
 1.海量数据的采集，存储，管理，分析，建模
@@ -5222,8 +2563,6 @@ Oracle，ETL，Hadoop，数据处理，数据仓库，数据分析
 2.2年以上数据处理，分析相关项目经验
 3.有推荐系统，实时计算，计算广告，用户行为分析，大数据处理，广告投放运营方面经验者优先
 4.具有比较突出的组织，策划，协调及沟通能力，有强烈的结果导向和客户导向。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 3, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '大数据开发工程师' LIMIT 1), '深圳市华旭科技开发有限公司', '大数据开发工程师', '深圳-宝安区', '1-1.5万/月', NULL, '1. 参与公司数据库开发，存储过程，视图;
 2. 负责数据模型设计、ETL映射设计和ETL脚本开发编写;
 3. 负责数据分析、清洗、整理、加工、转换;
@@ -5233,8 +2572,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 2. 有1年以上大型数据库(ORALCE/MSSQL SERVER/MYSQL等)开发经验、SQL技能娴熟；
 3. 有较强的SQL编程能力,熟练编写存储过程，能设计各种复杂的业务处理、统计分析语句，精通sql性能优化；
 4. 熟练使用至少一种主流ETL工具(Kettle）开发，1年以上ETL开发经验', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 5, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '大数据开发工程师' LIMIT 1), '深圳市懿华软件有限公司', '中高级Spark工程师', '深圳-福田区', '1.5-2.5万/月', NULL, '岗位职责：
 1.基于Spark框架大数据架构的设计、开发；
 2.基于Spark技术的海量数据的自动化分析处理和统计工作；
@@ -5247,8 +2584,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 5.良好的团队合作意识、沟通能力；
 6.有过千万数据系统开发经验；
 7.财产保险从业经验者优先。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '大数据开发工程师' LIMIT 1), '大连东软思维科技发展有限公司', '大数据开发工程师', '昆明-西山区', '1-1.3万/月', NULL, '岗位职责
 1.负责运营商大数据分析相关业务的数据核查与分析。
 2.负责全流程的建模编码与上线监控，负责撰写分析报告。
@@ -5260,10 +2595,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 4、掌握一门编程语言，能够独立开发后台应用，会用Python和Java尤佳。
 5、熟悉Hadoop生态圈相关技术知识，接触过kafka和流计算优先。
 6、有风控、反欺诈、反作弊、运营商等相关的安全行业背景优先。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 8, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 3, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '大数据开发工程师' LIMIT 1), '中联重科搅拌车事业部', '大数据应用工程师', '长沙-岳麓区', '15-20万/年', NULL, '1、负责数据分析、加工、清洗、处理程序的开发;
 2、从事海量数据分析、挖掘相关工作;
 3、负责大数据相关平台的搭建、开发、维护、优化;
@@ -5273,10 +2604,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 2、熟悉 Scala、Java、Python 语言；
 3、熟悉常用的设计模式，数据结构和算法，具备优秀的技术架构的设计能力；
 4、熟悉开源分布系统，对 Hadoop、Hive、Spark、Storm、Flink、HBase、Kafka、Zookeeper 中的多项有深入了解。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 4, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 3, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '大数据开发工程师' LIMIT 1), '成都铭逸科技有限公司', '大数据开发助理', '成都-高新区', '4.5-6千/月', NULL, '工作职责：
 1、负责公司大数据平台建设；
 2、根据业务需求，制定数据仓库和数据分析平台的实施和持续更新；
@@ -5304,9 +2631,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 2.Java基础扎实，理解io、多线程、集合等基础框架；
 3.熟悉Hadoop 生态链中的多个组件（hdfs、hbase、mr、hive、spark、kafka）；
 4.对待工作有热情，并有良好的逻辑分析能力和学习能力。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 3, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '大数据开发工程师' LIMIT 1), '武汉海星通技术股份有限公司', '大数据开发工程师', '武汉-江汉区', '1-1.8万/月', NULL, '岗位职责:
 1、设计合理数据采集任务，数据采集平台设计及开发；
 2、负责日常数据采集任务的监控与质量检验；
@@ -5319,10 +2643,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 4、熟悉Kettle或其他开源ETL工具的使用 ，有完整的数据仓库类项目的开发经验更佳；
 5、熟悉sqoop,flume等Hadoop生态圈ETL工具；
 6、对待工作有热情，并有良好的逻辑分析能力和学习能力。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 8, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 3, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '数据分析师' LIMIT 1), '博世汽车柴油系统有限公司', 'PS_RBCD_Industry 4.0 Data Scientist/工业4.0数据分析', '无锡', NULL, NULL, 'Do you want beneficial technologies being shaped by your ideas? Whether in the areas of mobility solutions, consumer goods, industrial technology or energy and building technology - with us, you will have the chance to improve quality of life all across the globe. Welcome to Bosch.
 Developing analytics to support Industry 4.0 projects in RBCD. Responsible for big data processing, modeling and algorithm development, to drive insight of operation efficiency, cost, and quality optimization. Support on transferring the analytics into technical know-how and customer value.
 1. Work together with/ lead project team to understand and analyze customer requirements, and pre-evaluate project deliverables and benefits
@@ -5398,9 +2718,6 @@ Experience of using Cloud to perform large scale calculations, such as AWS, Goog
 Experience in handling large and distributed datasets on Spark, Hadoop, Hive or Storm, etc.
 Bachelor’s degree above (Information, Engineering, Statistics, Mathematics, IT, or Computer Science majors preferred)
 Strong written English and oral communication skills', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 3, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 9, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '数据分析师' LIMIT 1), '上海育碧电脑软件有限公司', 'Data Analytics Manager 数据分析经理', '上海', NULL, NULL, 'Ubisoft China is looking for a talented and passionate Analytics Manager to shape its data strategy and develop our teams’ expertise in data.
 The Analytics Manager will be the expert capable of asking the right questions. He will be able to translate data into insights, and insight into recommendations that can be delivered to stakeholders including game production teams, business teams and studios management.
 This role requires both an excellent understanding of games production and operations as well as strong business acumen. It will focus on leading, developing and managing our data analysts in China to ensure they deliver high quality analysis. This position will also require close collaboration with many stakeholders from the worldwide analytics community.
@@ -5424,8 +2741,6 @@ This role requires both an excellent understanding of games production and opera
 · Self-motivated, self-driven and autonomous.
 · Good business acumen, with a strategic mindset.
 · Proficient in English.', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 3, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '数据分析师' LIMIT 1), '益辉集团', 'Sales/Data Analyst 销售数据分析', '北京-朝阳区', '1-1.5万/月', NULL, '? Assist with the smooth transition to central property data management system by understanding the requirements. Support setup of all related records in the property databases.
 ? Manage property related datasets, ensuring its accuracy and integrity at all times
 ? Organize and facilitate amendments to existing property data at client and property level
@@ -5975,8 +3290,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 ? Ability to work in a collaborative team environment and under aggressive timelines
 ? Accustomed to operating in a product-drive organization or with agile methodologies
 ? Fluent in English', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 9, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '数据分析师' LIMIT 1), '尚励信息技术（上海）有限公司', '薪酬数据分析专员', '上海-浦东新区', '6-8千/月', NULL, 'Qualifications:
 1.Strong analytical and problem-solving skills; Logical thinking; Detail-oriented and quick learning ability.
 2.Good reading, written and verbal communication skills in English. CET-6 is required;
@@ -6180,8 +3493,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 招聘负责人
 万小姐
 联系邮箱:hryje1319@163.com', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 5, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '数据分析师' LIMIT 1), '西安云上融汇商务信息咨询有限公司', '数据分析师', '西安-新城区', '6-8千/月', NULL, '【职位要求】
 1、零基础接受公司培训,有经验者可不接受培训，详情面谈。
 2 、公司出资，为公司的账户进行交易盈利；
@@ -6363,8 +3674,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 4、配送中心，总部，门店IT基础业务服务工作
 5、协调指导第三方服务商工作
 6、及时反馈各系统别重大故障问题，及时提报开发部门处理', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '数据分析师' LIMIT 1), '深圳市阿思特科技有限公司', '广告数据分析员', '深圳-龙岗区', '5-8千/月', NULL, '岗位职责：
 1 负责亚马逊店铺的广告数据整理，分析问题并优化。
 2 负责对店铺当天及每周的广告状况进行汇总及分析,及时发现问题。
@@ -6519,8 +3828,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 公司网址：
 www.xlysoft.net(中文)
 www.salvationdata.com(英文)', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '数据分析师' LIMIT 1), '福州蓝胖子企业管理有限公司', '电商主管（数据分析师）', '贵阳-云岩区', '0.6-1.2万/月', NULL, '工作内容：
 1、负责天猫、京东等平台店铺的运营管理工作店铺的运营及管理，客户数据的统计及整理；负责公司产品电子商务网站整体营销方案策划、推广战略目标的制定和执行；负责定期分析顾客反馈情况、产品以及市场发展的现行状况，收集反馈产品的市场信息，并迅速制定相应的应变方案；负责天猫、京东等平台各项站内、站外推广工作以及相关活动报名和跟进；
 2、根据销售目标制定周、月、季度计划和运营推广方案，管理网店运营数据和日常工作；
@@ -6566,8 +3873,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 3、带薪福利假、年假、年终奖；
 4、多种员工关爱福利：生日、结婚礼金、新生儿礼金、节日福利；
 5、丰富的文体活动以及团队拓展活动。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 4, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '数据分析师' LIMIT 1), '山东众腾物业管理有限公司', '大数据分析工程师', '异地招聘', '0.8-1万/月', NULL, '1、负责大数据方向技术方案的突破、公司管理系统、APP平台的架构设计、业务架构与研发工作，解决开发中各种系统架构问题；
 2、 优化现有系统的性能，解决软件系统平台关键技术问题攻关、核心功能模块设计、核心代码开发；
 3、 在项目需求不断细化的工程中校正整体的架构设计，以及详细模块拆分设计；
@@ -6593,10 +3898,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 公司总部地址：烟台开发区长江路290号公路大厦1楼1-3F
 乘车路线：可乘坐201、203、205、206、207、209、210、526、21路、28路到“众腾人力”站下车 (开发区公路大厦)
 公司网址：http://www.zhongtenghr.com', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 7, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 3, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '数据分析师' LIMIT 1), '深圳市易佰网络科技有限公司', '品类分析专员/数据分析', '深圳-龙岗区', '6-8千/月', NULL, '工作职责:
 1、 熟悉eBay平台的政策和制度；熟悉平台调研方法，通过第三方工具进行收集、分析市场行业数据，分析产品前景，调研开发适合ebay平台销售的潜力新产品；
 2、研究与分析所负责产品线，把握产品线所属行业宏观大环境，洞察并分析行业发展趋势，发展市场新机会，挖掘整理目标国际的市场搜索趋势；
@@ -6755,8 +4056,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 3、熟悉大数据平台操作，熟悉Hadoop、Spark优先，能够运用数据透视表等分析功能，能够运用SAS、SPSS、R、sql、RPython等工具进行数据挖掘，具备一定的数据仓库设计与编程能力者优先，有风险模型和策略模拟开发和实施相关经验者优先。
 4、熟悉行业产品特征（塑包、纸包、建材、地产），对整个行业有整体了解者优先。
 5、具备良好的沟通技能、分析能力、逻辑思维能力，对技术富有钻研精神，乐于分享技术方面的心得。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 3, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '数据分析师' LIMIT 1), '广州花美时化妆品有限公司', '数据分析师', '广州-白云区', '6-8千/月', NULL, '岗位职责：
 1、负责天猫旗舰店日常数据的处理；
 2、数据整理和分析，有数据异常情况及时反馈并跟进处理结果；
@@ -6810,8 +4109,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 3、扎实的计算机、统计学、数据挖掘、机器学习理论基础；
 4、熟悉卫生统计学方法，熟练应用R/SQL/Python/SAS EM /IBM IM /SPSS Clementine等相关数据分析/挖掘工具，懂得如何处理大规模医疗数据，熟悉医药销售业务数据结构的优先；
 5、熟练使用excel、PPT等工具进行文档编辑和撰写。具备利用数据分析、建模技术解决运营中行业客户分析、市场营销等相关业务问题的能力，熟悉运营各种统计指标口径。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 4, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '数据分析师' LIMIT 1), '广州丰亿商务服务有限公司', '数据分析学员（专业培训+5K)', '广州-天河区', '5-8千/月', NULL, '职位信息
 1.对数据资料进行分析，完成数据资料的分析和整理；
 2.参与分析报告的编写及实施，发现问题并总结经验；
@@ -6872,8 +4169,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 6.了解机器学习，深度学习，自然语言处理，知识图谱，图像与视觉等领域的现状与最新进展，并在其中一个领域有实践经验，并保持对前沿技术的关注
 7.熟练使用数据可视化工具和具备数据可视化经验（QlikSence,Tableau等）
 8.具有良好的沟通能力和业务分析能力，有汽车整车行业业务分析经验者优先', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 3, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '数据分析师' LIMIT 1), '北京深演智能科技股份有限公司', '商业数据分析师（Business Analyst）-BJ', '北京-朝阳区', '1.5-2.5万/月', NULL, '工作职责:
 1、负责公司数据产品的日常运营及数据应用，进行数据关系梳理，多维的数据收集、分析及可视化输出；
 2、通过数据分析、趋势分析、报表呈现、营销洞察等，为客户Markting相关事宜提供专业解读、改进策略、实施建议等；
@@ -7036,8 +4331,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 熟悉数据仓库原理，数据仓库建模方法论，熟练使用建模工具进行数据仓库模型设计
 技能要求/skills requirements：
 R1、具备机器学习或者数据挖掘的研究背景和项目背景；熟练掌握分类、回归、聚类等机器学习模型；了解算法基本原理，具有数据挖掘和算法应用能力；2、熟练掌握SQL、R、Python以及相关进行分析的工具或Hadoop/Spark/ODPS等大数据分布式平台，熟悉分布式机器学习框架比如Spark MLLib等；3、对数据敏感，具有优秀的分析和解决问题能力，对于把大数据和分析算法的结果能够应用到实际业务场景产生商业价值具有强烈的热情；4、能够熟练应用一种或多种主流数据库（如：Oracle、sqlserver等），有千万量级数据量的数据库设计能力者优先。5、精通复杂型SQL，有较好的SQL性能调优经验。6、 熟悉数据仓库建模，熟悉一种或多种ETL工具的开发，如Kettle、Informatica、Datastage等。7、 使用过一种或多种BI平台（如PowerBi/帆软/Tableau/Qlikview/OBIEE等）者优先。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 3, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '数据分析师' LIMIT 1), '北京盛业恒泰投资有限公司', '金融数据分析师', '北京', '0.8-1.2万/月', NULL, '1、搜集行业相关信息，为相关需求者提供更准确的数据信息；
 2、丰富市场分析能力，做出每日分析计划，熟练掌握各种分析技术；
 3、对市场、行业、公司运营等提供数据分析计划，为战略决策提供支持；
@@ -7205,8 +4498,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 7. 良好的数据敏感度，优秀的逻辑思维能力，思路清晰，思维严谨；
 8. 能熟练使用Hadoop、Hive、Spark、HDFS等Hadoop/Spark生态系统应用进行大数据处理者优先考虑；
 9. 掌握Axure、Visio、MindManager等产品设计工具者优先考虑。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 3, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '数据分析师' LIMIT 1), '宁波鄞州硕学教育培训学校', '数据分析师', '宁波-海曙区', '6-9千/月', NULL, '一、工作时间
 8:30-11:30 13:00-17:30（夏季多30分钟午休时间）
 二、休假制度
@@ -7254,11 +4545,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 8、了解Java语言，了解Spring/Spring Boot框架，熟悉linux/unix系统；
 9、业务敏感，能快速理解业务并与业务人员进行沟通，具备良好的数据敏感度，能从大量数据提炼核心结果，并用简洁清晰的方式呈现数据分析背后的业务逻辑；
 认真细致，踏实肯干，吃苦耐劳，有责任心、耐心和上进心，工作积极性高，沟通和协调能力强，有团队合作精神。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 6, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 8, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 3, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '数据分析师' LIMIT 1), '广州晟皇有限公司', '外汇交易员/数据分析师（双休）', '广州-天河区', '6-8千/月', NULL, '1、学习理财技能，分析行情，做出每日交易计划.
 2、负责为客户提供外汇理财咨询、建议服务，制定相应的投资组合和策略
 3、把握市场机会，及时交易,确保账户达到稳定盈利，尽可能的达到利益***化。
@@ -7374,8 +4660,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 5、 参与开发行业通用的数据模型，模型部署及效果监控流程；
 6、 研究新的模型算法改进项目现有算法，模型性能；
 7、 指导，协同新同事完成项目', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 3, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '数据分析师' LIMIT 1), 'SGS通标标准技术服务有限公司深圳分公司', '数据分析专家', '深圳-龙岗区', '2-3.5万/月', NULL, '1、 和业务团队以及内部开发团队、产品经理等合作，主导数据分析项目，设计数据分析方案并负责实施落地，包括：
 ？ 数据库方案，负责数据库端（主要基于MySQL和MS SQL Server）的设计及开发（表结构设计，存储过程开发及调优等）
 ？ 数据抽取、清洗、转换，数据质量控制，维度及量值（计算值）甄别及确定，数据聚合、前端展现、扩展及挖掘等。
@@ -7391,9 +4675,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 5、 熟悉统计语言优先，如R 或S等。
 6、 在机器学习模型和算法方向有应用经验，对大数据分析架构有实际应用落地经验优先考虑（基于商业或开源方案）。
 7、 有在大数据平台上处理大规模（实时）数据及应用机器学习模型经验者优先。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 5, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '数据分析师' LIMIT 1), '广东中联兴环保科技有限公司', '数据分析工程师', '广州', '5-8千/月', NULL, '岗位职责：
 1、负责开展数据处理、数据分析的相关技术研究工作，制定标准化作业流程和规范模板。
 2、负责完成监测数据采集、清洗、存储及加工等工作，为客户提供全面的数据分析成果，完成时点报告、区间报告、专题报告等编写工作。
@@ -7441,8 +4722,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 3、 补充医疗保险、人身意外伤害保险、节日慰问等
 四、工作地点：
 北京亦庄经济开发区博兴一路8号金风科技2期', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 4, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '数据分析师' LIMIT 1), '广州泰怡凯贸易有限公司', '数据分析师', '广州-白云区', '0.8-1万/月', NULL, '数据分析
 岗位职责：
 对接公司数据分析系统技术开发团队，按照业务部门的数据分析需求实现前端分析结果的呈现；
@@ -7528,8 +4807,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 5、对电商运营，会员运营，CRM，线上运营业务有一定了解，对数据具有一定的敏感度，能够通过行业和竞品数据挖掘出行业动态和市场机会 ；
 6、以结果为导向，对工作细节认真负责，态度严谨，思维敏捷，保证数据准确性，可靠性，逻辑性；
 7、至少有一到二个项目的成功案例经验，（模型，自动化，可视化，方法论，数据库，差异化，价值化）。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 3, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '数据分析师' LIMIT 1), '广州超威生物科技有限公司', '数据分析主任工程师-超威', '广州-荔湾区', '20-30万/年', NULL, '1、精通数据分析、数据管理、数据产品等项目以及产品优化相关工作经验；
 2、擅长业务数据分析和挖掘，精通数据可视化，数据报表体系，能根据公司业务进行数据标准体系的搭建，为业务提供方便快捷的数据服务，包含数据分析工具以及数据分析指导等内容；
 3、拥有个性化推荐、实时营销、用户行为分析等互联网主流项目经验；
@@ -7546,8 +4823,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 6、具备ABAP编程能力；
 7、熟悉HQL,熟悉hive、hadoop、sqoop、airflow等大数据组件，能基于这些大数据工具进行数据开发
 8、具备优秀的文档及方案编写能力，出色的沟通能力，团队协作能力。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 3, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '数据分析师' LIMIT 1), '北京预立创投生物医学科技有限公司', '基因数据分析专员', '青岛', '0.8-1万/月', NULL, '招聘岗位名称：基因数据分析专员
 招聘人数：3人
 职位描述：
@@ -7684,8 +4959,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 4、熟悉聚类、决策树、回归、朴素贝叶斯算法、SVM、神经网络等算法，有实际的算法开发经验和建模经验优先；精通Excel，掌握Python、R、SAS、SPSS等任一数据分析工具；熟悉SQL脚本编写快速准确进行数据提取和处理，为决策提供数据支撑；有hadoop进行分布式数据处理经验，对hbase、hive操作熟练；熟悉storm或spark流计算开发技术，实际开发过实时数据应用者优先 逻辑思维能力较强，能独立思考和分析问题，善于将业务问题转化为数据挖掘模型；
 5、自我驱动，快速学习能力，抗压能力；
 6、有政府类用户数据治理分析经验优先，知名互联网公司经验优先，有海量数据分析、处理经验及大数据分析计算平台的开发经优先。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 3, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '数据分析师' LIMIT 1), '合肥维天运通信息科技股份有限公司', '综合管理岗（数据分析）——网络货运事业部', '合肥', '5-7千/月', NULL, '2、负责各营销单元对接协调工作，通过数据发现问题，进行业务问题传递和解决推动；输出经营分析经验；
 3、负责梳理流程、制度的制定，事业部各类工作的跟踪、管理；
 4、协助事业部完成其他各类临时性工作
@@ -7770,8 +5043,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 3、良好的编程能力，熟练使用matlab、python、r其中之一，熟悉MySQL数据库的使用；
 4、良好的数据感知力、业务问题抽象分析能力、项目执行力、沟通和展示能力，有项目管理经验优先。
 5、具有工作责任感和团队合作精神，乐于学习新知识，关注新技术', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 5, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '数据分析师' LIMIT 1), '长沙军民先进技术研究有限公司', '数据分析师', '长沙-岳麓区', '1-2万/月', NULL, '1、参与大型数字园区、数字医疗数据治理项目，协助项目经理数据治理规划，制定数据治理的工作计划和实施方案，不断完善系统以满足数据中台的数据服务要求；
 2、治理分项数据平台建设数据标准化和规范化,数据治理（元数据、数据标准和数据质量管控）的功能需求，主导规划数据治理各系统的建设；
 从业务源头进行数据逻辑流程治理以及元数据、主数据、数据质量流程处理等工作；
@@ -7786,8 +5057,6 @@ linux操作系统shell命令；
 2、5年以上数据治理/大数据/传统数仓/BI/人工智能类相关工作经验，有项目支撑管理经验优先；
 3、具备大数据Hive/ Spark、HQL等存储过程开发和指导设计能力，熟练掌握文档转化为PPT经验，具备丰富UML数据处理流程设计能力优先；
 4、具备电力行业经营、电网、营销类业务之一实施或维护经验/项目实施经验优先。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 8, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '数据库管理员' LIMIT 1), '大兴汽车集团', '高级数据库工程师', '深圳-宝安区', '1.5-2.5万/月', NULL, '职位职责
 1. 负责数据库的监控，备份，性能优化及故障处理等
 2. 负责业务需求相关的数据仓库应用平台的设计、开发和维护工作。
@@ -7807,10 +5076,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 8 良好的沟通和团队合作精神，高度的责任心和积极的工作态度，能承受较大的压力。
 1、 入职即签订劳动合同、购买五险一金，商业补充意外医疗保险一份。
 年轻、有活力、有朝气、有梦想、积极向上、热情主动、真诚友善、善于学习、勤奋努力、敢担当、敢负责，对个人有良好规划，愿意和团队一起工作，以团队贡献为荣，那么，我们，期待着与你同行，欢迎您的加入。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 5, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 3, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '数据库管理员' LIMIT 1), '上海美慧软件有限公司', '数据库工程师', '南京-栖霞区', '0.9-1.1万/月', NULL, '岗位职责:
 1、 负责大中型项目、产品的数据库设计；
 2、 负责制定较大数据库的存储架构，备份及恢复策略；
@@ -7829,10 +5094,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 8、有较强的上进心或进取心，性格随和，善于交流沟通，做事踏实肯干，能吃苦耐劳；
 9、能承受工作压力，按时保质完成任务；
 10、善于学习新技术，对新技术有较强的接受能力。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 5, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 8, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 3, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '数据库管理员' LIMIT 1), '南京瑞玥科技有限公司', '中级数据库工程师（Oracle)', '苏州', '5-7千/月', NULL, '岗位要求：
 1、负责报表相关功能的设计、开发工作，并负责报表优化、维护；
 2、有实际的MY SQL或Oracle等数据库开发相关工作经历；
@@ -7878,8 +5139,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 4、具有润乾报表、水晶报表、RDP报表开发及优化经验者优先；
 5、对数据分析有较高的热情，良好的文档撰写能力和沟通能力，有较强的组织能力和团队合作精神；
 6、积极主动，追求上进，具有较好的工作承压能力。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 5, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '数据库管理员' LIMIT 1), '上海博应信息技术有限公司', '数据库工程师', '上海', '0.8-1.5万/月', NULL, '岗位职责：
 1、负责建立各项目数据库的管理规则及灾备策略等管理、维护工作；
 2、负责数据库的各项数据分析与产品开发、负责数据使用接口的开发；
@@ -7891,12 +5150,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 2、熟悉Windows、Linux、Unix等操作系统，熟练掌握SQL语言及数据库存储过程编写，至少熟练使用一种关系数据库软件（Mysql、PG等），熟悉Mongoodb、redis，至少熟悉一种脚本语言Shell、Python；
 3、熟悉Java语言，有noSQL数据库经验优先，有Hadoop相关使用经验及大数据处理经验者优先；
 4、学习能力强，具备良好的分析和解决问题能力，对技术抱有热情，愿意研究新技术。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 5, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 7, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 8, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 3, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '数据库管理员' LIMIT 1), '上海携银信息科技有限公司', '高级ETL工程师/数据库工程师', '深圳-福田区', '1-1.5万/月', NULL, '- 负责银行ODS/HDS/EDW 数据预处理子系统的设计和开发；
 - 负责银行ODS/HDS/EDW ETL设计和开发；
 - 负责银行ODS/HDS/EDW ETL流程的优化及解决ETL相关技术问题；
@@ -7923,8 +5176,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 2、精通oracle数据库
 3、精通数据库性能优化与调整，包括SQL语句的优化，和服务器的性能参数调整；
 4、熟悉主流数据库技术（如SQLserver,MYsql,DB2.Informix,Sybase等）至少一种。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 5, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '数据库管理员' LIMIT 1), '江苏恩华药业股份有限公司', '数据库管理员', '徐州', '4.5-6千/月', NULL, '1、整理所负责区域的电子版流向并导入销售分解系统，核对数据的正确性，为财务部门核算销售费用提供依据。
 2、计算各种定量考核，汇总、整理公司重点关注的医院终端、推广产品的相关信息与数据，及时填写上报相关的各类表格，为公司的管理决策提供依据，为所负责区域的销售管理人员的日常经营管理提供数据支持。
 3、通过数据分析，管理负责区域的流向溢出情况。
@@ -7947,8 +5198,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 3、熟悉自动化业务，有工业控制数据分析等系统开发经验者优先；
 4、适应长期出差，具有较强的沟通能力快速解决问题的能力，有良好的团队工作意识者优先
 5、大专以上学历，计算机及相关专业毕业，1-3年相关工作经验。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 5, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '数据库管理员' LIMIT 1), '深圳市锐科信息技术有限公司', '数据库管理员', '深圳-坪山区', '0.7-1.2万/月', NULL, '岗位职责：
 1.负责政务数据共享平台和开放平台的数据订阅、编目、接入和管理工作；
 2.负责参与数据处理脚本（如oracle存储过程）的编写；
@@ -7960,9 +5209,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 4、了解大数据架构及相关组件工作原理，包括hadoop、spark等基础维护工作者优先；
 5、具有良好的沟通能力，团队协作能力；
 6、有政府行业或海量数据处理经验优先', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 5, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 3, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '数据库管理员' LIMIT 1), '王府井集团股份有限公司销售分公司', '数据库管理员', '北京', '6-8千/月', NULL, '岗位描述：
 1、专业人员职位，在上级的领导和监督下定期完成量化的工作要求，并能独立处理和解决所负责的任务；
 2、负责公司各类报表编制及汇总；
@@ -7987,8 +5233,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 3、具备良好的沟通协调能力；
 4、具有较好的团队合作精神、行动执行力较好。
 5、能独立用MYSQL搭建数据库。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 5, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '数据库管理员' LIMIT 1), '广州市帆鹏知识产权服务有限公司', '数据库管理员/数据库工程师', '广州', '0.6-1万/月', NULL, '职位描述：
 1、负责产品业务逻辑设计与数据库表结构设计
 2、根据业务需求和数据库表结构进行数据库开发，包括存储过程、函数开发等
@@ -8000,8 +5244,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 3、有良好的团队合作精神，能够接受具有挑战性和压力大的工作；
 4、有良好的沟通表达能力，能够对接开发人员、实施人员梳理业务需求；
 5、责任心强，能够主动推进工作落实并反馈工作进度。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 5, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '数据库管理员' LIMIT 1), '上海爱可生信息技术股份有限公司', 'Mysql DBA', '上海', '1.8-2.7万/月', NULL, '职位描述:
 1. MySQL数据库规划、设计、监控维护、升级、备份、镜像、容灾；
 2. 数据库服务器及数据仓库服务器的安装部署、性能调优、安全运行、容灾方案制定等；
@@ -8012,8 +5254,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 2.参加过中大型数据库项目，具备数据库性能调优的经验
 3.有MySQL数据库相关的资质认证
 3.需要驻场工作十八个月', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 5, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '数据库管理员' LIMIT 1), '深圳市深长城物业集团有限公司', '数据库管理员', '深圳-南山区', '4.5-5千/月', NULL, '工作内容：
 每月录入水电表数据，
 完善公共能耗数据统计分析，
@@ -8065,11 +5305,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 8.有数据分析型系统测试经验，数据库测试经验丰富；
 9.有Flink、MPP数据库、Hadoop等大数据相关测试经验者优先；
 10.有编写测试脚本或者系统运维脚本经验优先。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 5, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 8, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 3, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '测试工程师' LIMIT 1), '菲缔信息科技（上海）有限公司', '软件测试工程师 Graduate Software Testing', '异地招聘', '1-1.5万/月', NULL, 'Ready to start a rewarding career in the ever-changing world of technology?
 Software testing is a critical part of the software development process. Organisations are currently heavily investing in new technology and techniques to improve the efficiency and effectiveness of testing. These include:
 You will have the opportunity to develop both business and technical skills whilst also making a large contribution to the successful delivery of high-quality software for world renowned organisations.
@@ -8110,8 +5345,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 7.有开发设计方案评审、走查经验，能对测试依据的完备性以及可测性等给出结论；
 8.有针对需求进行测试设计，并输出测试设计文档及用例的经验；
 9.针对当前测试环境不支持的需求，能提出测试环境或测试工具解决方案。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 8, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '测试工程师' LIMIT 1), '湖北国知专利创业孵化园有限公司', '仪器测试工程师', '武汉-东湖新技...', '3-5千/月', NULL, '此岗位代园区入驻企业——武汉敢为科技有限公司——招聘
 武汉敢为科技有限公司2013年成立于东湖新技术开发区，办公场地位于武汉市东湖新技术开发区汤逊湖北路8号长城创新科技园知源楼B栋3层，占地1000余平米。是一家专业从事光学设计及光机电算一体化产品、现代高端光学分析仪器及配套产品的研发、生产和销售的***高新技术企业。
 岗位职责：
@@ -8147,9 +5380,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 7.熟悉Sql server、Mysql等至少一种数据库，熟悉T-SQL以及SP，能够使用工具观察数据库性能 ；
 8.熟悉C语言，熟悉 Shell、PHP、Per、Pythony 等至少一种脚本语言；
 9.工作积极主动，分析问题和实际动手能力强，善于沟通，具有良好的团队合作精神，能够承受一定的工作压力。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 5, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 8, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '测试工程师' LIMIT 1), '成都育碧电脑软件有限公司', 'Development Tester 软件开发测试工程师', '成都-高新区', NULL, NULL, '成都育碧正在招聘软件测试工程师。你将加入的是一个为育碧全球工作室开发游戏数据分析工具产品的团队。他们的产品将帮助育碧AAA游戏团队分析在线游戏大数据，并做出数据驱动的决策。你将和开发、运维团队紧密合作，通过手动及自动测试确保产品质量满足用户需求。
 Ubisoft Chengdu is looking for a development tester to support the internal users of Ubisoft internal data products. The products are helping Ubisoft AAA online game teams analyze their big data and make data driven decisions.
 The Person will work closely with development team and operation team. You will conduct manual and automated tests to ensure the deliverables created by development team fit product design and user''s requirements. You will also write test report, analysis the product quality and drive the product quality improvement.', 'open', NULL);
@@ -8322,10 +5552,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 （5）有Oracle、Mysql、PostgreSQL等软件开发或测试经验者优先
 （6）具备测试方案及测试用例写作能力和相关产品维测及数据分析和问题定位技能
 （7）具备良好表达和沟通能力及团队写作能力', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 5, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 8, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '测试工程师' LIMIT 1), '广州集泰化工股份有限公司', '品质保证工程师（QA）', '广州-从化区', '1-1.5万/月', NULL, '岗位要求：
 1. 解决及跟踪质量问题，品质异常数据分析及整理，跟踪改善效果；
 2. 产品及过程质量改进（如：降低不良率，降低成本等）；
@@ -8404,8 +5630,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 8. 具有较强的数据分析和问题解决能力；
 9. 英语水平良好；
 10. 良好的沟通能力和团队合作精神，责任心强。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '测试工程师' LIMIT 1), '上海昊川企业管理咨询中心(有限合伙)', '软件测试开发工程师（双休/社保）', '广州-天河区', '0.8-1.3万/月', NULL, '职责：
 1、根据软件设计需求制定测试计划、设计测试数据和测试用例
 2、准确地定位并跟踪问题，推动问题及时合理地解决
@@ -8533,8 +5757,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 5.熟悉SQL语言以及一种以上数据库，如DB2、Oracle、Mysql等；
 6.精通一种开发语言，如性能、自动化；
 7.精通一种测试管理工具，如MQC、CQ、Testlink等（功能），Loadrunner等（性能），QTP、Selium等（自动化测试）。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 5, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '测试工程师' LIMIT 1), '神州数码系统集成服务有限公司深圳分公司', '高级测试工程师 (MJ002302)', '长沙-岳麓区', '0.8-1.5万/月', NULL, '测试工程师招聘要求：
 岗位职责：
 1、对需求文档进行分析，判断测试方向与方法，并编写和执行自动化及手工案例；
@@ -8604,9 +5826,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 5、数据敏感，有一定的数据分析技能和经验，能基于业务理解推动数据测试的落地工作；
 6、熟悉Linux操作系统及常用命令；
 7、工作细致负责，具有良好的团队沟通和协作能力。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 8, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 3, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '测试工程师' LIMIT 1), '苏州小优智能科技有限公司', '应用测试工程师', '苏州-吴中区', '0.6-1.1万/月', NULL, '岗位职责：
 1.协助产品工程师和项目负责人进行产品的装配、调试和测试工作；
 2.对测试结果的数据进行整理分析；
@@ -8650,10 +5869,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 8.有数据分析型系统测试经验，数据库测试经验丰富;
 9.有Flink、MPP数据库、Hadoop等大数据相关测试经验者优先;
 10.有编写测试脚本或者系统运维脚本经验优先。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 8, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 3, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '测试工程师' LIMIT 1), '苏州敏芯微电子技术股份有限公司', '测试工程师', '苏州-工业园区', '5-8千/月', NULL, '一、岗位职责
 1、负责传感器芯片及其模组的测试研发；
 2、同研发人员或外部客户沟通，确定产品测试需求，制定产品的测试方案和计划；
@@ -8714,8 +5929,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 5、熟悉测试流程，熟练应用测试相关理念、工具和方法，测试中不断优化测试流程和方法。
 6、独立撰写完整的产品研发测试方案、测试用例和测试报告文档，有良好的文档撰写经验。
 7、具有良好的团队合作精神，善于沟通和分析。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 8, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '测试工程师' LIMIT 1), '网经科技（苏州）有限公司', '测试工程师（语音）', '苏州', '0.6-1万/月', NULL, '工作岗位职责：
 1、公司产品版本的语音模块测试，及时发现问题，为公司产品质量把关；
 2、配合售后重现、定位、解决客户问题；
@@ -8728,8 +5941,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 4、熟练操作Linux、会使用抓包软件进行数据分析；熟悉网络架构，有实际的组网经验；
 5、熟悉SIP协议，了解其中一种（SIP，H.323，MGCP）协议者优先；
 6、有较好的协调沟通能力，工作有主动性，执行力强。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 8, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '测试工程师' LIMIT 1), '黑芝麻智能科技（上海）有限公司', 'ADAS测试工程师', '上海-浦东新区', '1.2-2万/月', NULL, '工作职责:
 1、 负责自动驾驶系统的模块测试和软件测试；
 2、 制定并跟踪测试策略、测试计划，制定测试流程和测试规范，设计数据采集用例和功能测试用例；
@@ -8777,8 +5988,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 5、有较强的系统问题分析经验和能力，能够解决复杂的系统问题；
 6、有监控系统、灰度发布、CI/CD等系统构建研发经验优先。
 7、有创业精神，有良好的质量管控意识及严谨的工作态度', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 8, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '测试工程师' LIMIT 1), '广州埃克森生物科技有限公司', '临床测试工程师', '广州-黄埔区', '0.5-1万/月', NULL, '1、生化分析仪、血细胞分析仪的性能测试，质控和校准品的测试；
 2、负责医疗产品的临床调研、临床需求收集及提出；
 3、组织、主导临床试验，数据统计分析，报告撰写；
@@ -8804,8 +6013,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 4. 熟练使用chrome开发调试工具，网络抓包工具，网络限流等辅助测试工具。
 5. 熟悉python语言，熟练使用selenium\\jmeter等自动测试工具。
 6. 掌握linux常用命令，如查负载，查日志等。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 8, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '测试工程师' LIMIT 1), '广州汇标检测技术中心', '元素测试工程师（食品/环境/药品/饲料）', '广州-黄埔区', '0.5-1万/月', NULL, '岗位职责：
 1.负责ICP、原子吸收火焰及石墨炉仪器操作和原始数据分析；
 2.实验室设备的日常校准与维护；
@@ -9107,8 +6314,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 1.全日制大学本科学历，软件工程、电子技术、自动化、等相关专业优先；
 2.配合部门加班，沟通流畅、吃苦耐劳
 3.熟练使用办公软件', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '测试工程师' LIMIT 1), '南京溧水电子研究所有限公司', '软件测试工程师', '南京-溧水区', '6-8千/月', NULL, '任职要求
 1. 专科及以上学历，电气电力电子相关专业；
 2. 有2年以上嵌入式软件功能测试经验；
@@ -9355,8 +6560,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 6、 优秀的英文听说读写能力 (Excellent spoken and written communication skills in English.)；
 7、 团队协作、沟通能力 (Team work performance, communication skills.)；
 8、 时间管理、优先级管理 (Time management, priority management.)。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 3, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '算法/机器学习工程师' LIMIT 1), '隆鑫通用动力股份有限公司', '飞控算法工程师(珠海隆华)', '珠海', '15-30万/年', NULL, '1、负责飞控系统建模仿真、优化设计、测试验证，以及数据分析等工作；
 2、负责飞行控制算法开发、仿真分析、改进优化与飞行验证工作；
 3、负责控制系统测试和验证，配合系统联调和试飞；
@@ -9401,8 +6604,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 7、员工培训：公司重视员工培训，在员工职业发展的不同阶段适时提供在职和管理提升培训，帮助员工不断获得个人职业发展的能力提升；
 8、公司为员工午休免费提供折叠床，园区内提供免费停车位；
 9、职业发展：公司为员工提供广阔的职业发展平台，鼓励并协助员工在企业内得到自我的全面发展 微信分享。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 8, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '算法/机器学习工程师' LIMIT 1), '苏州青天网络科技有限公司', '银行贷款+人工智能开发', '苏州-工业园区', '1-1.5万/月', NULL, '原名：苏州苏众达商务信息咨询有限公司，现名：苏州农益晨，于2013年成立，本公司主营：中国银行，建设银行，工业银行，招商银行，苏州银行等多家银行房产抵押类产品，另与一些银行签订正式的代理合作协议（平安银行、平安普惠、常熟农商行），我们的工作内容就是帮助银行筛选优质客户，有客户来电咨询银行产品，根据客户条件能快速专业解答客户问题并做好统计工作。
 职位要求：
 1.18-35岁，男女不限，口齿清晰，语音富有感染力，具有出色的沟通、表达能力；
@@ -9468,10 +6669,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 4、季度/年度调薪；
 5、入职满1年至5年有5天带薪年假，第6年6天，以此类推；
 6、享有带薪婚假15天，带薪产假158天，带薪陪产假15天。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 5, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 3, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '算法/机器学习工程师' LIMIT 1), '客迈软件（杭州）有限公司', 'AI Chatbot高级产品经理（英文）', '杭州', '3-4万/月', NULL, '1、结合公司战略方向，制定AI/Bot产品的发展路线图和实施计划；
 2、持续分析竞争对手动态和市场动态，规划产品新功能，提出产品需求或改进意见；
 3、负责产品功能的ER设计、User Story和需求文档编写，并主持全英文的评审会议和讨论；
@@ -9499,10 +6696,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 4、掌握hive、SQL等相关数据查询工具，能从海量数据提炼核心结果，有大数据挖掘和建模的经验优先；
 5.熟悉Linux开发环境，熟练使用Java、Python等语言，对数据结构和算法设计有较为深刻的理解；
 6、具备良好的抗压能力、沟通能力、逻辑思维能力，学习能力及优秀的团队意识。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 8, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 4, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '算法/机器学习工程师' LIMIT 1), '江苏太湖云计算信息技术股份有限公司', '算法工程师', '广州-天河区', '1.5-2.5万/月', NULL, '岗位职责：
 1、与数据科学家合作，理解算法，将Python代码工程化，变成可用可集成服务，和应用去集成；
 2、算法调研、预演、训练，配合数据科学家准备数据，实现数据注入、处理、使用全过程；
@@ -9522,8 +6715,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 12、有NLP项目开发经验优先;
 13、有敏捷开发, jira等团队协同开发工具使用经验优先;
 14、具良好沟通、团队协同、学习能力，能提出适当、有意义的技术问题。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '算法/机器学习工程师' LIMIT 1), '奥可纳软件技术（上海）有限公司', '初级量化研究员-机器学习2018-2020届', '上海-浦东新区', NULL, NULL, 'Akuna Capital 是一家年轻而蓬勃发展的交易公司, 专注于尖端技术、数据驱动决策和自动化。我们的核心竞争力是作为期权做市商提供流动性--这意味着我们提供我们愿意买入和卖出的有竞争力的报价。为了成功地做到这一点, 我们自行设计实现低延迟技术、交易策略和数学模型。
 我们的创始合伙人包括CEO Andrew Killion最初萌发想法是在他们的家乡悉尼。他们于2011年在衍生品行业中心和全球期权之都芝加哥开设了公司的*首个办事处。今天 Akuna 在悉尼、上海和波士顿设有更多办事处，并为之自豪。
 Akuna Technologies 是我们首家国际办事处, 创立于2014年。我们的上海办事处与最新的硬件和软件技术合作, 开发高性能低延迟解决方案, 这些解决方案具有强大的可扩展性, 确保我们的战略尽可能快地用于全球交易运营。
@@ -9550,9 +6741,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 加分项：
 有轨迹数据挖掘经验优先；
 有大数据处理经验优先。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 3, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '算法/机器学习工程师' LIMIT 1), '明峰医疗系统股份有限公司', '人工智能算法工程师', '杭州-余杭区', '1.5-3万/月', NULL, '1. 负责医学大数据的挖掘、信号处理、人工智能（深度学习）等相关领域的研发和算法实现；
 2. 开发基于医学大数据的人工智能模块和产品，如低剂量成像，伪影校正，辅助诊断等；
 3. 帮助公司建立和完善人工智能研发平台和标准化研发流程；
@@ -9566,8 +6754,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 6. 学习能力强、善于沟通、对技术创新充满激情；
 7. 具备良好的沟通能力和团队合作精神，善于表达自己的想法，具备较强的抗压能力；
 8. 有海外留学或工作经历、知名IT/医疗设备公司工作经验者优先录用。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 3, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '算法/机器学习工程师' LIMIT 1), '上海东方传媒技术有限公司', 'AI算法工程师', '上海-长宁区', '2.7-4万/月', NULL, '1、负责基于AI软件技术规划和设计、技术跟踪和研究；
 2、应用深度学习模型，对视频、图像进行结构化分析，负责相关模型的训练和调优，开发算法并实现产品化；
 3、进行数据探索和数据分析，对公司应用平台和技术平台中的生产数据进行采集、分析、验证和优化，开发算法并实现产品化；
@@ -9609,9 +6795,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 6. 熟悉回归、分类、聚类、关联规则、时间序列、神经网络、决策树及其他常用统计分析和数据挖掘技术，了解其算法原理和适用性，能够根据应用场景选择适当的方法，并通过数据分析工具实现；
 7.能够准确把握数据特征，并有效地对数据和分析结果作可视化展示；
 8、具备优秀的表达和沟通能力，擅长技术文档的编制，具备极强的团队精神和合作精神，对工作有热情。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 5, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 3, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '算法/机器学习工程师' LIMIT 1), '上海奥根诊断技术有限公司', '生物信息算法工程师', '上海-闵行区', '0.8-1万/月', NULL, '在上级的指导下，完成公司产品研发项目，负责信息分析的算法设计，流程开发：
 1. 临床测序数据研发；
 2. 生物信息算法开发，测试和优化；
@@ -9628,9 +6811,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 积极主动自发的精神，有较强的抗压能力和较强的责任心和事业心。
 4. 特质：
 持续的自我驱动力，愿意接受挑战，较强的创新精神，较强的事业心和对成功执着追求的使命感。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 8, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 4, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '算法/机器学习工程师' LIMIT 1), '上海悠络客电子科技股份有限公司', '产品经理/人工智能领域', '上海-徐汇区', '1.5-2万/月', NULL, '1、执行公司整体产品规划的落地，能够独立进行市场调研、用户调研、需求管理及分析；
 2、负责产品规划、产品功能设计、功能迭代项目的总体跟进以及产品的持续完善和改进；
 3、了解用户需求，分析竞争对手和市场动态，设计和改进产品，提升用户满意度，优化用户体验；
@@ -9660,8 +6840,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 5. 热爱智能机器人研发工作，有移动机器人开发经验者优先；
 6. 具有快速的学习能力，良好的英文资料阅读能力，良好的解决问题及逻辑分析能力；
 7. 工作积极，主动，有做好一款产品的强烈愿望；', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 8, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '算法/机器学习工程师' LIMIT 1), '苏州超集信息科技有限公司', '深度学习/数据分析工程师', '苏州', '1.2-1.8万/月', NULL, '1, 负责机器学习集群环境搭建、模型训练和线上服务开发;
 2, 负责模型训练、模型服务的迭代优化;
 3, 负责前沿大规模人工智能与机器学习算法的研究与开发；深入研究业内领先的技术思路和高效算法;
@@ -9675,8 +6853,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 4, 掌握一种以上常用的深度学习框架，如tensorflow、keras、pytorch等;
 5, 熟练掌握至少一种编程开发语言，如python，C/C++、matlab、Java等;
 6, 学习能力、沟通能力、问题分析与解决能力，执行能力强，善于沟通，工作积极主动，责任心强，具备良好的团队协作能力.', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '算法/机器学习工程师' LIMIT 1), '深圳市真迈生物科技有限公司', '算法工程师', '深圳-罗湖区', '1.5-3万/月', NULL, '岗位职责：
 1. 负责维护并优化已有算法程序代码；
 2. 使用图像处理、机器学习相关算法开发优化相关算法模块；
@@ -9720,8 +6896,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 5、精通数学和统计（建模，统计，分析，数学），优秀的数据分析及解决问题能力；在校期间参加过数学建模或交通建模者优先；
 6、了解数据库、大数据计算、云计算、人工智能，学过相关方面课程者优先；
 7、学习能力强、思路清晰、能举一反三、触类旁通。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '算法/机器学习工程师' LIMIT 1), '南京天易合芯电子有限公司', '算法工程师', '南京-浦口区', '0.8-2万/月', NULL, '1. 基于穿戴设备PPG信号的生命体征（HRM，SPO2，BP等）检测，包括信号处理、建模、特征识别的算法开发与优化；
 2. 基于穿戴设备单导联ECG信号的生命体征（HRM、HRV、疲劳度等）算法开发与优化；
 3. 基于穿戴设备加速度传感器（ACC）的计步，运动模式识别，运动参数提取等算法开发与优化；
@@ -9755,8 +6929,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 5、熟练使用以下编程语言中的至少一种：Java, Scala；
 6、熟练使用以下脚本语言中的至少一种：Python, R等；
 7、良好的编程能力、算法设计能力，具备大规模语料数据处理经验者优先；8、有较强的分析问题解决问题能力， 良好的沟通能力和团队协作精神。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '算法/机器学习工程师' LIMIT 1), '贰佰号科技（北京）有限公司', '算法工程师', '北京-海淀区', '2.5-3万/月', NULL, '岗位职责：
 1、深入理解B端（目前集中在能源领域）业务，准确分析问题，研发适合的算法与策略，不断优化算法效果和性能；
 2、熟悉机最新的智能算法，通过机器学习，统计分析和算法对时序数据分析建模；
@@ -9787,8 +6959,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 3、有实际Hadoop、Spark等大数据分析平台实际项目使用经验；
 4、高级算法工程师需具备5年及以上智慧交通C-V2X、高精度定位相关工作经验；
 5、持有测绘专业高/中级职称证书者优先。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 3, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '算法/机器学习工程师' LIMIT 1), '深圳中科图灵科技有限公司', 'AI算法工程师', '深圳-南山区', '1.5-4万/月', NULL, '岗位职责：
 1. 负责强化学习、深度学习人工智能数学模型研究、算法实现及优化；
 2. 跟踪人工智能技术和算法的前沿技术；
@@ -9802,11 +6972,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 6. 熟悉SQL语言，熟悉至少一种开源大数据相关数据库系统，如Hive、Spark SQL、Impala等；
 7. 具备理解英文技术文档和论文的能力；
 8. 具有强烈的责任心和钻研精神，以及团队协作精神。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 8, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 4, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 3, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '算法/机器学习工程师' LIMIT 1), '民航电信开发有限责任公司', '算法及人工智能开发工程师', '北京', NULL, NULL, '岗位职责：
 1、负责数据处理算法改进、人工智能应用领域技术的跟踪研究。
 2、负责数据算法及人工智能领域的项目开发与应用。
@@ -9823,8 +6988,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 5、良好的沟通、学习、逻辑表达和团队协作能力。
 6、有数据分析和挖掘经验优先。
 7、开源社区活跃并有积极贡献优先。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 5, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '算法/机器学习工程师' LIMIT 1), '北京吉因加科技有限公司', '算法工程师', '深圳-坪山区', '1-2万/月', NULL, '职位描述：
 1、开展基于肿瘤组学大数据（基因组、转录组、影像组等）相关研究和开发工作；
 2、负责或参与肿瘤基因组数据分析算法、统计模型框架搭建、测试和系统开发；
@@ -9836,8 +6999,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 4、深入了解经典深度学习网络结构，能熟练使用开源机器学习或深度学习框架，如sklearn/Tensorflow/Keras或Pytorch。
 5、至少熟练掌握一门编程语言：Python/R/C或者C++。
 6、熟悉Linux环境。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 8, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '算法/机器学习工程师' LIMIT 1), '重庆天箭惯性科技股份有限公司', '惯导算法工程师', '重庆-渝北区', '1.5-2万/月', NULL, '1、根据公司现有资源和已掌握的相关技术，评估产品的导航指标体系，并给出相关建议和意见。
 2、针对导航类项目（含GNC项目）的导航指标体系要求，开展导航算法设计；
 3、组织并开展导航算法的验证及效果评估；
@@ -9862,9 +7023,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 4、熟悉大数据相关技术的原理及使用（包括但不限于：hadoop,hive,hbase,分布式内存数据库，storm，spark）；
 5、熟练使用Java或者Python；熟悉至少一门脚本语言（包括但不限于：shell,python）；
 6、学习能力强，有激情，看好大数据行业。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 3, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '算法/机器学习工程师' LIMIT 1), '深圳酷比通信股份有限公司', '算法工程师', '深圳-南山区', '1.9-3万/月', NULL, '岗位职责：
 1、负责对传感器（PPG、Gsensor、ECG信号等）的数据进行研究；
 2 、负责计步算法、睡眠算法、心率算法、手势算法的研究；
@@ -9926,8 +7084,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 5、有电力/能源规划决策领域相关项目经验优先；
 6、善于学习总结，有较强的求知欲，对探索未知领域和解决问题充满热情；
 7、工作严谨踏实，责任心强，条理清楚；有良好的团队合作精神和沟通能力。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '算法/机器学习工程师' LIMIT 1), '南京华苏科技有限公司', '高级机器学习/数据挖掘工程师', '南京-雨花台区', '1.5-2.5万/月', NULL, '工作职责：
 1.运用数据挖掘/机器学习的理论和方法，开发，设计机器学习数据挖掘算法应用于通信运营商的市场大数据分析与客户服务分析，应用于物联网和政企大数据领域。
 2.对于数据分析和数据挖掘技术有较全面深入的理解，能够对客户或团队成员形成知识转移；
@@ -9938,8 +7094,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 2.具有扎实的编程能力，精通一门或多门语言 (Python/R/Scala等)，精通常用算法和数据结构；
 3.了解前沿技术，熟悉主流机器学习、数据挖掘或nlp模型算法并有实战经验，如分类/聚类/回归/时间序列/文本挖掘/深度学习等；
 4.优秀的沟通表达能力，踏实和坚持不懈的工作态度', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 4, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '算法/机器学习工程师' LIMIT 1), '浙江浙大中控信息技术有限公司', '算法工程师（数据分析方向）', '杭州-滨江区', '1-1.5万/月', NULL, '1、负责前瞻性交通行业大数据分析算法预研；
 2、负责算法的设计研发、实现、验证、优化、验证；
 3、结合业务需求，为需求方设计定制算法设计解决方案及优化现有算法；
@@ -9951,8 +7105,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 3、精通SQL，熟悉MySQL/Oracle/PostgresSQL数据库，熟练运用Python/SAS/MATLAB等主流数据分析软件工具，熟悉Elasticsearch处理大规模数据；
 4、能够独立分析解决算法研发中的各种问题，思考问题思路清晰，创新性强；
 5、良好的沟通能力和团队协作能力。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 5, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '算法/机器学习工程师' LIMIT 1), '尚特杰电力科技有限公司', '资深算法工程师', '合肥-高新区', '2-2.5万/月', NULL, '岗位职责：
 1、参与故障诊断或数据分析项目的可行性分析、技术可行性分析和需求分析；
 2、负责核心算法的研究、设计、优化、改进及代码实现；
@@ -9966,8 +7118,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 4、按照详细设计说明书，独立完成程序单元的编码和调试任务，能定位程序问题、分析和解决问题；
 5、熟知光伏组件特性，具备制定常规组件智能诊断算法的能力
 6、具有数字信号处理、图像处理算法研究或开发经验', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 4, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '算法/机器学习工程师' LIMIT 1), '中江联合（北京）科技有限公司', '人工智能算法工程师', '北京-海淀区', '0.8-2万/月', NULL, '岗位描述：
 1.在产品方面，负责人工智能在工业领域的应用研究，包括产品工艺参数优化、产品质量预测、产品瑕疵识别和产品计数。同时根据公司产品战略发展方向，在产品不断迭代和优化过程中，负责产品优化和持续改进算法。
 2.在项目方面，做为项目组成员，深入了解工业领域(元器件)的需求、并设计和实现相关算法。
@@ -9977,8 +7127,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 3，熟练使用一种或几种深度学习框架（如TensorFlow、PyTorch、MXNet等）；
 4，了解常见图像处理方法，熟练使用机器学习算法：分类、聚类，如NN、QDA、SVM、RF；
 5，熟悉目标检测算法Faster R-CNN、R-FCN等。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 4, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '算法/机器学习工程师' LIMIT 1), '深圳市力博得研发中心', '算法工程师', '深圳-宝安区', '1.5-2万/月', NULL, '1、参与电动声波牙刷软件算法的研究及代码的编写，从需求分析、输入输出确定、方案设计、测试、算法库交付等；
 2、负责平台软件开发，嵌入式软件系统设计，与硬件工程师协同完成系统测试与调试工作；
 3、参与图像处理、模式识别、数据分析等项目的评估，跟踪行业关于智能AI最新发展趋势，收集、分析竞争对手相关产品的亮点和优势，为项目立项提供决策依据
@@ -10016,9 +7164,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 3. 具备linux开发经验，有良好的JAVA/Python编程开发能力;
 4. 具备良好的沟通表达能力，对医疗大数据的发展有参与热情；
 5. 能够准确理解业务需求，有医疗行业项目经验的可以加分。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 8, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '算法/机器学习工程师' LIMIT 1), '深圳市沃感科技有限公司', '控制算法工程师', '深圳-南山区', '1-2万/月', NULL, '任职要求：
 1. 本科及以上学历，电子或自动化相关专业；
 2. 熟悉8051，PIC，AVR，ARM多种单片机的开发和调试；
@@ -10086,9 +7231,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 2、精通一种或以上的深度学习框架，如TensorFlow、Mxnet、Caffe、pyTorch、Keras等。
 3、具有以下一个或多个领域的理论背景和实践经验：机器学习、数据挖掘、深度学习、信息检索、自然语言处理、复杂网络分析、博弈论等；
 4、至少精通一门编程语言（C/C++，Java，Python，Scala等），熟悉网络编程、对数据结构和算法设计有较为深刻的理解。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 4, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '算法/机器学习工程师' LIMIT 1), '深圳市视美泰技术股份有限公司', '图像算法工程师', '深圳-南山区', '1.5-3万/月', NULL, '职位要求：
 1. 编程能力强，有良好的数据结构与算法功底，能够熟练使用 C++ 语言编写较复杂的算法；
 2. 有丰富的编程经验，能够调试解决在 Linux 或 Android 平台的常见的问题；
@@ -10099,9 +7241,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 1、具体负责机器学习/深度学习项目算法开发；
 2、针对不同场景负责数据分析、模型的训练，负责产生符合需求的模型(输入定义好的资料, 输出预期的结果)；
 3、对模型训练调优，提升性能和准确性。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 8, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 4, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '算法/机器学习工程师' LIMIT 1), '华南智能机器人创新研究院', '光学算法工程师', '异地招聘', '1-2.5万/月', NULL, '岗位职责：
 1、负责光学算法方案编制、光学算法详细设计；
 2、协助MCU嵌入式软件或PC软件实现光学算法；
@@ -10146,9 +7285,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 2. 熟悉锂电池特性，具备新能源汽车大数据项目开发经历者优先，具备动力电池性能开发经历者优先；
 3. 数理基础、编程基础扎实，熟悉算法数据结构，熟悉统计学习方法，熟悉深度学习算法及其框架；
 4. 有较好的Matlab/Java/C/Python等语言基础，精通1-2种。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 4, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '算法/机器学习工程师' LIMIT 1), '广州溪域科技有限公司', '人工智能技术测试助理/双休', '广州-白云区', '6-8千/月', NULL, '岗位职责：
 1、协助上级完成每日的测试任务；
 2、做好每日的数据分析；
@@ -10185,8 +7321,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 3.熟悉C/C++，熟悉Linux系统，熟悉OpenCV和PCL等开源库；
 4.熟悉激光雷达的使用和数据分析如三维重建和点云处理；
 5.具备3D数据处理经验者优先。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 8, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '算法/机器学习工程师' LIMIT 1), '成都智明达电子股份有限公司', '算法工程师（信号处理方向）', '异地招聘', '20-25万/年', NULL, '岗位职责：
 1、负责雷达或通信类相关算法的研究；
 2、负责算法嵌入式平台实现、仿真和维护；
@@ -10235,8 +7369,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 3、具有基于激光雷达的SLAM算法开发和应用经验；
 4、能够使用C或C++语言，在Linux系统下进行算法移植和实现。
 5、具备团队合作意识，有强烈的责任心，具备独立处理问题的能力。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 8, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '算法/机器学习工程师' LIMIT 1), '深圳市异方科技有限公司', '算法工程师', '异地招聘', '0.8-1.5万/月', NULL, '工作职责：
 负责基于物流货物的重量、体积、品类等属性数据的数据分析和数据产品的核心算法研发
 职位要求：
@@ -10247,8 +7379,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 5、有良好的沟通能力，独立解决问题能力；
 6、具有数据挖掘经验优先；
 7、具有一定的3D视觉和计算机图形学开发经验优先；', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 4, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '算法/机器学习工程师' LIMIT 1), '信联科技（南京）有限公司', '大数据分析算法工程师', '南京-江宁区', '1-2万/月', NULL, '岗位职责
 1、负责根据产品需求，参与制定解决方案，进行算法模型的设计和选型；
 2、负责针对数据内容和质量，进行数据清洗，改进算法模型，优化分析结果；
@@ -10259,10 +7389,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 3、熟练掌握Shell/Python/Java中的一种或多种;
 4、熟练掌握Spark/Hadoop中的一种或多种;
 5、熟悉Linux使用;', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 8, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 3, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '算法/机器学习工程师' LIMIT 1), '北京万方数据股份有限公司', '初级算法工程师', '北京', '1-1.5万/月', NULL, '负责海量结构化、非结构化数据分析与挖掘；
 负责各算法和模型的分布式实现（离线，在线），基于
 实现算法模型；
@@ -10280,8 +7406,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 （4）熟练使用Python，或者Java语言；具备在Cuda开发能力；
 （5）对数据的存储、应用的接口有一定的经验；
 （6）具有工作激情，并能承担一定强度的研发工作，能接受创业公司文化并愿意与公司一同发展；', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '算法/机器学习工程师' LIMIT 1), '江苏中宏讯达科技有限公司', '算法工程师', '无锡-惠山区', '0.8-1.6万/月', NULL, '工作职责：
 1. 根据不同的处理目标建立数学模型并输出仿真数据；
 2. 针对汽车行驶状态数据进行建模，仿真，分析，校准；
@@ -10292,9 +7416,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 3. 有过大数据分析和处理经验优先；
 4. 有服务端软件开发经验优先；
 5. 有自动化控制设备编程经验优先。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 8, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 9, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '算法/机器学习工程师' LIMIT 1), '北京银丰新融科技开发有限公司', '推荐算法工程师', '长沙', '2-2.5万/月', NULL, '1、本科及以上学历，计算机、数学、统计、金融、经济等相关专业
 2、金融或互联网大数据相关工作经验，其中2年以上数据分析及算法模型开发经验
 3、熟练SAS、Python 、R中的一种或几种
@@ -10321,9 +7442,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 5. 能读英文文献。
 优先条件：
 有文章发表者优先', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 3, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '算法/机器学习工程师' LIMIT 1), '上海莫能臣智能科技有限公司', '语音算法工程师', '上海-杨浦区', '1.5-2.5万/月', NULL, '岗位职责：
 应用深度学习、机器学习等方法，解决实际音频数据分析问题。
 应聘条件：
@@ -10331,9 +7449,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 2 .熟悉深度学习、机器学习、信号处理等相关的建模方法；
 3.有语音、声信号、深度学习相关项目经验或相关教育背景的优先考虑。
 4.计算机、自动化等相关专业硕士及以上学历。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 8, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '算法/机器学习工程师' LIMIT 1), '中国航空工业集团公司上海航空测控技术研究所', '算法工程师', '上海', '0.8-1.2万/月', NULL, '必备条件：
 1. 硕士及以上学历，振动分析、控制理论与控制工程、测控技术、故障与诊断等相关专业；
 2. 熟练使用C、C++语言，并具有丰富的软件编程经验；具有MATLAB、LABVIEW仿真开发经验；
@@ -10352,8 +7467,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 2、对机器学习、机器视觉、人工智能算法、智能机器人；
 3、大数据hadoop、spark、Kafka、Hive、爬虫、数据挖掘、数据分析技术研究；
 4、有人工智能、大数据、云计算、信息安全等新一代信息技术有丰富项目实战经验在职人中（可***、可合作）。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 3, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '算法/机器学习工程师' LIMIT 1), '杭州高特电子设备股份有限公司', '算法工程师', '杭州-西湖区', '0.8-2万/月', NULL, '岗位职责：
 1）根据需求设计及实现相关算法。
 2）进行算法验证仿真等相关工作；
@@ -10386,8 +7499,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 1、本科以上学历，统计、物理、生物信息、数学、流行病学等专业；
 3、熟练使用perl、python等面向对象语言以及R语言；
 4、有1~2年算法开发经验或熟悉NGS数据分析优先；', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 3, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '算法/机器学习工程师' LIMIT 1), '深圳市金合联供应链技术有限公司', '深度学习算法工程师', '异地招聘', '2.5-3.5万/月', NULL, '1、本科及以上学历，计算机软件、计算机应用、软件工程、自动化、数学等相关专业；', 'open', NULL);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '算法/机器学习工程师' LIMIT 1), '民航电信开发有限责任公司', '算法及人工智能开发工程师', '北京-朝阳区', '0.9-1.4万/月', NULL, '1、负责数据处理算法改进、人工智能应用领域技术的跟踪研究。', 'open', NULL);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '网络安全工程师' LIMIT 1), '深圳市道合顺科技有限公司', '安全工程师', '深圳-福田区', '1.5-3万/月', NULL, '岗位职责
@@ -10414,10 +7525,6 @@ f.具备基本的二进制应用逆向分析能力，包括静态分析和动态
 6.曾参与数据安全、资金风控、内容风控、数据风控、反欺诈、反洗钱等系统的开发与落地；
 7.对机器学习相关方法有实际应用经验；
 8.在CCFA/B类会议上发表过Paper。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 10, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 3, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '网络安全工程师' LIMIT 1), '同济大学', '道路交通安全工程师', '异地招聘', '18-25万/年', NULL, '同济大学交通安全国际合作联合实验室成立于2015年，由同济大学与普渡大学、哥伦比亚大学、中佛罗里达大学、德国宇航中心、英国拉夫堡大学、日本东京大学等10余所国际著名高校及研究机构共建。2016年获批教育部/国家外专局资助的交通安全学科创新引智基地。联合实验室建有国际一流的高仿真驾驶模拟器平台，在中国最早启动了自然驾驶国际合作研究项目。联合实验室与华为、通用、福特、宝马、沃尔沃、英特尔、哈曼等国际知名企业建立了长期合作关系。实验室与交通管理部门、设计院、科研机构合作开展道路设计阶段安全评估、已建道路安全评估与改善；与上海、湖南、河北、云南、山西、广东、江苏、浙江、甘肃等地的交通部门开展了深入的合作，相关工作取得了良好效果，并得到广泛认可。
 为了更好推进事故多发道路排查及道路安全评估改善的工作；招聘道路、交通领域的工程师1名。
 1) 交通数据分析：对路网、交通流、交通事故等数据进行分析；
@@ -10602,8 +7709,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 【培训分享】一对一导师培训，定期组织新员工入职培训，不定期组织部门内部及跨部门分享会；
 【生活福利】免费零食、丰盛下午茶、自动贩卖机、微波炉、大冰箱等；
 【工作环境】我们为你提供舒适的工作环境，互助友爱的人文环境，与您共同成长。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '软件开发工程师（通用）' LIMIT 1), '深圳市森博世科技有限公司', '产品开发工程师', '深圳-龙华新区', '0.5-2万/月', NULL, '工作内容：
 1、熟悉产品开发流程，针对各类第三方跨境电商平台，寻找具有畅销潜力的产品，挖掘优质供应商，丰富产品线，
 2、熟悉各类产品生命周期，独立负责分析和调研欧美市场热销品、开发新产品，
@@ -10655,10 +7760,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 ● 有较强的逻辑/抽象思维能力，善于分析、归纳、描述、沟通和解决问题；
 ● 工作认真，能够快速学习新知识并应用，敢于接受挑战，积极参与团队合作。
 酷爱编程，独立开发过各种应用：网站应用、桌面应用和移动应用等；能够独立设计并且开发实现整个系统，包括前后端。（有AWS开发经验的优先）', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 5, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 7, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 8, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '软件开发工程师（通用）' LIMIT 1), '广州米烁贸易有限公司', 'PHP高级开发工程师', '广州-天河区', '1.1-1.9万/月', NULL, '（一）岗位职责
 （1）负责网站后端接口开发和维护，遵照开发规范，按时保质的完成负责开发任务；
 （2）参与需求分析，产品设计，功能开发等；
@@ -10690,12 +7791,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 11、提供完整的晋升通道，为你的发展指明方向，晋升透明，只要有能力，晋升就像坐火箭；
 12、上班地点就在地体周边，让你出了地铁口一分钟就能到公司，大大减少通勤时间。
 心动不如行动，快快加入我们吧', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 3, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 5, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 8, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 7, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '软件开发工程师（通用）' LIMIT 1), '公安部警用装备采购中心', 'IT运营岗/技术支持/软件工程师/硬件工程师/信息维护', '上海-闵行区', '1-2万/月', NULL, '一、工作内容
 1、负责单位IT硬软件日常运维，及时解决用户日常使用问题；
 2、负责业务部门对IT系统需求的收集、整理，并协调和协助管理IT外包开发公司进行招标，开发，测试，上线及维护等相关事宜；
@@ -10746,11 +7841,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 8、员工活动：公司不定期为您提供旅游、部门聚会、迎新聚餐、爬山跑步等丰富多彩的娱乐活动，让您在业余时间得到放松和快乐；
 9、周年庆+年会：公司为了感谢大家在一年里的辛勤工作，特精心准备周年庆表彰大会和年终动人晚宴，让您一同享受收获；
 10、节日贺礼：公司在端午节、中秋节、春节向员工发礼品和慰问品；', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 3, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 5, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 7, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 8, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '软件开发工程师（通用）' LIMIT 1), '泰邦生物集团（NASDAQ Ticker：CBPO）', '软件工程师', '北京-朝阳区', '1.5-2.5万/月', NULL, '工作内容
 1. 作为IT在营销领域的业务合作伙伴，负责和集团营销相关的业务部门进行沟通，并进行业务需求调研、需求收集、需求分析等工作；
 2. 根据营销相关的业务需求，结合现有主流的营销IT技术和解决方案，规划/设计对应的营销信息化系统解决方案；3. 负责主流的营销解决方案/营销系统供应商的方案试点、选型工作；
@@ -10769,9 +7859,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 7. 有Agile/Scrum 项目经验优先考虑；
 8.个人品质优秀，诚实守信，能吃苦耐劳，无不良记录。
 因疫情期间，可电话/视频无接触面试。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 5, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '软件开发工程师（通用）' LIMIT 1), '深圳市金众诚科技有限公司', '数据开发工程师', '深圳', '0.8-1.2万/月', NULL, '岗位职责：
 1.基于数据分析产品、ERP业务应用基础上收集客户的个性化分析需求。
 2.完成需求分析，撰写项目需求文档，根据经验披露、评估开发过程存在的风险及不可控因素，组织或协助完成需求评审。
@@ -10792,10 +7879,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 8. 具有较强的责任心和使命感，踏实肯干、诚实敬业，能够承担工作压力，正直诚实，乐观向上，积极进取；
 9. 熟悉软件工程/软件方法学和项目管理；
 欢迎熟悉金蝶K/3 Wise、Cloud产品的DBA或者开发人员转岗该岗位。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 6, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 5, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '软件开发工程师（通用）' LIMIT 1), '武汉零捌商机传媒有限公司', 'PHP程序员', '武汉-洪山区', '1.2-2万/月', NULL, '任职要求：
 1.计算机相关专业本科或以上学历，5年以上PHP开发工作经验，有三年以上开发团队管理经验，具有高负载网站的开发经验；
 2.精通PHP编程开发语言、精通MySQL数据库、精通Linux操作系统；
@@ -10816,11 +7899,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 6. 负责现有PHP架构，找出系统瓶颈，改进系统算法，提高系统性能；
 7. 参与建设通用、灵活、可扩展的业务支撑系统的讨论，并负责核心功能与底层基础功能设计，支撑上层多场景的复杂业务；
 （需出差到广州）', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 5, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 8, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 3, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 7, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '软件开发工程师（通用）' LIMIT 1), '江苏盈达信息技术有限公司', '数据开发工程师', '南京-玄武区', '1.2-1.5万/月', NULL, '岗位职责：
 1、处理各类异常和故障，确保系统平台的稳定运行；
 2、数据采集及预处理程序开发、维护，优化；
@@ -10842,11 +7920,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 7、具备良好的抗压能力、沟通能力和团队精神，勇于接受挑战，能够以目标为导向，自我驱动完成业务目标。
 8、清晰的逻辑分析和表达能力，热爱技术，乐于分享，对行业和技术的发展有自己的见解；
 9、良好的团队精神和合作意识，强烈的责任心，对工作有激情，良好的沟通能力。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 7, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 8, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 4, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '软件开发工程师（通用）' LIMIT 1), '南昌多安科技有限公司', '.NET开发工程师', '南昌-青云谱区', '1-1.5万/月', NULL, '岗位：软件语言开发工程师、技术部经理
 工作地点： 江西南昌
 招聘人数： 2人
@@ -10866,9 +7939,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 待遇
 基本工资6000起，年终奖励,五险一金，带薪度假！任职2年后品行能力优异者，转为合伙人机制，享受分红待遇。
 用人文化：我们招的不仅是员工，更是共创价值的合伙人。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 10, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 3, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '软件开发工程师（通用）' LIMIT 1), 'BME柏美迪康', '应用算法开发工程师', '上海-普陀区', '2-2.5万/月', NULL, '这个地球上有几十亿人口，两个人相遇的概率只有千万分之一。
 多高兴，你现在找到了我们。
 就等你来了——
@@ -10897,8 +7967,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 在这个世界里，每个人都做着自己热爱并擅长的事情，大家笑笑闹闹、嘻嘻哈哈，一起走了很远很远的路。
 我们已经创造了无数人的相遇。
 现在，就等你来，然后创造更多有意思的故事。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '软件开发工程师（通用）' LIMIT 1), '浙江双良商达环保有限公司', '软件工程师', '杭州-西湖区', '0.6-1万/月', NULL, '1、负责智慧水务平台的系统维护、操作培训指导工作；
 2、保障系统稳定运行，及时反馈系统存在的问题并提出解决方案；
 3、根据系统运行情况及数据分析，提出系统优化需求，制定并实施优化方案；
@@ -10916,11 +7984,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 9、了解PLC系统、视频监控系统、物联网关优先；
 10、 较强的沟通协调能力及高度责任心，积极主动，能自我驱动，善于分析解决问题; 应变能力强，能独立正确的处理突发状况；
 11、具有技术文档编写能力和故障排查能力，工作严谨、保密意识强，具备团队合作精神。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 5, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 7, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 8, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '软件开发工程师（通用）' LIMIT 1), '深圳市施罗德工业集团有限公司', '软件工程师', '深圳-龙华新区', '1-1.5万/月', NULL, '岗位职责：
 1、参与产品设计，软件架构设计。
 2、根据需求设计人机交互界面，软件模块设计，性能优化等。
@@ -10944,8 +8007,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 12、有团队开发经验，使用过SVN或者git等版本控制软件。
 13、有较强的沟通表达、问题解决能力,能独立完成安排的任务模块。
 14、进行软件单元、功能的测试，查出软件存在的缺陷并保证其质量。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 9, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '软件开发工程师（通用）' LIMIT 1), '红星地产', '数据开发工程师', '上海-闵行区', '1.2-2万/月', NULL, '岗位职责：
 1、规划大数据平台的架构和部署需求，把握系统的高可用、扩展、安全、性能、伸缩性等；
 2、负责大数据平台的设计、建模、代码开发和测试；
@@ -10963,11 +8024,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 6、软件基础理论知识扎实，具有良好的数据结构、算法功底；
 7、对新技术敏感，有一定独立分析，技术研究能力，乐于接受挑战，具有良好的团队合作精神；
 8、工作2-4年优先', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 7, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 4, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 3, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '软件开发工程师（通用）' LIMIT 1), '成都瀚德科技有限公司', 'Web开发工程师', '成都', '0.7-1.2万/月', NULL, '岗位职责
 1、负责服务前后端业务功能设计及开发工作；
 3、负责优化前端体验和页面响应速度，并保证兼容性和执行效率；
@@ -10985,10 +8041,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 福利待遇：五险一金、生日福利、节日福利、月度奖金、员工活动、大于10天的春节假期、另外还有其他员工福利。
 工作时间：周一至周五9:00-17:30，周末双休。
 工作地点：成都高新西区西芯大道汇都总部园3栋5楼。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 10, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 5, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '软件开发工程师（通用）' LIMIT 1), '清能德创电气技术（北京）有限公司', '嵌入式软件工程师', '北京-丰台区', '1.5-2.5万/月', NULL, '岗位职责：
 1、根据公司产品定义，负责嵌入式软件技术方案设计，方案可行性分析，方案评审，控制算法设计，控制算法仿真分析等；
 2、负责公司产品的嵌入式软件开发，包括但不限于软件功能框图绘制、软件流程图绘制、通信协议编制，软件编程、调试、评测；
@@ -11042,8 +8094,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 7. 了解常用的数据可视化图标插件，可以独立使用数据可视化插件完成一些数据分析，监控或展示功能。
 8. 掌握常用的产品设计或界面设计工具，可以独立使用工具完成页面低保真或高保真原型效果图。包括但不限于以下：Axure，墨刀，Photoshop，Sketch
 9. 善于与团队成员沟通，团队协作顺畅。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '软件开发工程师（通用）' LIMIT 1), '深圳市中选科技有限公司', '.NET 高级软件工程师', '深圳', '0.8-1.5万/月', NULL, '【工作内容】
 1、完成软件的设计、实现、测试、修改bug等工作。
 2、系统功能模块详细设计，业务功能实现与单元测试，系统的二次开发等。
@@ -11068,8 +8118,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 4、申请入深户、长期居住证办理
 5、生日福利等多种福利
 6、员工活动', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '软件开发工程师（通用）' LIMIT 1), '广州易热捷信息技术有限公司', '数据库开发工程师', '广州-天河区', '1-1.5万/月', NULL, '岗位职责:
 1、负责数据仓库开发和数据报表开发，日常数据统计分析和系统维护
 2、和数据分析师团队及需求部门进行有效沟通，报告项目进度及问题解决等。
@@ -11092,8 +8140,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 5项目介绍：本职位主要从事金融行业应用软件开发，开发中心在体育中心附近。
 人才要求：有长期从事软件开发的理想、稳定性强，能够同公司共成长的有识之士。
 简历接收邮箱：2070049028@qq.com 联系电话：020-22097540', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '软件开发工程师（通用）' LIMIT 1), '深圳理想动力信息技术有限公司', '高级GO语言开发工程师', '深圳-龙岗区', '2-3万/月', NULL, '职位概要：
 1.负责公司日常数据报表开发；
 2.根据公司市场发展情况进行未来规划（如BI数据分析、数据埋点等）；
@@ -11113,10 +8159,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 6.熟悉MySQL、Redis、ES、Linux、Mq；
 7.对技术有激情，喜欢钻研，能快速接受和掌握新技术，学习能力和工作责任心强，良好的沟通表达能力和团队协作能力；
 项目APP名称《高佣联盟》', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 5, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 7, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 8, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '软件开发工程师（通用）' LIMIT 1), '北京天行汇通信息技术有限公司', '算法开发工程师', '北京', '1.5-3万/月', NULL, '职位描述：
 1.负责语音合成/语音识别/声纹识别/语音信号处理/联机手写识别/光学字符识别/人脸识别/视频分析/指纹识别/自然语言处理/自然语言理解/大数据分析/机器翻译/输入法中一项或几项领域的引擎的系统设计、核心算法设计、及编码实现；
 2.负责引擎配套的测试、验证工具的设计及开发；
@@ -11140,9 +8182,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 5.优先考虑：
 -有语音合成/语音识别/光学字符识别/人脸识别/自然语言处理等一种相关技术研发工作经验；
 -能独立完成系统结构的设计者，有深度学习知识背景者。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 8, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 4, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '软件开发工程师（通用）' LIMIT 1), '上海国盾量子信息技术有限公司', '软件工程师（中科大上研院）', '上海-浦东新区', '0.8-1.5万/月', NULL, '岗位职责：
 1、根据需求完成软件系统模块设计以及开发文档的编写；
 2、根据设计文档和需求说明完成代码编写、调试、单元测试、维护及上线；
@@ -11157,8 +8196,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 3、专业技能： ◇ 熟练掌握Python等编程语言； ◇ 熟练掌握科学库如numpy、scipy、pandas、matplotlib等； ◇ 熟练掌握MySQL原理及机制，掌握各种查询语法具有数据库设计和SQL优化能力； ◇ 熟悉多进程、多线程、协程，熟悉常见的网络编程模型； ◇ 有数据分析、机器学习相关工作经验优先； ◇ 高并发、高性能的分布式系统的设计和开发经验者优先； ◇ 有数字信号处理、线性代数等基础优先，有科研经验优先； ◇ 了解Python web框架，如Flask、Django、aiohttp框架，熟悉各种常用设计模式；
 4、其他要求：对常规仪器仪表有使用经验优先。
 5、积极主动的沟通能力；', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 5, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '软件开发工程师（通用）' LIMIT 1), '杭州市地铁集团有限责任公司运营分公司', '数据开发工程师', '杭州-江干区', '1-1.5万/月', NULL, '岗位职责：
 1.负责数据库环境的规划、部署、版本升级；
 2.负责数据库日常监控、性能优化、备份恢复、数据清理、定期维护和异常处理；
@@ -11176,10 +8213,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 5.具备较强的责任心及沟通能力，团队协作能力；
 6.具有各类数据库专业认证者优先(如Oracle OCP等)。
 7.具有独立进行数据挖掘建模和专题数据分析能力，有大数据技术研究背景尤佳。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 5, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 7, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 8, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '软件开发工程师（通用）' LIMIT 1), '长沙市社为电子科技有限公司', '.NET开发工程师', '长沙-岳麓区', '0.7-1万/月', NULL, '岗位职责
 1、贯彻本部门岗位责任制，密切与公司其他部门的工作关系，加强与公司各部门的配合，遵循公司开发流程做好软件开发的服务工作；
 2、负责公司平台的编码、调试、维护等具体研发工作；
@@ -11221,9 +8254,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 4、熟悉Sqlserver、mySql、Oracle数据库；
 5、有物联网经验和java开发经验者优先，参与过Bim平台、工矿、建筑行业系统开发优先；
 6、较强的逻辑分析、数据分析能力、问题排查能力及良好的团队协作及沟通能力。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 5, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '软件开发工程师（通用）' LIMIT 1), '广州贝拓科学技术有限公司', '软件工程师', '广州-海珠区', '0.8-1万/月', NULL, '职位要求：
 1.有Windows平台桌面软件开发专业背景，熟悉MFC框架结构以及c#语言以及winform或者.net框架；
 2.熟练掌握visual studio平台，熟悉：XML，算法，MySQL server数据库，三层架构等；
@@ -11248,8 +8278,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 6、假期：提供按国家标准的带薪假期，以及入职满1年8天带薪年假；
 7、高温补贴；
 8、本岗位薪资构成：基本工资+年终奖金。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 5, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '软件开发工程师（通用）' LIMIT 1), '富璟科技（深圳）有限公司', 'VBA开发工程师（双休）', '深圳-南山区', '0.8-1.2万/月', NULL, '岗位职责：
 1、负责RPA技术研发;
 2、完成RPA中的Excel、PPT报告自动生成程序编写;
@@ -11273,8 +8301,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 4、优越的，透明可见和快速（上升）的职业发展道路；
 5、高于同行薪酬制度，丰厚奖励、公司福利；
 6、公司不定期的专业技巧及个人素质提升培训。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 5, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '软件开发工程师（通用）' LIMIT 1), '苏州佳世达电通有限公司', '软件工程师', '苏州', '6-8千/月', NULL, '工作职责：
 1、负载新客户测试系统方案评估、方案报价、方案实施
 2、负责Handle测试整体测试系统开发（设备选型、测试系统搭建、编程开发）
@@ -11312,9 +8338,6 @@ PS：半导体、太阳能光伏、LED制造业相关企业的应聘人员，条
 3.提供午餐补贴、通讯补贴、医药补贴、出差补贴、年终奖；
 4.提供人性化的员工关怀和管理氛围，让员工在公司快乐工作、幸福生活；
 5.提供年度调薪、岗位晋升，期权激励，为员工提供广阔的个人发展空间。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 5, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '软件开发工程师（通用）' LIMIT 1), '讯汇科技（广州）有限公司', '后端开发工程师', '广州-天河区', '1.5-2.5万/月', NULL, '讯汇科技研发中心拥有超过60名工程师的专业团队，超过50%人员拥有超过10至15年的大型互联网项目研发经验。
 涉及的技术领域包括：服务虚拟化及服务集群技术、超大吞吐量直播推拉流技术、超大并发IM通信技术、低延迟大型数据库技术、国际流媒体CDN、传统及VoIP国际电话通讯技术、大型数据分析及处理技术等。
 岗位职责：
@@ -11329,9 +8352,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 3. 熟悉MySQL，精通mysql数据库优化，了解memcache、redis、mongodb等常用nosql解决方案；
 4. 能拆解需求，设计系统各层级架构，实现系统的可扩展；
 5. 有良好的代码习惯，思维敏捷、喜欢钻研技术，具有较强的分析和解决问题的能力。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 5, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 7, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '软件开发工程师（通用）' LIMIT 1), '宁波华坤医疗器械有限公司', '产品开发工程师', '宁波-慈溪市', '1-1.5万/月', NULL, '1. 协助研发副总监进行新产品方案阶段的进行技术可行性分析和技术实现。
 2. 对产品进行创新设计并满足产品性能、可靠性、成本和生产工艺性要求。
 3. 能够制定产品开发计划并跟进产品开发项目，做好沟通、审核、评估，把控项目整体进度和质量。
@@ -11357,8 +8377,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 3、掌握SQL SERVER 、MySQL数据库，数据库操作及界面设计，能够独立开发外部数据采集软件，具备数据分析和出具检测报表功能。了解数据库的数据创建，数据提取、分析等；
 4、孰悉计算机常用外围接口RS232、RS485、以太网接口。
 5、有较强的学习能力，具备严谨的、条理清晰的逻辑思维和抽象能力，善于沟通、有团队合作精神，能独立完成安排的开发任务，能承受一定的工作压力；', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 5, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '软件开发工程师（通用）' LIMIT 1), '江苏信用行科技股份有限公司', '开发工程师', '无锡-无锡新区', '1-1.5万/月', NULL, '工作内容：
 1、制定公司项目技术及产品研发发展战略规划、近期研发计划，并全面组织推进工作。
 2、全面负责公司前沿性项目技术及产品开发，关注互联网发展技术、不锈钢行业电子商务平台发展动向及应用领域，开展相关的研究与开发。
@@ -11376,8 +8394,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 4、 熟练使用至少一种数据库（SqlServer,Mysql等）；
 5、 具有较强的沟通能力、文字表达能力、团队合作精神；
 诚邀不拘一格的您加入我们团队。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 5, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '软件开发工程师（通用）' LIMIT 1), '深圳旭宏医疗科技有限公司', '后端开发工程师', '深圳-南山区', '1.5-3万/月', NULL, '1.根据业务需求与web/app/pc客户端组协作开发并实现各产品功能；
 2.参与后端研发中涉及到的技术框架选型及设计与实现；
 3.与数据组协作完成核心接口的定义、使用、测试并保证业务代码的运行效率；
@@ -11395,10 +8411,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 10.工作细致、踏实、责任心强；具有良好的团队精神和沟通能力；
 11.能阅读英文文档；
 12.有医疗开发相关经验优先；', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 4, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 7, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '软件开发工程师（通用）' LIMIT 1), '香港韩智炫国际集团', 'PHP开发工程师', '广州-天河区', '0.5-1万/月', NULL, '1、根据设计，进行相关模块及功能的代码编写，随时检查开发过程，调整进度，保证编码开发工作的按时完成，并保证代码符合公司的相关规范要求；
 2、根据项目开发方案，进行系统建模、数据结构设计等，保证程序开发的规范性、健壮性；
 3、开发高性能数据接口、数据分析任务、平台业务相关模块；
@@ -11414,10 +8426,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 6、责任心强，学习能力强，沟通能力强，具备良好的问题定位、分析及解决能力。
 7、有公众号商城、小程序开发经验者优先
 8、熟悉微擎框架系统', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 5, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 4, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '软件开发工程师（通用）' LIMIT 1), '魔元术（苏州）信息科技有限公司', 'Winform开发工程师', '异地招聘', '0.6-1.3万/月', NULL, '工作职责：
 1. 负责C/S架构业务项目的软件开发，按时完成领导安排的技术需求及功能模块；
 2. 有一定的针对代码重用性、扩展性设计的经验和能力；
@@ -11435,9 +8443,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 7. 有POS,WMS项目设计与开发的能力，熟悉大数据分析处理和高并发，优先；
 8. 对工作有责任心、具有良好的沟通和团队协作能力；
 9. 了解Javascript、Ajax、CSS+DIV、jQuery、EasyUI、Bootstrap，HTML5优先；', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 3, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '软件开发工程师（通用）' LIMIT 1), '广州市数商云网络科技有限公司', 'SDK开发工程师', '广州-海珠区', '0.9-1.2万/月', NULL, '2、熟练解决软件的各种兼容问题与bug，优化Andriod及IOS应用程序的性能，用户体验；
 3、按照项目计划，与项目组其他成员协同工作，在保证质量的前提下，按时完成开发任务；
 4、回复和解决客户对接sdk过程中所遇到的问题。
@@ -11450,9 +8455,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 7、基础扎实、思路清晰，有独立调试和解决程序问题的能力；
 一个基于大数据驱动的营销自动化平台。我们致力于通过大数据技术，依托SaaS实现品牌营销策略、渠道推送、营销执行、智能数据分析、用户管理等全链营销自动化，提升品牌营销整体效率，精细量化营销ROI，扩大销售效益。
 http://www.yingyuma.com/', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 4, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '软件开发工程师（通用）' LIMIT 1), '先策医药科技（武汉）有限公司', 'SAS程序员', '武汉', '0.6-1万/月', NULL, '岗位职责：
 1. 负责按照统计分析计划(SAP),编写SAS程序,生成统计数据图表列表等rtf文件；
 2. 负责SAS宏程序的开发，构建公司相关程序框架体系和程序相关SOP；
@@ -11486,10 +8488,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 8、具有极强的新技术学习与验证能力
 9、有大数据及Javascript开发经验者优先
 10、具有分布式计算经验者优先，如Hadoop', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 5, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 3, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '软件开发工程师（通用）' LIMIT 1), '昆山联滔电子有限公司', '新产品开发工程师(含PD/FA方向)', '昆山', '0.7-1.3万/月', NULL, '1、精通新产品的开发流程；掌握线性振动马达产品的设计，功能及原理；
 2、独立完成马达3D/2D设计与制作及公差分析；
 3、熟练使用CAD，Pro-E or UG及Comsol或abaqus等工程软件.
@@ -11528,9 +8526,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 7.熟悉不同整车厂客户标准，熟悉了解TS16949的体系内容，了解VDA6.3', 'open', NULL);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '软件开发工程师（通用）' LIMIT 1), '赛尔网络有限公司山东分公司', '数据库开发工程师 数据治理专员', '济南-市中区', '0.8-1万/月', NULL, '1、设计并优化数据库物理建设方案。2、在项目实施中，承担数据库的实施工作；负责业务数据库系统的模型设计，表结构设计。3、进行数据分析工作，使用存储过程等方式实现对数据分析、报表输出，实现对数据的有效管理。4、为软件开发人员提供技术咨询服务，分析SQL语句性能，提出可靠性建议。5、负责数据库系统的高可用性，备份恢复，性能调忧，监控等实现。
 1.掌握Oracle、Mysql等数据库；2.掌握数据库技术的基本概念、原理、方法和技术；3.能够使用SQL语言实现数据库操作；4.具备数据库系统安装、配置及数据库管理与维护的基本技能；5.掌握数据库管理与维护的基本方法；6.掌握数据库性能优化的基本方法；7.了解数据库应用系统的生命周期及其设计、开发过程；8.熟悉常用的数据库管理和开发工具，具备用指定的工具管理和开发简单数据库应用系统的能力；9.了解数据库技术的最新发展，熟悉非关系型数据库(NoSQL)：Redis、MongoDB、HBase、Cassandra的研发人员优先；10.了解数据治理相关内容，参与数据管理制度的制定、使用、推广工作。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 5, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 7, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '软件开发工程师（通用）' LIMIT 1), '安世亚太增材制造有限公司', 'C++高级开发工程师', '杭州-萧山区', '1-1.5万/月', NULL, '1、 分析和调研3D图形打印软件，编写相关需求文档
 2、 对市场开源的3D图形打印软件进行分析和研究。
 3、 负责市场开源的3D打印软件支撑功能改进。
@@ -11548,8 +8543,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 1，FDM（桌面机、工业机）
 2，巧克力打印机
 3，金属打印机', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 4, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '软件开发工程师（通用）' LIMIT 1), '深圳市能信安科技股份有限公司', '高级后端开发工程师', '深圳', '1.5-2万/月', NULL, '2、负责基于python语言开发的移动应用漏洞扫描引擎的迭代开发与维护。
 3、负责产品授权认证业务系统及移动应用权限及隐私政策合法合规性检测系统的迭代开发与维护。
 4、负责移动Web安全防火墙系统的迭代开发与维护。
@@ -11560,11 +8553,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 3、精通linux系统下开发后端服务器系统，精通linux系统下网络代理设置与开发，精通linux系统下HTTP协议抓包数据分析，有独立开发服务器端项目，上线维护及架构能力；
 4、有移动Web及移动App安全漏洞分析与验证等安全领域开发经验者优先考虑；
 5、精通网络编程，精通tcp，http等通讯协议，熟悉tcpdump等常用网络抓包分析工具的使用，精通多进程和多线程开发；', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 5, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 7, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 8, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '软件开发工程师（通用）' LIMIT 1), '深圳市今古科技有限公司', '数据开发工程师', '上海-黄浦区', '1-1.5万/月', NULL, '1、 参与数据平台（数据仓库）持续的建设，包括模型设计、开发测试，实现与相关应用系统的数据服务支持；
 2、 满足业务和项目的数据需求，提供面向业务的OLAP、报表，数据提取等数据服务；
 3、 参与数据产品的设计与开发，助力业务发展；
@@ -11579,9 +8567,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 6、工作认真负责，良好的沟通能力与团队协调能力，能独立处理测试团队在项目过程中遇到的各类问题；
 7、良好沟通能力，具有较强的测试需求分析能力；
 8、有高度的责任心和团队协作精神。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 5, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 8, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '软件开发工程师（通用）' LIMIT 1), '南京先极科技有限公司', 'Unity 3D开发工程师', '南京', '1-1.5万/月', NULL, '1. 参与项目需求分析和设计；
 2. 负责使用Unity3D引擎，开发游戏或虚拟仿真项目；
 3. 快速理解游戏或虚拟仿真项目UI交互逻辑的设计编写相关功能模块的代码；
@@ -11595,8 +8580,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 4. 具有良好的沟通能力、抗压能力和团队合作能力。
 5. 熟练利用各种地理分析软件或数据分析软件，如：ArcGIS 结合Unity3D进行三维地形模型转换处理、MATLAB数学模型与Unity3D整合辅助计算开发编程者优先考虑。
 6. 有完整上线项目经验者优先。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 3, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '软件开发工程师（通用）' LIMIT 1), '格林豪泰酒店（中国）有限公司', 'BI数据开发工程师', '上海-长宁区', '1-2万/月', NULL, '[工作内容]：
 1、BI平台建设与维护；
 2、通过SQL Server工具（SSIS、SSAS、SSRS）进行ETL工作和报表开发；
@@ -11610,9 +8593,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 5、熟悉Unix/Linux环境；
 6、良好的沟通能力和学习业务能力, 能够为业务部门用户组织和提供培训, 使用BI方法回答和解决业务问题；
 7、较强的数据敏感性、优秀的逻辑分析和沟通表达能力、良好的逻辑思维能力和抗压能力；', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 8, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 3, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '软件开发工程师（通用）' LIMIT 1), '广州市零码汇信息科技有限公司', '数据开发工程师（BI）', '广州-荔湾区', '1-1.5万/月', NULL, '1、协助需求人员及产品经理，完成数据处理方案制定、数据模型设计、kettle作业及调度设计、数据仓库维护；
 2、根据业务部门需求完成数据处理相关kettle作业开发，并对交付质量负责；
 3、负责商品分析，数据挖掘和分析，为商品企划提供数据支持；
@@ -11625,10 +8605,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 4、3年及以上相关数据分析工作经验，逻辑思维清晰；
 5、本科及以上学历，统计学、计算机、等专业优先；
 6、了解电商服装行业，具有相关行业的数据分析工作经验者优先', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 5, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 3, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '软件开发工程师（通用）' LIMIT 1), '上海幸宜信息科技有限公司武汉分公司', '数据库开发工程师', '武汉-东湖新技...', '0.9-1.8万/月', NULL, '岗位职责：
 1、制定数据库开发规范，参与并审核数据库设计；
 2、进行业务系统数据库的规划、设计、实施，设计并优化数据库物理建设方案；
@@ -11644,10 +8620,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 5、熟悉建立数据库仓库及有数据分析与挖掘基础优先；
 6、工作认真踏实，沟通能力良好，良好的团队合作精神；
 7、高度的责任感，善于在工作中学习，能够承受工作压力；', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 5, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 4, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '软件开发工程师（通用）' LIMIT 1), '上海宏银信息科技股份有限公司', '报表开发工程师', '上海-浦东新区', '1-1.5万/月', NULL, '职位描述：
 1、 与业务部门沟通，根据业务部门的需求，设计页面展现原型。
 2、 数仓团队提供数据源，根据后端数据源梳理表之间的关系，画出E-R图。
@@ -11660,8 +8632,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 2、 2年以上报表开发相关工作经验，报表工具为SAP BO，Cognos，QlikView，PowerBI，Tableau，FineReport，FineBI任意一种。熟悉帆软FineReport和FineBI者优先。熟练掌握excel分析数据。具有一定的前端审美能力。
 3、 熟练掌握主流数据库系统中的一种或多种, SqlServer或MySql及相关数据库客户端工具
 4、 工作积极主动、有责任心；具备良好的沟通能力，具有团队协作精神。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 5, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '软件开发工程师（通用）' LIMIT 1), '上海复享光学股份有限公司', '仪器产品工程师/软件开发工程师/硬件工程师', '异地招聘', '14-28万/年', NULL, '1）主持或参与光电设备产品开发、老产品升级项目；
 2）参与产品规划、产品设计及解决方案设计；
 3）参与产品开发规范建设，提高公司共享技术模块占比；
@@ -11699,8 +8669,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 3. 有Winform应用开发工作经验、会使用数据库（SQL等）者优先考虑；
 4. 良好的Office技能，可以使用Excel工具进行数据的各项处理；
 5. 逻辑思维能力强，具备良好的沟通协调能力，具有团队合作精神和自主工作能力。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '软件开发工程师（通用）' LIMIT 1), '湖北省威赛尔科技有限公司', '软件开发', '武汉', '4-8千/月', NULL, '一、岗位职责：
 1、负责公司的小程序开发与维护；
 2、大数据分析，完成数据测试及匹配结果分析工作，对海量业务数据进行分析，深度挖掘内部数据，构建用户征信的指标体系；
@@ -11713,8 +8681,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 1、工作时间8:30-18:00，周末双休，年假，法定节假日、五险一金；
 2、公司员工享受生日福利、过节礼品、下午茶、不定期公司活动；
 3、公司为员工提供完善的晋升空间。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '软件开发工程师（通用）' LIMIT 1), '上海上实龙创智能科技股份有限公司', '产品开发工程师', '上海-静安区', '1.5-2.5万/月', NULL, '岗位职责：
 1、 根据公司现有数据资源，设计满足业务需求的分析解决方案，并协助研发部门及团队完成相关开发工作。
 2、 结合用户需求、成熟产品，形成可交付、可实施的解决方案，促成项目落地；
@@ -11752,9 +8718,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 7. 有医疗软件如HIS/RIS/PACS/LIS等或数据分析软件经验者优先
 8. 有实际项目负责经验或项目负责人经验者优先考虑
 9. 具有良好的逻辑思维能力、独立工作能力和团队合作精神', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 5, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '软件开发工程师（通用）' LIMIT 1), '上海知汇云信息技术股份有限公司', 'ETL开发工程师', '上海-浦东新区', '1-1.8万/月', NULL, '1、负责数据分析、加工、清理，相关处理脚本和程序的开发；
 2、负责开发大数据工具，如报表平台、多维度分析工具、ETL 平台、调度平台的研发；
 3、负责分布式大数据平台应用开发（Hadoop/Spark/Hive/Impala 等）；
@@ -11764,9 +8727,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 2、熟练掌握 Java,Scala 或 Python 编程语言，熟悉大数据架构体系，熟悉 Hadoop、HDFS、Hive、Impala、Spark、Kafka、Elasticsearch、Kibana 等技术中的一个或者多个，熟悉 Sqoop、DataX 等数据导入工具；
 3、能熟练使用 Hive、Spark 等加工和处理数据，有海量数据处理经验；
 4、有数据仓库开发经验/BI 系统开发经验优先；', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 3, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '软件开发工程师（通用）' LIMIT 1), '深圳市杰驰电子有限公司', '软件开发工程师（.Net, Pyhon）', '深圳-福田区', '6-8千/月', NULL, '1、参与项目的设计、实现、业务需求的沟通，功能模块详细设计，业务功能实现与单元测试，系统维护；
 2、负责电商核心系统及移动产品后端功能模块详细设计与开发；
 3、负责信息系统数据库结构设计、编码、测试、上线等工作；
@@ -11779,10 +8739,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 5、熟悉SQL Server/Mysql/Oracle 其一种数据库技术；
 6、熟悉多层架构、常用设计模式，具备面向对象的编程思想；
 7、有良好的编程和工作习惯；沟通能力强，有较强的逻辑思维能力和团队合作精神。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 5, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 3, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '软件开发工程师（通用）' LIMIT 1), '中诚信国际信用评级有限责任公司', '模型开发工程师-001', '北京-东城区', '1-1.5万/月', NULL, '岗位职责：
 1.负责将ESG信息数据进行清洗、转换、各类统计，输出用户所需结果；
 2.使用建模工具进行ESG评级模型开发，包括数据准备、特征工程，建模及数据分析、模型的选取与圈定、模型验证工作；
@@ -11795,8 +8751,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 4.熟知统计分析及查询相关软件及工具：SPSS、SAS、SQL等；
 5.熟悉JAVA等基本开发语言，以及R或Python语言；
 6.思维清晰，条理性强，能够主动的学习新技术，具备较强的创新能力。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '软件开发工程师（通用）' LIMIT 1), '中国物品编码中心', '东方捷码中心  软件工程师', '北京', '0.8-1.2万/月', NULL, 'Jave 工程师，大数据方向。
 负责Ecode平台运维与二次开发工作，参与公司其他应用软件的开发工作，参与Ecode平台推广工作。
 工作职责：
@@ -11811,10 +8765,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 4. 至少掌握shell/python/java语言的一种；
 5. 沟通协调能力强，执行力强，具有团队合作精神；
 6. 有大数据应用开发经验优先；有大规模Hadoop运维经验优先。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 8, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 3, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '软件开发工程师（通用）' LIMIT 1), '南京创致优信息科技有限公司', '帆软报表开发工程师', '南京-建邺区', '0.8-1.5万/月', NULL, '1、负责对接业务、数据分析师及产品经理需求，评估报表需求可行性和工期；
 2、负责帆软PC端、移动端报表产品的开发、调优、测试与上线、发版工作；
 3、基于报表产品对数据结构的要求，反向推动应用层数据的完善及落地实施；
@@ -11827,9 +8777,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 5、熟悉SQL Server/Mysql/Oracle等标准数据库，熟练上述数据库的开发;
 6、对web相关技术钻研有强烈的兴趣，有良好的学习能力和较强的进取心；
 7、能够积极创新，乐于面对挑战，负责敬业，具有高度的责任心及团队精神，执行力强。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 5, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 4, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '软件开发工程师（通用）' LIMIT 1), '苏州东安岩芯能源科技股份有限公司', '嵌入式—高级软件工程师', '上海-静安区', '1.2-2万/月', NULL, '? 独立或者做为主要力量进行嵌入式产品项目中的软件设计，实现包括协议通信、逻辑控制、数据采集、数据分析等各种功能。
 ? 主导嵌入式系统级设计，包括定义新产品需求、规格、原理/拓扑、系统仿真等预研工作。
 ? 参与制定项目开发计划，按照进度计划进行产品（软件）开发，并在开发过程中按照公司要求输出合格项目文档。
@@ -11851,8 +8798,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 6、具有一定的计算机编程能力，熟悉Labview语言者优先考虑；
 7、学习能力强，身体健康，吃苦耐劳；善于学习新技术；
 8、勤奋踏实，有良好的团队合作精神。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 4, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '软件开发工程师（通用）' LIMIT 1), '新华人寿保险股份有限公司河南分公司', '新华保险河南分公司 软件开发岗', '郑州-郑东新区', '0.5-1万/月', NULL, '一、岗位职责：
 1、负责大数据数据分析和挖掘平台的规划、开发、运营和优化；
 2、有关技术方案、文档的编写，软件单元的测试；
@@ -11883,9 +8828,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 5、基础计算机操作、办公软件、设计软件、开发环境。
 良好的观察力、成本意识、沟通能力、执行力、协作性。
 工作地点：前期1-2年在江苏省江阴后，后地点在浙江省绍兴市越城区', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 4, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '软件开发工程师（通用）' LIMIT 1), '南京华士电子科技有限公司', '软件工程师', '异地招聘', '1.2-2.4万/月', NULL, '1.根据公司牵引系统产品，负责电机控制算法方案设计，算法仿真分析，方案评审等。
 2.负责各种变流器产品的嵌入式软件开发，包括但不限于软件功能框图、软件流程图、通信协议及软件编程、调试、评测。
 3.所负责产品的各种技术文件（软件设计说明书、软件流程图、软件源代码、软件评测方案、评测报告等）编制和管理。
@@ -11909,12 +8851,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 4、精通Oracle、SqlServer、MySQL等关系型数据库系统及SQL编写和调优；
 5、具有强烈的责任心和团队协作精神，有较好的沟通能力以及独立分析和解决问题的能力；
 6、熟悉逻辑常用算法，有机器学习建模经验者优先；', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 6, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 10, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 5, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 3, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '软件开发工程师（通用）' LIMIT 1), '上海夷易半导体有限公司', 'IC封装开发工程师', '异地招聘', '15-20万/年', NULL, '■ 通过热、电、应力等仿真，为新产品开发和优化封装设计
 ■ 与封装厂及供应商合作，通过DOE对封装设计、材料（线材、基板、封装料等）及其工艺的可制造性、鲁棒性及可靠性进行评估，完成封装及工艺的定型
 ■ 解决量产过程中封装相关的可靠性与良率问题
@@ -11939,8 +8875,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 5、熟悉关系型数据库和空间数据库；
 6、能承受较大工作压力，有较强的责任心，工作踏实、勤恳。
 7、工作积极主动，学习自主能力强，具有良好的沟通能力、团队合作精神。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '软件开发工程师（通用）' LIMIT 1), '珠海艾派克微电子有限公司', '嵌入式软件工程师（芯片方向）-艾派克', '珠海-香洲区', '1-1.5万/月', NULL, '1.按项目要求完成产品芯片的程序开发，测试与量产的烧录检测设备程序开发；
 2.按项目要求完成对开发对象的电气分析、数据分析，并能较好的使用各种测试与调试工具与平台；
 3.对预研项目做技术储备、技术分析，并能组织、引导解决产品问题；
@@ -11953,9 +8887,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 5.有较强数电模电知识，对器件选型、调试、测算有一定经验；
 6.会一种面向对象语言优先（C#、C++、JAVA等）；
 7.会FPGA并实践过项目的优先；', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 3, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '软件开发工程师（通用）' LIMIT 1), '广州艾吉米信息科技有限公司', 'PHP开发工程师', '广州-天河区', '0.5-1万/月', NULL, '岗位职责：
 1、负责产品数据分析、报表开发、投放系统开发与维护；
 2、负责平台业务开发，API开发对接等；
@@ -11973,9 +8904,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 5、 年度旅游及健康体检；
 6、 节假日福利、高温补贴及其他补贴；
 7、 完善的培训体系及职业规划指导。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 5, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 8, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '软件开发工程师（通用）' LIMIT 1), '上海森亿医疗科技有限公司', 'ETL开发工程师', '异地招聘', '0.6-1万/月', NULL, '1、 负责医院信息系统源数据分析工作。
 2、 使用ETL工具对医院信息系统数据进行提取、清洗、转换和整合。
 3、 进行数据任务流程调优及准确性改进，进行数据质量监测、校验和提升。
@@ -11988,8 +8916,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 5、良好的沟通能力、学习思考、解决问题能力，良好的抗压和适应能力。
 6、能适应长期出差。
 7、有ETL开发或数据集成经验者优先，本岗位接受优秀的应届生投递。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 5, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '软件开发工程师（通用）' LIMIT 1), '广东盛元中天生物科技有限公司', '软件工程师', '东莞-松山湖区', '0.8-1.5万/月', NULL, '岗位职责：
 1.多年的软件开发经验，丰富的物联硬件对接开发，能够根据业务需求，设计开发物联网系统；
 2.有独立设计系统能力以及高并发服务开发经验，具有大数据、数据分析与处理经验的优先；
@@ -12003,8 +8929,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 3.软件工程、软件开发、计算机软件、计算机科学与技术相关专业
 3.具有良好的创新思维、有团队合作精神及沟通能力；
 4.三年以上相关工作经验；', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '软件开发工程师（通用）' LIMIT 1), '深圳鸿泽自动化科技有限公司', 'Labview软件工程师', '深圳-龙岗区', '0.8-1万/月', NULL, '岗位职责：
 1、负责客户软件需求分析并输出需求文档；
 2、在现有框架下编写、调试、验证代码以适配客户新需求；
@@ -12020,8 +8944,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 6、熟悉一门文本语言(如C，C#等)，能够看懂文本代码；
 7、代码规范，思路清晰，能够与团队协同工作；
 8、能接受并适应短期出差', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 5, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '软件开发工程师（通用）' LIMIT 1), '上海新漫传感技术研究发展有限公司', '设备桌面软件工程师', '上海-嘉定区', '0.7-1.5万/月', NULL, '工作内容描述：
 1、工程类项目中设备仪器的桌面应用程序开发。
 2、对集成的辐射类仪器或探测器进行实时信号采集、数据分析、数据存储、图表显示、报表输出等功能的开发。
@@ -12037,8 +8959,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 5、掌握MySQL数据库的使用。
 6、有工业项目开发经验者优先。
 7、有组态软件使用经验者优先。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 5, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '软件开发工程师（通用）' LIMIT 1), '深圳市品触光电科技有限公司', '采购开发工程师', '深圳-宝安区', '6-7千/月', NULL, '工作职责：
 1、积极主动的和需求部门进行前期的需求分析，协助需求部门和厂商就产品细节进行
 了解和沟通；利用丰富的采购经验，规避可能发生的采购风险，防范于未然；
@@ -12087,9 +9007,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 ■ 具备良好的沟通、协调、组织力；抗压力、创新力、学习力强
 ■ 具备WindowServer2016~2019/Linux平台上OS管理能力
 ■ MCSE、MCSD、OCA证书', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 8, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '软件开发工程师（通用）' LIMIT 1), '江苏省联合征信有限公司', '移动应用高级开发工程师', '南京-建邺区', '2-2.5万/月', NULL, '1. 负责移动端应用的开发工作；
 2. 负责根据业务需求实现移动端组件的开发；
 3. 负责移动端（包括Android、IOS、小程序）整体技术架构设计，对整体应用的性能及框架进行改进和优化，软件工程***实践的建立与推行；
@@ -12097,8 +9014,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 5. 精通Android 和 IOS的移动端开发技术，熟悉移动端UI布局，不同分辨率适配；具备移动端应用上架经验；熟练使用React Native进行移动端开发者优先；
 6. 有前端React相关或Java服务端开发能力者优先；
 7. 熟练编写代码，具有良好的注释以及文档编写习惯，具备良好的业务理解能力和逻辑思维能力，责任心强，积极主动，善于沟通，具有团队精神。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '软件开发工程师（通用）' LIMIT 1), '杭州大名软件有限公司', 'C++软件开发工程师（实习）', '杭州', '3-4.5千/月', NULL, '职位描述
 1、负责核心产品、项目的开发，需求讨论；具体代码的实现；
 2、负责软件的性能优化、软件的体验改进；
@@ -12129,8 +9044,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 4、熟悉制造业业务流程；
 5、熟悉主流数据库，数据库基础知识扎实；具有良好的SQL语言开发技能及调优经验，掌握存储过程、函数等开发技术；
 6、具有良好的沟通能力和独立分析并解决难点问题的能力，能通过与业务人员的沟通和交流，解决关键业务需求，有良好的系统开发进度把控能力。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '软件开发工程师（通用）' LIMIT 1), '上海易编学教育科技有限公司', 'GO开发工程师', '上海-浦东新区', '1.2-1.8万/月', NULL, '1、研发公司的核心业务服务；
 2、研发基础平台服务相关系统，包括restful api、长连接服务、推送系统、消息队列、日志处理、数据分析等；
 3、研发基于Docker&Kubernetes的微服务系统。
@@ -12140,11 +9053,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 3、熟悉Redis/Mysql等数据库，具有很强的学习能力、分析问题和解决问题能力、对技术有钻研精神和兴趣；
 4、在 Github 上参与贡献过优秀 Go 开源项目优先；
 5、有大型分布式、高并发、高负载、高可用系统设计、开发和调优经验者加分。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 5, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 7, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 9, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '软件开发工程师（通用）' LIMIT 1), '中通服软件科技有限公司', '数据库开发工程师', '成都-高新区', '1.5-2万/月', NULL, '1、负责数据库业务程序开发，进行SQL代码规范审核；
 2、依据需求完成项目的数据分析、建模和算法实现；
 3、负责数据采集、清洗、存储、分析、挖掘等需求确认，进行数据核心算法的编写；
@@ -12155,10 +9063,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 3、熟悉shell语言,熟悉Java/Scala/Python中的一种或多种语言，了解Linux系统的常用命令;
 4、有大数据相关技术以及项目经验者优先;
 5、具备较强的数据分析和解决问题、组织及沟通能力，能够自我驱动。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 5, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 8, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '软件开发工程师（通用）' LIMIT 1), '龙旗集团-国龙信息技术（上海）有限公司', 'C/C++软件工程师(J12366)', '上海-徐汇区', '1-1.5万/月', NULL, '工作职责:
 1、动作捕捉应用系统开发、跨平台移植及性能优化；
 2、算法验证与实现；
@@ -12172,9 +9076,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 5、具有独立的模块设计与开发能力，拥有良好的研发文档习惯；
 6、具有良好的表达和沟通能力，较强的学历能力、责任心和团队精神，勇于接受挑战；
 7、具有计算机视觉、运动数据分析工作经验者优先。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 8, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 3, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '软件开发工程师（通用）' LIMIT 1), '中国电建集团成都勘测设计研究院有限公司', '地质专业开发工程师', '异地招聘', '0.7-1.2万/月', NULL, '职位发布城市针对全国
 一、基本条件：
 1. 拥护党的路线方针政策，遵纪守法、品行端正、爱岗敬业
@@ -12189,8 +9090,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 5. 具有MySQL, SQL Server等数据库的使用经验，熟练进行SQL查询操作；
 6. 熟悉软件开发流程及良好文档编写能力；
 7. 具备地质相关行业工作经验者优先。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 5, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '软件开发工程师（通用）' LIMIT 1), '广东博士科技有限公司', '搜索引擎开发工程师', '广州-黄埔区', '1.5-2.5万/月', NULL, '1、研究文本文献搜索引擎的策略算法工作，包括召回策略、相关性模型、排序模型等算法。
 2、深入搜索用户行为分析，结合平台业务特点进行定制化算法模型研发，提升搜索算法效果，在LearningtoRank、CTR/CVR预估等领域不断进行算法创新，优化相关指标。
 任职资格：
@@ -12199,8 +9098,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 3、精通java或python等主流编程语言，具有后台高性能服务器开发经验和数据分析处理经验；
 4、动手能力强，对算法有极大热情，具备良好的文献学习能力；
 5、具有优秀的沟通能力和团队合作精神。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '软件开发工程师（通用）' LIMIT 1), '江苏多维科技有限公司', '软件开发工程师', '张家港', '0.8-1万/月', NULL, '1. 生产物料数据系统和生产制造数据系统软件维护和开发，数据管理和维护、数据追溯。
 2. 根据工程师的算法要求，对生产数据，测试数据进行处理，形成Control Chart、Distribution、SPC Chart、优率report等。
 3. SQL语句优化，SQL Serve数据库的维护，数据备份等等。
@@ -12209,8 +9106,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 1. 两年或以上的数据分析、软件系统开发、数据库应用等相关工作经验。具有电子厂生产数据软件开发经验者优先
 2. 熟练使用软件开发语言工具VB；熟练面向SQL Server，MySQL等数据库软件开发。有数据库维护经验者优先。
 3. 有ERP（金蝶K3优先）实施经验。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 5, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '软件开发工程师（通用）' LIMIT 1), '苏州晶方光电科技有限公司', '软件工程师', '苏州-工业园区', '0.8-1.5万/月', NULL, '工作内容：
 1、数据分析体系的搭建，分析工具的开发维护
 2、MLA图像算法的优化、升级、开发
@@ -12238,10 +9133,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 7）、熟悉IOT平台规划，设计与建设，实现IT-OT系统与数据联通；
 8）、熟悉设备联接管理及与IoT平台开放联接协同；
 9）、具有良好的团队合作精神和项目管理能力。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 7, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 8, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '软件开发工程师（通用）' LIMIT 1), '天鲜配（上海）科技有限公司', '数据开发工程师', '上海-闵行区', '1.2-1.8万/月', NULL, '1、负责经营和管理过程中各类数据的搜集、整理、提取、分配、统计、分析、预测、报告等；
 2、负责制作各类统计报表，密切关注公司的运营和收益情况；
 3、积极发现业务中的亮点和问题，撰写相关数据分析报告，为分公司的科学决策提供支持，增强企业的竞争力；
@@ -12276,8 +9167,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 2、深刻理解行业业务知识和核心数据，具有良好的数据思维和数据敏感性；
 3、熟悉Oracle/MySQL/maxcompute数据库，精通pl/sql编程,精通存储过程和函数；
 4、熟悉数据库ETL开发，熟悉阿里云数据开发组件，熟悉dataworks数据开发过程。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 5, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '软件开发工程师（通用）' LIMIT 1), '广州元曜软件有限公司', 'BI开发工程师', '杭州-滨江区', '0.8-1.5万/月', NULL, '1、需求分析，消化客户的业务需求或者技术需求并转换成需求文档。
 2、方案设计，根据客户需求给出执行方案，如权限方案、原型设计等。
 3、沟通落实，连接各方资源并追踪落实目标。
@@ -12290,8 +9179,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 3、熟悉查询SQL，能计算业务指标；
 4、熟悉BI集成、Linux经验优先；
 5、沟通能力强，有担当负责任心优先。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 8, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '软件开发工程师（通用）' LIMIT 1), '苏州苏纳光电有限公司', '半导体工艺开发工程师', '苏州-工业园区', '0.6-1.2万/月', NULL, '1、负责GaAs，InP基化合物半导体芯片的工艺开发，解决工艺中常见的技术问题;
 2、分析工艺流程和测试数据，提出合理开发方案，确保开发工作的稳步进行;
 3、整理工艺文件，记录工艺参数，管控和优化工艺流程。
@@ -12301,10 +9188,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 4. 动手能力强，具有良好的数据分析和记录习惯;
 5. 具有良好的团队合作精神和较强的沟通能力。', 'open', NULL);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '软件开发工程师（通用）' LIMIT 1), '上海美锴信息技术有限公司', 'PHP开发工程师', '上海', '1-1.5万/月', NULL, '职位概述：负责公司系统、网站和内部工具的开发和维护工作。工作职责：1. 负责公司系统、网站和内部工具的研发和优化工作；2. 负责维护爬虫的优化和维护, 以及相关的数据分析3. 完成上级领导交办的其他工作任职要求：1. 1年及以上互联网（PHP、MySQL）相关开发经验2. 了解Linux系统并可在linux环境下调试开发3. 了解正则表达式4．精通MySql和JavaScript5. 本科及以上学历，计算机相关专业。6. 大学英语四级以上或相当水平，良好的英语读写能力者优先；7．较强的执行力和学习能力，较强的逻辑分析能力和沟通表达能力；良好的职业素养和职业操守，能承受一定的工作压力。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 5, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 8, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '软件开发工程师（通用）' LIMIT 1), '青岛云路先进材料技术股份有限公司', '成分开发工程师', '青岛-即墨区', '1-1.5万/月', NULL, '1.成分设计：开拓产品种类，以项目运作的形式进行新产品的成分开发、基础研究及老产品的质量优化；
 2.材料评价：进行带材的热处理、磁性能检测、物理化学参数检测、数据评估等工作；
 3.产品标准：保证产品的质量的稳定性，制定、验证及维护产成品的标准；
@@ -12388,9 +9271,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 2、运维的岗位要求：（每年工作不低于250天），要适应出差和加班。
 3、待遇（面议）：薪酬（底薪+绩效+六险一金，具体看业务水平）+ 差旅费
 综上所述： 如满足以上条件，并自愿接受者，请填“六瑞公司招聘运维人员个人简历表”,用邮件方式发到： 六瑞公司邮箱里。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 5, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 8, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '运维工程师/DevOps' LIMIT 1), '国采阳光（武汉）信息技术有限公司', '运维/技术支持工程师', '武汉-东湖新技...', '4.5-5千/月', NULL, '【岗位职责】：
 1.负责“互联网+政务服务”推进工作，完成数据分析对接，实施技术方案，部署方案等相关文案的编辑；
 3.计算机硬件的维护： 新拨入、购置的电脑主机、打印机及其他电脑外设的安装、调试，故障电脑主机、打印机及其他电脑外设的故障处理、维修或送修等相关工作；
@@ -12409,8 +9289,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 国维（武汉）管理服务有限公司介绍：
 国维(武汉)管理服务有限公司成立于2016年,注册资本3109万***，坐落于湖北省武汉市东湖新技术开发区，中国光谷核心金融服务区-光谷金融港，紧邻中国（湖北）自由贸易试验区武汉片区，区域商业投资环境优越，地面路网系统发达，交通出行便利。公司主营业务为提供公共事务管理与服务,人力资源保障,劳务派遣（凭许可证在核定期限内经营）；企业管理咨询,会务会展服务; 网络技术开发与技术咨询,计算机软硬件的研发,维护及批零兼营，档案数字化管理等。
 作为智慧管理服务解决方案提供商, 我们拥有“人力资源服务许可证”及“劳务派遣经营许可证”双证资质，我们坚持“品质为首 服务为本”的经营理念，提倡“服务同理心 做事责任心”的企业精神，确立“危机感 执行力 同理心”的企业核心价值观;始终围绕以服务客户为核心，为客户提供专业，优质的定制化管理服务方案及服务体验。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 8, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '运维工程师/DevOps' LIMIT 1), '上海凯道电子科技有限公司', '高级运维工程师', '上海-浦东新区', '1.5-2万/月', NULL, '2. 数据中心的变更管理，针对机房提交变更方案的审核，变更过程的监护及变更结果评估；
 3. 数据中心的维护保养管理，审核维护保养计划、维护保养规程，对标维护计划及规程对现场运维的维护工作实施检查 ，深度维护方案的制定及现场组织实施指导；
 4. 数据中心进行定期点检、风险评估，对于发现的安全问题督促现场整改；
@@ -12460,9 +9338,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 定期体检 补充医疗保险 运动场地 项目奖金
 我们提供舞台，你来设计表演
 期待你加入我们的兄弟战队，一起创写德卡的未来神话', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 5, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 8, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '运维工程师/DevOps' LIMIT 1), '厦门指纹科技有限公司', 'openstack 运维工程师', '厦门', '1.5-2.4万/月', NULL, '岗位职责：
 1、负责公司基于OpenStack的云平台部署、开发、运维工作；
 2、负责云平台中虚拟化、分布式存储、虚拟化网络等子项目的具体设计和研发；
@@ -12480,8 +9355,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 2.大规模虚拟桌面系统研发、架构设计经验；
 3.大规模分布式存储Ceph/Gluster等部署及优化经验；
 4.有OpenStack开源社区工作经验者优先，对KVM、Ceph、SDN等关联技术有经验者优先。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 8, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '运维工程师/DevOps' LIMIT 1), '武汉万科祥盈管理服务有限公司', 'ERP系统运维/SQL数据库/系统运维', '武汉-东湖新技...', '4-8千/月', NULL, '一、岗位职责：
 1、熟练掌握公司相关软件产品（金蝶EAS等软件）；
 2、为用户提供公司软件产品的技术支持服务、咨询解答等；
@@ -12504,9 +9377,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 五星级办公：20层湖景办公楼，内部配备健身房、食堂及超市、母婴室、豪华多功能会议室，每层设有多功能独立茶水间，园区自带大型停车场。
 六、交通环境：
 地铁2号线、光谷有轨电车L1线直达；园区附近有公交站（759、757、758等）；三环高架附近，交通便利。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 5, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 8, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '运维工程师/DevOps' LIMIT 1), '厦门畅享信息技术有限公司', '运维工程师', '厦门', '5-8千/月', NULL, '岗位职责
 1、负责软件系统的现场安装部署、系统对接及日常运维；
 2、对现场系统问题的分析排查；
@@ -12531,9 +9401,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 6、整洁舒适的工作环境，为辛劳工作的小伙伴准备了休闲茶点和各类零食，不定期组织各类节日庆祝或娱乐休闲活动，丰富员工的业余生活；
 7、提供各类内外训培训机会，新入职员工提供一对一导师制培养计划，为员工发展提供良好的发展空间和定制计划（公司将结合您意愿、能力及公司的发展制定适合您的职业发展规划）；
 8、每天7.3小时工作时间，5天工作制，公司关注员工健康，每周安排体育健身活动。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 5, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 8, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '运维工程师/DevOps' LIMIT 1), '上海穗禾信息科技有限公司', 'DBA运维工程师', '上海-徐汇区', '1-1.5万/月', NULL, '岗位职责:
 1、 负责系统监控、事件与问题管理；
 2、 管理系统变更，设计与实施运维监控，处理监控报警信息；
@@ -12553,11 +9420,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 8、 熟悉各类系统运维相关的开源技术与解决方案，有开发自动化运维工具经验者优先；
 9、 具有丰富分布式数据库和大数据平台实际操作经验者优先；
 10、持有Oracle颁发的DBA证书者优先。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 5, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 7, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 8, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 3, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '运维工程师/DevOps' LIMIT 1), '深圳市思诚包装制品有限公司', '阿里，谷歌网站运维工程师', '深圳-宝安区', '0.5-2万/月', NULL, '1，负责阿里巴巴等公司店铺整体规划，营销，推广以及客户关系管理系统工作。
 2，管理并保证阿里巴巴等公司平台的正常运作，优化店铺及商品排名，提升产品影响力和产品销量。
 3，负责阿里巴巴等公司平台的推广，提高店铺点击率和浏览率，完成店铺销售目标。
@@ -12589,9 +9451,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 7. 了解网络相关原理，熟悉 TCP/IP 协议，了解常见的网络硬件，并能对网络中出现的问题进行分析和处理；
 8.乐观积极，有较强的团队沟通和协调能力、抗压能力和责任心，细致认真。
 优先条件：有大型呼叫中心运维经验者优先', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 7, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 8, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '运维工程师/DevOps' LIMIT 1), '深圳证券通信有限公司', '系统开发运维测试（校招）', '深圳', '1-1.5万/月', NULL, '1.负责或参与证券交易、市场监察、业务管理、大数据应用、互联网应用、移动应用、金融云平台等核心应用系统的研发工作；
 2.负责或参与软件质量管理、应用项目测试和测试工具开发等工作；
 3.负责或参与日常应用系统运维和监控平台、自动化运维平台的建设维护等工作。
@@ -12605,11 +9464,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 （4）熟练掌握机器学习、深度学习算法和工具，有相应项目开发经验或成果，具备自然语言/语音/图形图像处理经验；
 （5）熟悉软件开发测试流程，掌握常用测试用例设计方法，具备设计和开发测试和自动化测试框架能力；
 （6）熟悉linux操作系统和一款主流数据库，有相应管理经验，具备Hadoop平台运维管理经验。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 8, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 4, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 3, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '运维工程师/DevOps' LIMIT 1), '深圳市中娱云科技有限公司', 'DevOps Engineer', '深圳-南山区', '1-1.5万/月', NULL, '1. 負責維運公司在AWS/Azure/Paperspace上面的服務(EC2, ELB, etc...)
 2. 協助RD Team部署與更新軟體服務(CI/CD, Build & Test & Release)
 3. 營運資料收集與數據分析(Elastic/Logstash/Kibana, MySQL & Redis)
@@ -12629,12 +9483,6 @@ f. ELK或Spark的架設與使用經驗
 g. 有數據分析相關經驗或統計背景
 h. windows系統管理經驗(policy, accounts, security groups)
 i. good team player & quick learner', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 5, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 7, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 8, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 9, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '运维工程师/DevOps' LIMIT 1), '广东创能科技股份有限公司', '设备运维经理', '广州', '1.5-2.3万/月', NULL, '【政务服务一体机业务介绍】
 政务服务一体机是以公安自助终端为基础，将现有门类繁多、内容单一的自助服务终端整合为统一平台、统一服务的综合政务服务终端，覆盖了公安、司法、人社、民政、住建、卫计、税务等部门的高效政务服务事项，全面推广应用将打通政务服务“最后一公里”，实现“就近办”。
 业务推广范围：政务服务中心、街道办、政数局、政法委、综治办、省政府、公安等政府单位。
@@ -12668,8 +9516,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 8.掌握CI/CD的开源工具的搭建配置和使用
 9.具备快速定位问题、解决问题的能力；对新技术充满热情，有很强的学习能力
 10.具备良好的沟通技巧、团队合作精神、服务意识，责任心、主动性，工具积极严谨，勇于承担压力', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '运维工程师/DevOps' LIMIT 1), '南京粒聚智能科技有限公司', '运维工程师', '南京-江宁区', '1-2万/月', NULL, '岗位职责：
 1.按照公司业务部署要求，负责在公有云/混合云平台上高效部署公司PaaS平台和SaaS应用产品；
 2.负责已部署产品的在线运营、系统维护、监控和故障处理等日常工作，保证业务满足QOS/SLA的要求；
@@ -12684,10 +9530,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 6.具备故障分析和处理能力，能熟练使用相关命令和工具，如strace、netstat、perf、iostat和dig等；
 7.具有制造业行业工作经验者优先；
 8.适应高SLA的运维服务要求。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 5, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 8, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '运维工程师/DevOps' LIMIT 1), '四川东山华盛企业管理有限公司', '运维工程师', '成都', '0.8-1.2万/月', NULL, '1、负责CentOS、Windows Server系统服务器、网络安全设施的配置，维护，监控，调优，故障排除等；
 2、对系统在日常运维过程中出现的系统异常情况进行分析排查，保证系统正常运行；
 3、对数据库进行数据备份、数据监控、应急响应、故障排除、编写数据分析报告等；
@@ -12701,12 +9543,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 4、熟悉互联网基础组件： 如MySQL、FastDFS、Redis、RabbitMQ/Kafka、Zookpeer等；
 5、熟悉主流开源监控工具如：Hystrix dashboard、Zabbix等运维常用监控工具，熟悉常用 CI/CD 工具， Jenkins、Drone、Gitlab-ci 优先；
 6、至少熟悉阿里云的使用，有电商系统维护管理经验优先，能承担部分软件测试工作；', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 5, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 7, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 8, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 9, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '运维工程师/DevOps' LIMIT 1), '江苏易云科技有限公司', '运维工程师', '上海-静安区', '1-1.5万/月', NULL, '1. 负责服务器基础运维工作，如分布式缓存系统、分布式文件存储系统、虚拟化等。
 2. 配合研发人员和架构师，提升服务器的稳定性和负载能力。
 3. 负责实现与运维相关的自动化工具或系统。
@@ -12723,9 +9559,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 6、熟练掌握Salt/Puppet等运维自动化工具，有良好的运维自动化意识，能够编写运维自动化工具解决日常运维问题
 7、熟悉Docker, Kubernetes 优先
 8、具备良好的运维标准化服务意识，有相关落地经验者优先', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 8, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 7, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '运维工程师/DevOps' LIMIT 1), '南京稻可道商贸有限公司', '运维美工设计师（双休五险一金）', '南京-玄武区', '4.5-6千/月', NULL, '岗位职责：
 商品运营：持续根据客户喜好，数据分析，调整商品上下架、陈列等整体运营工作；
 流量运营：充分利用各种活动资源，引入流量，提升店铺转化率。
@@ -12779,9 +9612,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 8. 了解常用自动化运维工具，如puppet；
 9. 具有期货、证券等金融类服务运维经验优先。
 10. 具有良好的沟通协调能力，做事认真仔细，吃苦耐劳；', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 5, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 8, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '运维工程师/DevOps' LIMIT 1), '上海思栈网络有限公司', '语音运维工程师', '上海-徐汇区', '0.8-1万/月', NULL, '工作职责：
 1、对现有语音平台呼叫中心系统进行日常维护，根据业务需求调整组件配置
 2、收集整理日常维护问题，对接厂商工程师进行问题处理；
@@ -12815,9 +9645,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 5.了解或者熟悉阿里云中间件：如MQ、盘古、edas等；
 6.有运维开发项目经验/阿里私有云经验优先，了解熟悉网络环境优先。
 7.能适应出差工作。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 5, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 8, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '运维工程师/DevOps' LIMIT 1), '西安同美信息科技有限公司', '云平台高级运维/虚拟化工程师', '西安-西咸新区', '1-1.2万/月', NULL, 'f) 负责工作相关文档撰
 任职要求：
 1、熟悉虚拟化、容器化、分布式技术如/VMware、OpenStack、K8s、Mesos、Rancher、Docker、SDN虚拟网络、分布式云存储、传统SAN存储等相关技术；
@@ -12829,8 +9656,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 8、能够协助组建和管理智能监控、软硬件运维、资产资源管理、数据分析一体化的规范化运营体系。
 9、有维护性开发经验，能够在系统已有功能的基础上完成能力增补。
 10、大学本科以上学历；', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '运维工程师/DevOps' LIMIT 1), '成都好伙伴网络科技有限公司', '服务器运维工程师', '成都-高新区', '0.8-1万/月', NULL, '岗位职责】：
 1、负责公司产品及业务平台网络架构的规划与部署工作；
 2、保证公司线上产品及业务平台的数据安全，为其稳定的运行提供技术支持；
@@ -12848,9 +9673,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 7、熟悉网络架构，具备基本的网络故障排错能力，对网络安全有一定的了解。
 8、有高度的责任心、敬业精神和团队精神，善于沟通；
 9、具有良好的职业道德和强烈的工作责任心。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 5, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 8, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '运维工程师/DevOps' LIMIT 1), '云南国际信托有限公司', '信息技术经理（运维管理方向）', '上海', '1-1.5万/月', NULL, '岗位职责：
 1. 负责公司业务投产系统的安全平稳运行，以及系统运行中问题的修护；
 2. 负责恒生交易系统、O32系统、FA系统、AM系统以及周边辅助系统的日常运营维护工作；
@@ -12886,9 +9708,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 6.熟悉linux数据库增删改查SQL语句管理；
 7.熟悉nginx,Tomcat,Mysql安装配置；
 8.熟悉集群，高可用架构搭建优先。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 5, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 8, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '运维工程师/DevOps' LIMIT 1), '河南中道电子信息工程监理咨询有限公司', '运维工程师', '郑州-金水区', '4-6千/月', NULL, '1、 根据评审流程，参与信息系统（包括运维、安全、机房、备份、权限设置及数据统计等方面）相关的评价方案和评价报告编制、系统审核执行等工作；
 2、 根据审核流程执行项目中的日常工作，与客户进行沟通及访谈，参与满意度调研工作，填写审核底稿，执行现场审核程序，对抽样进行简单的数据分析等；
 3、 识别和发现IT风险，诊断客户信息系统流程、内部控制问题，并提出建议及整改意见；
@@ -12966,9 +9785,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 3、精通windows、linux服务器操作系统：精通windows、linux下各种应用服务器的原理及应用；熟悉互联网云架构或各种云产品。
 4、精通linux系统下各种应用服务的搭建优化和性能调优；
 5、精通各种平台下的数据库（Qracle/MSSQL/MySQL/Mongodb）原理以及使用、维护、优化技术，精通主流运维工具；', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 5, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 8, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '运维工程师/DevOps' LIMIT 1), '广州中科旗信软件科技有限公司', '软件运维工程师', '广州-海珠区', '5-8千/月', NULL, '1.解决系统故障、业务程序更新；
 2.负责编写脚本、监控或完成其他可自动完成功能、运维架构的完善；
 3.部署一些使用中更方便更可靠或性能更好的开源工具以及制定运维流程规范；
@@ -12983,8 +9799,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 7.熟悉Windows server系统如Apache、MySQL、FTP、DNS等常用服务的安装、配置和维护；
 8.能够熟练排查运维过程中出现的服务故障、系统故障、网络故障；
 9.有相关大中型在线系统开发及维护经验优先考虑；', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 5, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '运维工程师/DevOps' LIMIT 1), '武汉东方赛思软件股份有限公司', '运维工程师', '郑州-金水区', '5-8千/月', NULL, '工作职责:
 1、 遵循运维流程和规范，负责大数据项目交付后的日常运维、排障排除、系统优化、运行监控等；
 2、 登记客户问题清单、总结运维问题、提出系统完善建议；
@@ -12997,10 +9811,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 3、熟练掌握操作系统（Windows、Linux）、数据库（Oracle、MySQL、VERTICA、HADOOP等）、中间件等的使用和维护；
 4、具有良好的沟通能力、学习能力，具有强烈的工作责任心和团队协作精神；
 5、有大数据项目的实施和运维经验者优先；有使用业内BI工具软件经验者优先。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 5, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 8, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 3, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '运维工程师/DevOps' LIMIT 1), '北京广图软件科技有限公司', '系统运维工程师', '北京', '1-1.5万/月', NULL, '【岗位职责】：
 1、负责用户现场生产环境系统程序及数据更新工作。
 2、负责用户现场生产环境系统运行过程中的问题跟踪及技术支持。
@@ -13014,8 +9824,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 5、良好的沟通表达及文档撰写能力；
 6、为人踏实、认真，抗压能力强，有良好的团队协作精神；
 7、身心强健，能接受不定期的为期1-4周的出差。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 8, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '运维工程师/DevOps' LIMIT 1), '深圳市联畅信息技术有限公司', '中间件运维管理岗', '深圳-福田区', '1-1.5万/月', NULL, '1、负责中间件日常运维规范及标准的制定和完善（包括但不限于配置参敬、监控阈值）；
 2、负责对中间件进行性能调优、监控纳管；
 3、负责中间件组件的故障原因定位、故障处理、闭环管理；
@@ -13031,9 +9839,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 7、 具有良好的团从协作能力和集体荣誉精神；
 8、 抗压能力强，能从容应急处理突发事件，快速恢复业务。
 9、具有事件根本原因深度探究的精神和能力，能够彻底解决冋题。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 7, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 8, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '运维工程师/DevOps' LIMIT 1), '世纪一束（杭州）医学诊断科技有限公司', '系统运维工程师', '异地招聘', '0.8-1.2万/月', NULL, '岗位职责：
 1、公司现有应用系统提日常操作、维护、管理、培训（包括订货系统，AIO系统，内网，CRM系统等）
 2、公司业务系统的需求调研、优化、实施、落地，合理高效的使用系统;、
@@ -13046,9 +9851,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 3、 熟悉数据库操作语言，了解数据库（MSSQLServer，MySQL）维护工作。
 4、善于沟通，具有良好的用户服务意识。
 5、积极学习新技术、富有团队合作精神，抗压能力强。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 5, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '运维工程师/DevOps' LIMIT 1), '武汉敬思亭信息技术有限公司', '调度运维工程师', '武汉-青山区', '5-7千/月', NULL, '岗位职责：
 1、负责国网湖北省检修公司与湖北省电力公司调控中心之间的沟通协调，协助国网湖北省检修公司对同期线损系统中相关数据进行分析、处理，协助省检修公司完成同期线损数据质量的提升。
 2、参与湖北省调一体化电量交互平台运维工作。
@@ -13081,8 +9883,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 4、掌握基本的网络知识；
 5、熟悉网络软硬件产品，能进行基本的安装调试；
 6、工作认真细心、沟通能力强、责任心强，有一定的数据分析、统计能力。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 8, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '运维工程师/DevOps' LIMIT 1), '广东旭诚科技有限公司', '系统运维工程师 （内蒙超级站）', '呼和浩特', '4-6千/月', NULL, '岗位职责：
 1、负责公司软件产品及项目的实施和售后维护；
 2、负责超级站环境监测数据的数据审核、设备巡检；
@@ -13110,8 +9910,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 4、掌握基本的网络知识；
 5、熟悉网络软硬件产品，能进行基本的安装调试；
 6、工作认真细心、沟通能力强、责任心强，有一定的数据分析、统计能力。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 8, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '运维工程师/DevOps' LIMIT 1), '绿港环境资源股份公司', '系统运维经理（线上）', '成都-高新区', '0.8-1.2万/月', NULL, '1、组织编制所有分支机构设备、设施、机械、车辆等运营物资清单，建立台账，详细记录使用年限、规格、型号、状况、保养情况、维修记录等得信息；
 2、组织根据台账编制维修、更换、新建计划与预算；日常运维工作明细、流程、标准；
 3、监督、检查计划的落实情况，设施、设备的状况以及维修、更换、整改质量，保证设备、设施的完好运行。
@@ -13135,8 +9933,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 2. 熟悉Linux操作系统，了解基本网络技术，熟悉HTTP，DNS应用协议原理，熟悉TCP/IP协议原理；
 3．熟悉zabbix/nagios/cacti等开源数据分析和系统监控报警组件；
 4. 责任心强，积极主动，热爱学习，有良好的沟通能力和团队合作能力，有CDN行业工作经验者优先考虑。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 8, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '运维工程师/DevOps' LIMIT 1), '江苏新日电动车股份有限公司', '服务器运维工程师', '无锡', '0.8-1万/月', NULL, '1.负责机房网络的稳定运行，定期排查安全隐患；
 2.保障各业务系统的安装调试及安全稳定运行；
 3.
@@ -13150,8 +9946,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 4.熟悉 Linux操作系统，了解linux平台安全配置和Web服务器配置；
 5.熟悉数据库服务器的维护和优化，备份恢复，安全防护等；
 6.责任心强，具有团结合作精神，沟通协调能力强，能承受一定的工作压力。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 8, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '运维工程师/DevOps' LIMIT 1), '浙江德升新能源科技有限公司', '运维工程师', '异地招聘', '6-8千/月', NULL, '工作职责：
 1、负责储能电站的运行及检修管理工作，负责运行规程、检修规程的编制与执行管理工作；
 2、负责运行过程中的数据记录和定期向部门负责人作工作情况反馈；
@@ -13179,9 +9973,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 4、熟悉mysql，oralce等数据库操作；
 5、具备较强的逻辑思维和表达能力，以及分析定位和解决问题的能力;
 6、有良好的沟通协作能力和合作意识，并能承受一定的工作压力。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 5, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 8, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '运维工程师/DevOps' LIMIT 1), '科盛环保科技股份有限公司', '运维工程师', '南京-栖霞区', '0.8-1万/月', NULL, '1、在部门经理领导下，协助主持部门内各项目运维中心的全面工作，负责污水处理站生产运行的组织、调度，处理生产过程中的各种问题；
 2、主持各项生产计划，设备检修计划，检查生产计划的落实情况，制定降本增效措施；
 3、组织落实职工培训计划、技改计划、各项日常生产管理计划，科学的调整生产工艺，确保水质净化达国家标准；
@@ -13200,8 +9991,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 2、熟悉linux操作系统；
 3、能编写脚本进行数据分析（如shell,python,go）;
 4、工作积极、主动，具有良好的团队合作意识；良好的沟通协调能力；', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 8, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '运维工程师/DevOps' LIMIT 1), '上海冷溪安全科技有限公司', '系统运维工程师（应届毕业生）', '上海-浦东新区', '5-7千/月', NULL, '1、负责协助全渠道系统的项目实施；
 2、公司Linux应用系统、Windows应用系统、网络及安全解决方案；
 3、应用系统软件配置，维护，监控，调优，故障排除等；
@@ -13212,8 +10001,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 1. 大学毕业，市场营销，电子商务、企业管理、物流、计算机相关专业；
 2. 积极主动、乐观亲和、认真负责、条理性强；
 3. 善于学习、勤于思考；敬业专业、务实高效；有较强的上进心、事业心；', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 8, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '运维工程师/DevOps' LIMIT 1), '上海快来秀展示科技有限公司', '新媒体运维推广', '上海-宝山区', '0.6-1万/月', NULL, '岗位职责：
 1、
 2、 可独立策划创意线上推广活动，并及时完成推广项目的分析总结工作，优化流程及效果，并对活动目标负责；
@@ -13250,9 +10037,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 3. 对Wiindows、Linux下环境有运维经验，熟悉相关基础服务和运行。
 4. 了解至少一种Server端语言（Node.JS/PHP/Python/Java等）。
 5. 有良好的沟通、协调能力、判断能力、分析能力。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 8, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '运维工程师/DevOps' LIMIT 1), '南京国瑞能源科技有限公司', '运维工程师', '呼和浩特-赛罕...', '4.5-6千/月', NULL, '1、从事国家电网内部，能量管理系统 相关运行维护工作；
 2、供电公司内部 系统巡检，利用数据库排除系统故障，定期撰写数据分析报告
 任职要求：
@@ -13267,8 +10051,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 4、满一年员工每年7月调薪5-20%；
 5、每年一次体检福利；
 6、端午、中秋、春节 、高温费', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 8, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '运维工程师/DevOps' LIMIT 1), '广州华钦软件技术有限公司', 'DevOps自动化运维', '广州-天河区', '1.5-2万/月', NULL, '-敏捷或Scrum团队的工作经验
 -精通各种工具，包括Jenkins，Jira，Confluence，Git
 -熟悉AWS Cloud，GCP，Ali Gloud或其他云平台
@@ -13279,8 +10061,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 -为开源项目做贡献
 -一般银行知识
 -在具有不同文化背景的全球团队中工作', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 9, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '运维工程师/DevOps' LIMIT 1), '上海甦源能源科技有限公司', 'IT维护/运维', '上海-宝山区', '1.5-2千/月', NULL, '岗位职责
 1、硬件维护主要包括PC机/笔记本电脑等终端设备的调配及维护并妥善记录；
 2、通讯终端的管理包括电话、视频会议终端等设备的安装及管理，分配座机号及邮箱管理；
@@ -13306,9 +10086,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 4）
 5）有良好的沟通能力和团队精神。工作积极、进取，有较强的学习能力责任心强、耐心，工作有条理，思路清晰。能独立解决问题，具有应急处理问题的能力。
 该职位接受应届毕业生，有广阔晋升空间和员工福利，标准工时，欢迎投递简历。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 5, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 8, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '运维工程师/DevOps' LIMIT 1), '合肥经纬电子科技有限公司', 'MES运维工程师', '合肥', '5.5-8千/月', NULL, '岗位职责：
 1、负责MES、ERP及其他办公网络的维护工作。
 任职资格：
@@ -13328,11 +10105,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 1 工作认真，态度积极主动，承受工作压力。
 2 良好沟通能力，团队协作能力。
 3 时刻保持学***动性', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 5, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 7, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 8, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 3, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '运维工程师/DevOps' LIMIT 1), '广东中光能投资有限公司', '电站运维值班员', '湛江', '4.7-6.5千/月', NULL, '1、在值长的领导下对设备的事故、故障及异常运行情况进行处理。
 2、值班期间做好设备的巡视、日常维护、监盘和缺陷处理工作。
 3、做好的设备巡检并做好相关记录，做好设备维护工作。
@@ -13366,9 +10138,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 3.有数据分析平台维护经验者优先；
 4.有DevOps相关开发/部署经验者优先；
 5.有过大dau项目维护经验者优先。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 7, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 8, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '运维工程师/DevOps' LIMIT 1), '中国电信国际有限公司', '运维综合管理', '深圳', NULL, NULL, '工作地点 深圳
 学历要求 全日制本科、硕士研究生
 专业要求 计算机网络、通信相关
@@ -13407,16 +10176,7 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 5、有Serverless，例如AWS Lambda、DynamoDB等经验；
 6、熟练Linux，有成熟的自动化代码生成设计方案与工作经验；
 7、对区块链、数字货币、交易所、智能合约有了解。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 10, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 11, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 7, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = 'Java后端工程师' LIMIT 1), 'Web3', '项目经理/Java后端开发/软件测试', '南京', '0.8-1.3万/月', NULL, '工作职责：1、参与项目的系统功能设计和数据库设计；2、软件系统设计、代码编写及相关文档编写等开发工作；3、参与公司项目的开发，软件测试、升级更新、系统性能优化等工作；4、独立完成个人承担模块或项目的开发和测试；5、全程把控软件测试任务的进度和质量，使其满足项目schedule的要求；6、按时整理发布测试报告，定期梳理测试管理工作存在的不足和改善方案。任职要求：1、有java及WEB应用软件开发经验；2、熟练运用Java常用类库以及其他框架（SpringCloud、Springboot、Hibernate、Mybatis、Kafka消息队列、WebSocket、RestFul、GraphQL等）；3、熟练使用mysql/oracle/sybase关系型数据库，有NoSql数据库（redis/mongodb等）设计和应用经验；4、有系统需求分析、设计经验以及项目管理经验；5、有软件测试和调优经验；6、具备良好的沟通能力和学习能力，责任心强，有一定的抗压能力。优先考虑：1、深入理解分布式、多线程等高性能架构相关开发技术；2、有实现大流量、高并发的分布式系统经验；3、熟悉前端框架，如React/Vue/Flutter；4、具有成熟的日志系统设计方案及工作经验；5、有AWS Serverless，例如Lambda、DynamoDB等经验；6、熟练Linux，有成熟的自动化代码生成设计方案与工作经验；7、对区块链、数字货币、交易所、智能合约有所了解。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 10, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 11, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 5, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 7, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = 'Java后端工程师' LIMIT 1), '智码创意', 'Java', '广州', NULL, NULL, '基于小程序，web网站开发、管理系统开发，电商平台开发等展开，运用核心技术，如
 Spring Boot+Vue前后端分离架构、ssm框架，MySQL数据库搭建，目前已完成需求分析、核心功能开发等工作，但在本地环境配置、项目部署及细节完善环节急需专业支持。岗位职责：
 1.负责将项目完整部署至本地开发环境，解决环境适配、依赖冲突等部署问题；
@@ -13426,9 +10186,6 @@ Spring Boot+Vue前后端分离架构、ssm框架，MySQL数据库搭建，目前
 •掌握了解如Java/Python/JavaScript、主流框架及数据库mysql
 •有项目部署、调试及问题排查经验，具备较强的技术敏感度；
 •责任心强，沟通效率高，配合完成任务。•文档整理修改问题等', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 6, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 5, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = 'Java后端工程师' LIMIT 1), '泽宇科技', 'Java', '厦门', '6-8千/月', NULL, '工作职责：
 1）负责物联网服务应用平产品研发、提供技术支持;
 2）参与公司物联网终端接入物联网平台与应用的架构设计，包括体系、标准制定、功能模块设计、功能开发等;
@@ -13456,10 +10213,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 6.熟悉Tomcat/Nginx，Maven/Jenkins等
 项目的构建部署;
 7.具有toc项目优先，参与中大型项目优先', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 10, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 5, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 7, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = 'Java后端工程师' LIMIT 1), '南京民基悠步', 'java开发', '南京', '5-8千/月', NULL, 'JAVA前后端开发
 岗位职责：
  
@@ -13473,8 +10226,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 4、较好的学习过软件工程
 5、性格开朗，愿意钻研学习，乐于从事团队协作的工作
 6、学习过软件开发框架优先（Sprintboot，mybatis、hadoop）', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 10, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = 'Java后端工程师' LIMIT 1), '淞树技术', 'java开发', '全国', '0.6-1万/月', NULL, '【任职要求】：
 1、大专及以上学历，计算机相关专业应届生；
 2、熟悉java、C、C++等计算机编程语言，熟悉数据库编程，熟悉ORACLE数据库或至少一种数据库；
@@ -13487,8 +10238,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 2、编写系统概要设计文档。
 3、负责相应模块的详细设计、开发、维护工作。
 4、应届毕业生可由开发工程师带领做项目。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 3, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = 'Java后端工程师' LIMIT 1), '货拉拉', '后端工程师', '北京', NULL, NULL, '岗位职责：
 负责国际化工具平台能力建设；
  
@@ -13498,16 +10247,8 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 熟练掌握JAVA流行开发框架，并具备解决实际问题的能力；
 沟通良好，执行力强，具有优秀的团队合作精神、敬业精神；
 愿意成长，能够学习新知识；喜欢和热爱这个行业；', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 4, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = 'Java后端工程师' LIMIT 1), '货拉拉', '后端工程师', '北京', NULL, NULL, '职责和任务： 参与高并发、高可用 Java 后端核心业务系统的架构设计、核心代码编写与系统维护。 根据产品需求和技术文档，基于 Spring Boot、Spring Cloud 等微服务架构实现高质量的业务功能。 协同团队进行分布式系统治理，参与分布式锁、分布式事务的落地，解决数据一致性与系统高可用问题。 基于 TCP/IP、HTTP 等底层协议及 JVM 机制，参与系统网络传输优化与性能调优，保障线上服务的稳定性。 深度使用 AI 辅助编程工具提升开发效率，同时参与 LLM 大模型 API 接入、Agent 流程编排等 AI 工程化落地工作。 跟踪和学习最新的分布式中间件与 AI 前沿技术，积极参与团队技术分享。 任职要求： 27届毕业生，计算机、软件工程等相关专业。 扎实的 Java 基础，深入理解 JVM 内存模型、垃圾回收机制、多线程与并发编程原理。 精通 TCP/IP 协议栈，理解 TCP 三次握手/四次挥手、滑动窗口及拥塞控制机制，熟悉 Netty 等网络编程框架者优先。 具备良好的分布式理念（如 CAP/BASE 理论），熟悉 Redis、Kafka/RabbitMQ、ZooKeeper 等主流分布式中间件。 熟练使用 AI 辅助编程工具（如 Copilot, Cursor），具备高效的 Prompt Engineering 能力，能利用 AI 加速业务交付。 了解 LangChain、LlamaIndex 等 AI 编排框架，有对接主流大模型 API 或使用向量数据库（如 Milvus）的实践经验者优先。 具备良好的问题解决能力、沟通协作精神与严谨的代码质量意识。 需具备独立开发过 Java/AI 结合的个人项目、在知名 OJ 平台有良好记录、或有 Vibe Coding 开发经验者。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 6, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 11, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 7, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = 'Java后端工程师' LIMIT 1), '货拉拉', '后端工程师', '深圳', NULL, NULL, '我们正在寻找 2027 届优秀的应届毕业生加入货拉拉无人车后端团队。你将直接参与到自动驾驶物流落地的核心系统建设中，与经验丰富的工程师团队一起成长。 岗位职责 参与货拉拉无人车项目云端服务的日常开发、设计与维护 与无人车车载端、流媒体平台、物联网设备等多端协同开发 参与各个城市无人车路权的申请工作，配合完成相关技术对接和材料准备 岗位要求 学历专业：2027 届本科及以上学历，计算机、软件工程、自动化、通信等相关专业 编程基础：扎实的 Java 基础，了解常用数据结构和算法，具备良好的编码习惯 项目经验：有实际项目或实习经验者优先（课程项目、开源贡献、竞赛项目均可） 技术视野：了解分布式系统、微服务、数据库、缓存等后端核心技术，对高并发场景有基本认知 加分方向（满足其一即可）： 了解流媒体技术（WebRTC、RTSP 等） 了解物联网相关技术（MQTT、设备接入等） 了解自动驾驶 / 无人车 / 车联网相关知识 有 Linux 环境下开发经验 综合素质：具备良好的沟通能力和团队协作精神，学习能力强，对新技术有好奇心 你将获得 参与前沿无人车技术落地，积累行业稀缺经验 完善的校招生培养体系（Mentor 一对一指导 + 技术成长路径） 与优秀团队共事，技术氛围浓厚 有竞争力的薪酬福利', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 4, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = 'Java后端工程师' LIMIT 1), '快手', 'Java开发工程师', '北京', NULL, NULL, '1、负责快手各内外部产品后端系统、平台系统的研发工作，通过敏捷开发支持产品需求快速迭代，不断优化系统架构，支撑业务规模增长，保障服务稳定；
 2、对现有系统的不足进行分析，找到目前系统的瓶颈，改进提高系统性能；
 3、参与解决海量数据分布式处理、高效查询、数据一致性、准确性等方面带来的各种技术难题和挑战。', 'open', NULL);
@@ -13521,10 +10262,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 3、熟悉多线程、消息队列以及Redis、Hbase、ES等常用中间件解决方案；
 4、有大规模海量数据机器学习/数据挖掘/计算广告/搜索引擎相关经验者优先；
 5、具备良好的沟通和表达能力，对信息流的用户体验上有自己的想法，有较好的产品意识者优先。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 11, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 7, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 4, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = 'Java后端工程师' LIMIT 1), '乐信集团', '后台JAVA（校招）', '深圳', '1.3-1.7万/月', NULL, '岗位职责：
 1.参与核心系统开发： 在公司技术专家的指导下，参与业务关键模块的设计、编码与测试，支持千万级用户、日活跃量级可观的业务场景。
 2.协作探讨最优方案： 与资深产品经理和团队成员密切沟通，理解用户需求，共同探讨如何运用技术实现最优产品体验，并动手实践。
@@ -13559,13 +10296,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 7.我们期待有潜力、有热情、渴望在金融科技领域大展拳脚的优秀应届毕业生加入乐信！
 
 一起用代码构筑更高效的金融未来！', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 6, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 3, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 5, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 7, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 4, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 9, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = 'Java后端工程师' LIMIT 1), '九联科技', 'JAVA开发工程师', '惠州', '0.7-1.3万/月', NULL, '【岗位职责】：
 1、负责公司承接的智慧城市相关信息化项目的系统设计的迭代、开发、重构;
 2、编写代码实现产品功能，完成项目开发，撰写相关文档，参与需求分析;
@@ -13581,8 +10311,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 1、配合研发项目组进行相应程序开发；
 2、按质按量完成项目中分派的任务，完成项目相关的文档工作；
 3、完成软件部署、培训、维护等。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 5, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = 'Java后端工程师' LIMIT 1), '清云智飞', 'Java开发工程师', '南京', '0.8-1.5万/月', NULL, '职责描述：
 1、参与公司工业互联网平台设计开发；
 2、负责业务平台模块设计开发；
@@ -13594,11 +10322,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 4. 掌握MySQL相关技能；拥有数据库设计能力，熟悉SQL优化者优先；
 5. 熟练掌握Maven，Git；
 6. 具有很强的责任心，能够承担压力，团队意识强，思路清晰。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 11, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 5, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 9, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = 'Java后端工程师' LIMIT 1), '华苏科技', 'java开发工程师', '南京', '0.8-1.2万/月', NULL, '岗位职责
  
 1、参与产品组件的需求分析与设计。
@@ -13612,8 +10335,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 3、了解Tomcat、Jboss、weblogic、apache等其一的应用和WEB服务器的配置；
 4、了解sql、Oracle、Mysql数据库系统；
 5、了解HTML语言、JavaScript脚本语言、XML语言，了解当前流行的javascript开源框架。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 5, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = 'Java后端工程师' LIMIT 1), '联启科技', 'Java开发（北京岗）', '北京', '0.6-1万/月', NULL, '【岗位职责】全国各一线城市、准一线城市、二线城市项目驻场技术人员
 【任职要求】
 JAVA/大数据相关/运维/测试/后端开发/等相关专业方向，初级技术人员。
@@ -13650,10 +10371,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 1. 有智能手机(Android或iOS)开发经验者优先。
 2. 熟悉AOSP，深入理解Java虚拟机技术、Android Kernel及Framework框架层工作机制及实现原理。
 3. 有React Native、Weex、Flutter跨平台技术实践经验。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 11, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 4, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 9, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = 'Java后端工程师' LIMIT 1), '美克生能源', 'Java开发工程师', '上海', '1.5-2.5万/月', NULL, '岗位职责
  
 1、参与SAAS平台开发，负责Java服务端开发或Rest API的设计及开发；
@@ -13697,9 +10414,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 6、工作责任心强，细致，耐心，有较强的发现问题及分析问题能力；
 7、具备一定的抗压能力；
 8、学习意愿强、沟通良好，有意愿在金融板块发展。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 5, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = 'Java后端工程师' LIMIT 1), '朗蕴', 'java开发工程师', '武汉', '6-7千/月', NULL, '岗位职责：
 1.负责公司项目的推进技术支持工作
 2.负责开发框架的设计、搭建与改进
@@ -13712,8 +10426,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 2.负责部品数据管理系统功能；
 3.有大型软件开发企业工作经历者优先；
 4.有过Spring Boot框架搭建和开发经验者优先', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 6, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = 'Java后端工程师' LIMIT 1), '众阳健康科技', 'Java开发工程师', '济南', '1-1.5万/月', NULL, '岗位职责:
 1、根据需求设计完成产品功能或者服务的设计，文档编写，代码实现，单元测试和接口测试。
 2、配合研发经理完成sql脚本审核，codeReview 工作。
@@ -13723,9 +10435,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 2、计算机基础知识扎实，掌握数据结构、C语言基础知识、Java基础知识；
 3、掌握JavaWeb常用框架，熟悉J2EE常用框架，对SSH、SSM、Spring等框架熟练掌握。
 4、具备良好的沟通能力与协作理解能力，爱好钻研技术，学习能力强。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 4, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = 'Java后端工程师' LIMIT 1), '深圳市正浩创新科技股份有限公司', '后端工程师(A65725)', '深圳', NULL, NULL, '职责描述：
 1、负责相关业务服务器端的研发工作,包括需求沟通、功能设计与开发等；
 2、负责相关业务服务器相关的高并发架构设计、线上维护、性能调优等；
@@ -13736,20 +10445,11 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 2、熟练使用Java语言，有Java后台开发基本能力；
 3、有扎实的计算机基础，熟悉数据结构和常用算法;
 4、有完整项目开发实习经验优先。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 4, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = 'Java后端工程师' LIMIT 1), '货拉拉', '后端开发工程师', '北京', NULL, NULL, '岗位职责： 负责云原生AI开发平台的设计、研发与迭代，为算法团队提供一站式模型开发、训练、部署和推理的平台能力，优化算力资源调度分配机制，提高资源利用率。 参与大模型工程系统架构设计及研发，支持项目和产品高质量迭代。 参与基于大语言模型驱动的AI应用平台能力的研发与技术迭代。 负责平台的性能优化和稳定性保障，确保平台及服务的稳定运行。 任职要求： 1、计算机软件或相关专业研究生及以上学历。 2、熟悉Go、C++、Python等编程语言,具有良好的编程规范意识。 3、熟悉Docker、Kubernetes及相关云原生系统，具备Kubernetes二次开发的能力和经验。 4、熟悉MLOPS的相关流程，至少有一种机器学习框架使用或者开发经验，如TensorFlow、PyTorch、DeepSpeed、vLLM、Sglang、LmDeploy等。 5、有较强的学习能力和系统分析能力，能够解决复杂的系统问题。 6、具有良好的团队合作精神、积极主动的沟通意识、强烈的责任心。 7、有GPU 编程、GPU 虚拟化、大模型分布式推理加速经验优先。', 'open', NULL);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = 'Java后端工程师' LIMIT 1), '货拉拉', '后端工程师-稳定性', '深圳', NULL, NULL, '关于我们 全局稳定性应急响应团队 *我们负责货拉拉技术架构下的稳定性体系建设，负责NOC应急响应体系，根据货拉拉系统的监控以及组织&协同全局研发的应急响应、全局稳定性体系的建设，从应用系统架构、监控、容量、性能等方面进行分析以提前发现隐患问题，并推动优化解决，不断提高系统运行稳定性，参与并运营ticket工单系统，对接客服&一线的系统问运营，总结与分析该体系下的提效方案，技术风险文化运营，体系下的机制规范文档建设。 *我们拥有成熟的对接全技术中心各部门团队的运作体系。 *我们有专业的开发运维建设团队。 我们希望你 *本科及以上计算机相关专业，在校期间有学生会、活动策划、主持等相关经验更佳 *沟通达人+灵活+善于总结 *责任心强，积极进取 *具备计算机领域相关的基础知识和技能能力。 *熟悉linux系统、TCP/IP、HTTP/HTTPS等计算机体系结构方面的知识 *熟悉Java、Python、Shell、Go等任一编程语言 *会英语口语等能力的作为加分项 简历筛选人：胡家亮、郑韩 一面面试官：胡家亮 二面面试官：郑韩 岗位base地：上海/深圳', 'open', NULL);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = 'Java后端工程师' LIMIT 1), '货拉拉', '后端开发工程师', '深圳', NULL, NULL, '岗位职责 1）负责相关系统的设计和开发工作 2）独立完成中小型项目的系统分析、设计，并主导完成详细设计和编码的任务，确保项目的进度和质量 3）理解业务，识别需求，参与架构、系统、分析设计等多领域项目的相关技术的实践、应用和研发 任职要求 1）本科或以上学历，计算机软件或相关专业，Java开发经验 2）熟悉Java/J2EE， 基础扎实，熟练掌握常用Java技术框架，能编写高质量简洁清晰的代码 3）对于Java基础技术体系（包括JVM、类装载机制、多线程并发、IO、网络）有一定的掌握和应用经验 4）良好的面向对象设计理解，熟悉面向对象设计原则，掌握设计模式及应用场景 5）具有比较强的问题分析和处理能力，有比较优秀的动手能力，热衷技术，精益求精，有一定的技术癖 6）熟悉底层中间件、分布式技术（包括缓存、消息系统、热部署等） 7）热爱技术，工作认真、严谨，具备较强的学习能力和责任心，能自我激励，善于沟通与团队协作。 8）有客服工单、AI对话、智能客服、呼叫中心系统经验者优先考虑。 9）要求英文能力出色，口语流利，有海外学习或工作经历优先', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 2, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 3, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 11, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = 'Java后端工程师' LIMIT 1), '货拉拉', '后端开发工程师', '深圳', NULL, NULL, '工作职责 负责国际化AI项目，参与AI相关能力开发与优化 与海外业务、产品、研发团队共同完成AI产品研发和海外业务落地 持续关注AI领域最新技术，并推动业务创新 按需支持国内相关业务系统能力的迭代和建设 优化系统性能与稳定性，保障服务可用性 - 任职要求 本科及以上学历，计算机、软件工程、人工智能等相关专业，英语口语流利 熟悉Java/Python语言 了解机器学习、深度学习基本概念，熟悉常见算法流程 对LLM（Transformer、RAG、Embedding、Fine-tuning等）有一定了解 熟练使用主流AI编码工具（codex、cursor、Qoder等） 有良好的稳定性意识 - 加分项 对AI有浓厚的兴趣，喜欢研究AI前沿技术 有过AI应用开发、智能助手、聊天机器人等项目经验', 'open', NULL);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = 'Java后端工程师' LIMIT 1), '货拉拉', '后端开发工程师', '北京', NULL, NULL, '职位名称：后端开发工程师 一、基础能力 · 本科及以上学历，计算机相关专业。 · 熟悉 Golang，熟悉其并发模型、内存管理、pprof性能调优及常用框架（如go-zero、Kratos、gin等）。 · 扎实的计算机基础（数据结构、操作系统、网络协议）及分布式系统理论。 · 理解MySQL，具备复杂SQL优化与分库分表设计能力； 二、加分项（满足其一即可显著优先） · 信息安全相关：具备安全开发意识，熟悉常见Web漏洞原理与防御；有代码安全扫描、密钥管理、安全网关等安全组件开发经验。 · AI Agent相关：了解LangChain、Semantic Kernel等框架，有大模型API调用、提示词工程或Agent工作流编排经验；关注AI在研发效能/安全领域的应用。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 5, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 4, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = 'Java后端工程师' LIMIT 1), '手回科技集团', '后端开发工程师', '深圳', '0.8-1.6万/月', NULL, '岗位职责
 1、功能研发：深度参与公司核心业务系统建设，覆盖需求分析、架构设计、代码开发及单元测试全流程，保障功能模块高效落地。
 2、系统维护：承担现有后端服务的性能调优、缺陷修复与稳定性保障工作，重点确保高并发场景下服务的持续可用与高效运行。
@@ -13762,11 +10462,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 3、具备扎实的数据结构与算法基础，深入理解操作系统核心原理（进程 / 线程模型、内存管理机制）及计算机网络协议（TCP/UDP、HTTP/HTTPS）。
 4、熟练运用 MySQL、PostgreSQL 等关系型数据库，掌握索引设计与查询优化技巧；了解 Redis 等缓存技术的应用场景与基本使用方法。
 5、熟练使用 Git 进行版本管理，能够独立完成 Linux 环境下的开发环境配置，掌握常用的系统操作命令。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 5, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 7, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 4, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 9, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = 'Java后端工程师' LIMIT 1), 'iDaily·每日科技', '后端开发工程师', '上海', '0.8-1.5万/月', NULL, 'iDaily 每日科技是全球获得苹果推荐次数最多的开发商，旗下多款 App 获得苹果年度最佳，拥有 倒数日、iDaily、iMuseum、iCity、灵感笔记等知名 App 作品，累计用户超过4亿。
 
 公司重视技术积累及迭代，坚持多平台原生开发，致力于打造坚实可靠的底层代码库，服务于亿级用户的高并发高可用后端。
@@ -13778,9 +10473,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 · Go / Ruby 开发经验
 · 了解 MySQL / PostgreSQL / Redis / MongoDB 等常用数据库开发与优化
 · 有钻研精神，并对新技术有孜孜不倦的追求', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 5, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 7, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = 'Java后端工程师' LIMIT 1), '小黑盒', '后端开发工程师', '北京', '1.5-2.5万/月', NULL, '---你需要参与---
 1.参与后台系统的设计、开发与维护；
 2.参与游戏数据的调研、分析、评估、功能开发以及上线。
@@ -13800,9 +10492,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 5.周三尖叫之夜，大家一起开黑、桌游、switch..
 6.每周各部门分享沙龙，培养T型人才，零食下午茶、无限量饮料必不可少；
 7.小黑屋电竞馆尽享员工优惠，同事也是你的最强队友..', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 3, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 4, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = 'Java后端工程师' LIMIT 1), 'AceCamp本营', '后端开发工程师', '北京', '0.6-1.2万/月', NULL, '岗位职责：
 - 互联网服务端的开发
 - 配合项目经理完成项目实施的技术工作
@@ -13848,9 +10537,6 @@ PS：投简历前须知：
 ＊最重要的，我们重视你的成长和收获：各种培训、优秀员工奖励、股权激励！
 
 这里有稳定和谐的团队氛围，这里有足以征服你的技术leader，这里也有相对自由的创造环境，欢迎志同道合者加入我们！', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 10, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 5, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = 'Java后端工程师' LIMIT 1), '百融智能', 'Java开发工程师（校招）', '北京', NULL, NULL, '岗位职责：
 1、参与项目需求分析和设计；
 2、完成软件系统代码的实现，编写代码注释和开发文档；
@@ -13868,11 +10554,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 7、有较强的文档阅读和编写能力。
 8、可承受较大的工作压力，有团队意识和钻研精神； 
 9、若能提供技术博客或有大数据处理经验的可适当放宽条件优先。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 10, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 5, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 4, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 9, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = 'Java后端工程师' LIMIT 1), '上海青翼工业软件有限公司', 'Java软件开发工程师', '上海', '1-2万/月', NULL, '岗位描述：1. 负责或参与软件开发项目；2. 执行敏捷开发流程,保证项目的质量；3. 解决软件工程中的关键问题和技术难题；4. 编写技术文档。任职资格：1. 计算机、机械相关专业本科或以上学历；2. 精通Java或C#语言，有编程经验优先；3. 熟悉Web编程；5. 有PLM、MES等开发经验者优先。上海张江，上海松江，武汉，成都可选', 'open', NULL);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = 'Java后端工程师' LIMIT 1), '中科创达', 'Java开发工程师(D6108)', '南京', '0.9-1.3万/月', NULL, '职责描述：
 1.负责创达业务（智能终端、智能汽车、智能物联网等）某一技术领域的研发工作
@@ -13919,9 +10600,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 8.有hybrid App开发经验优先；
 9.具有toc项目优先，参与中大型项目优先；
 10.具备良好的需求分析能力、业务和技术方案模块设计能力，思路清晰。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 3, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 9, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '前端开发工程师' LIMIT 1), '皮可爱科技', '前端开发', '镇江', '4-5千/月', NULL, '前端招聘：
 1、有前端开发经验，熟练掌握至少一种前端开发框架，能熟练使用 Vue2 ；
 2、熟悉微信生态（小程序、公众号等），具有微信小程序开发经验，可以基于uniapp、vue进行微信小程序的开发；
@@ -14055,8 +10733,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 4.熟悉常用数据结构和算法；
 5.了解常用的前端工程化解决方案：Webpack,Vite等；
 6.良好的编码习惯和优秀的解决问题的思路。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 4, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '前端开发工程师' LIMIT 1), '乐融致新', '前端开发工程师', '北京', '3-4千/月', NULL, '工作职责：
 1.负责PC，移动端界面的前端构建，各类交互设计与实现；
 2.前端样式和脚本的模块设计及优化；
@@ -14082,9 +10758,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 2、掌握至少一门编程语言，具备一定的算法与数据结构知识，有扎实的编程基础；
 3、对计算机图形学、 3D 渲染、游戏开发感兴趣，对技术有热情；
 4、有责任心，具备良好的团队意识，熟练使用Git进行团队协作。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 4, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 9, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '前端开发工程师' LIMIT 1), '东方金信', '前端开发工程师', '全国', '0.6-1.5万/月', NULL, '岗位职责：
 1、大数据产品前端（web/H5）功能设计与开发，包括前端框架的设计与实现，以及各业务模块前端代码开发；
 2、在线IDE、知识图谱、在线BI工具，后台管理应用等大数据工具类产品开发工作。
@@ -14125,8 +10798,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 1、有线上前端项目（H5/小程序等）开发经验，或独立作品展示；
 2、熟悉 Nodejs 或移动端 Hybrid 开发，了解前端性能优化手段；
 3、对用户体验敏感，有设计思维或全栈潜力者更佳。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 4, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '前端开发工程师' LIMIT 1), '哇嘶嗒科技有限公司', 'tripo前端开发工程师', '北京', '1.8-3.6万/月', NULL, '岗位职责
 希望同学：对人工智能感兴趣，怀有热情和探索欲望
 岗位职责
@@ -14140,8 +10811,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 加分项：
 1、喜欢玩游戏、喜欢探索新技术
 2、有自己的技术审美 /可附github链接', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 9, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '前端开发工程师' LIMIT 1), '驻场无忧', 'web前端开发工程师', '北京', '1-6千/月', NULL, '岗位职责
 1. WEB前端开发
 2. 协助完成动态页面的交互和设计，适配不同的产品和前端设备
@@ -14158,9 +10827,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 7.工作认真负责，善于学习，热衷接受和掌握新技术，善于沟通。
 8.积极向上、具备团队合作精神、工作严谨认真对代码及系统质量有严格的要求意识，用于探索与坚持创新
 9.可以接受出差，工作时间早9晚6', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 4, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 9, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '前端开发工程师' LIMIT 1), '上海跳上月球科技有限公司', '前端工程师（27届校招）', '上海', '2-4万/月', NULL, '岗位职责
 1. 与产品/设计团队紧密配合，参与移动应用（iOS / Android）与业务平台功能开发与版本迭代。
 2. 参与客户端 / 平台基础架构与工程设计，持续优化产品性能、兼容性及交互体验。
@@ -14232,8 +10898,6 @@ iOS开发 熟悉Xcode，熟练掌握Objective-C/Swift）
 3. 逻辑思维能力强，做事有条理性，有较强的分析问题和解决问题的能力。
 4. 有优秀APP和h5网站开发经验者优先。
 5. 有安卓和iOS开发经验者优先。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 4, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '前端开发工程师' LIMIT 1), '中科昊芯', '处理器/SoC前端设计工程师', '北京', '1-2万/月', NULL, '职责描述：
 1.负责设计符合SPEC要求的ASIC，通常情况下，该ASIC是处理器内核中或者SoC中的Module；
 2.负责基于已有IP进行定制化WRAP设计，或者对已有自研IP进行功能修改；
@@ -14280,8 +10944,6 @@ ________________________________________
 What We Offer:
 • Competitive salary and benefits package.
 • Mentorship and structured onb', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 9, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '前端开发工程师' LIMIT 1), '阿里巴巴', '前端开发工程师-阿里巴巴2027届应届生', '全国', NULL, NULL, '1. 负责全栈式开发，不只有Node全栈，还有页面搭建、中后台低代码等场景；
 2. 负责移动端开发，不只有移动Web、小程序多端，还有诸如Weex动态化等场景；
 3. 负责性能、架构等方面的改进与优化，还能参与ElementUI/MorJS等开源产品和社区建设；
@@ -14302,9 +10964,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 3. AI辅助开发实践：使用AI工具rules，增加自定义命令，理解上下文工程来增强AI工具的能力；
 4. 技术视野：对AI技术体系有浓厚兴趣，掌握LLM/PE/Agent/RAG等原理与运用；关注AI与前端技术的发展趋势，了解大模型能力及其在开发中的应用场景；
 5. 在相关领域国际顶级会议、期刊发表论文，或相关学术会议组织的权威比赛中获奖。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 4, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 9, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '前端开发工程师' LIMIT 1), '上海收钱吧互联网科技股份有限公司', '【27届校招】前端开发工程师(J11452)', '苏州', '1.5-2.5万/月', NULL, '岗位职责:
 1.参与收钱吧前端系统开发，前端功能实现。
 2.在导师指导下参与模块的前端开发。
@@ -14319,8 +10978,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 8.了解AI工具在前端开发中的应用，如ChatGPT、GitHub Copilot等代码生成工具，有AI辅助开发经验者优先。
 9.对机器学习、数据可视化有基本认知者加分。英语四级及以上，具备基本的英文文档阅读能力。
 10.对金融支付行业感兴趣，愿意深入学习相关业务知识。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 9, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '前端开发工程师' LIMIT 1), '燧浦智能科技有限公司', '前端开发工程师（全职，不接受实习）', '上海', '0.8-1.2万/月', NULL, '岗位职责：
 1、参与公司Web端/移动端H5产品的页面开发与维护；
 2、根据UI设计稿，完成页面布局、样式编写及交互效果实现；
@@ -14335,8 +10992,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 4、了解HTTP协议和Ajax/Fetch请求，能配合后端完成数据交互；
 5、了解Git版本管理工具，熟悉基本的代码提交和分支操作；
 6、了解Chrome开发者工具，能进行简单的页面调试和问题定位。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 9, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '前端开发工程师' LIMIT 1), '盛趣游戏', '2026届春招-游戏前端开发（实习）工程师', '上海', NULL, NULL, '岗位职责：﻿
  1. 负责游戏前端相关业务开发与维护工作，包括但不限于周边工具、游戏通用模块等开发与维护；
 任职要求：
@@ -14357,8 +11012,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 5、熟练掌握sass、less等css预编译工具，熟练掌握ES6新特性并使用于项目开发中；
 6、熟悉通信协议TCP/HTTP等标准；
 7、熟悉服务器脚本语言，熟悉node开发，有Express框架开发经验者优先；', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 9, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '前端开发工程师' LIMIT 1), '拼多多集团-PDD', '【PDD-2027届校招】Web前端研发工程师', '上海', '1.2-2万/月', NULL, '岗位职责
 1、负责公司核心产品（H5/PC Web/微信小程序等）的前端开发，打造流畅、高性能的用户体验；
 2、与产品、设计、后端团队紧密协作，参与技术方案设计，推动前端技术落地；
@@ -14372,8 +11025,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 1、有线上前端项目（H5/小程序等）开发经验，或独立作品展示；
 2、熟悉 Nodejs 或移动端 Hybrid 开发，了解前端性能优化手段；
 3、对用户体验敏感，有设计思维或全栈潜力者更佳。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 4, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '前端开发工程师' LIMIT 1), '阿里巴巴', 'AI前端开发工程师-阿里巴巴2027届应届生', '全国', NULL, NULL, '1. 负责对客官网的前端开发工作，打造优质的面向开发者/企业/Prosumer 的云计算与 AI 服务平台；
 2. 负责官网对客与内部运营产品的前端开发工作；
 3. 参与构建 AI Agent/Skills 体系能力，实现开发及业务提效；
@@ -14400,8 +11051,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 1、有线上前端项目（H5/小程序等）开发经验，或独立作品展示；
 2、熟悉 Nodejs 或移动端 Hybrid 开发，了解前端性能优化手段；
 3、对用户体验敏感，有设计思维或全栈潜力者更佳。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 4, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '前端开发工程师' LIMIT 1), '字节跳动', 'AI Agent 前端开发工程师（北京/上海/广州/杭州）', '广州', '2.8-3.5万/月', NULL, '岗位职责
 
 1、参与 AI Agent 研发平台的前端研发工作；实习内容涉及多端开发（Web、桌面端、IDE 插件等）、前端研发场景 AI 能力建设等
@@ -14440,9 +11089,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 4、熟悉Linux操作系统，编写Shell脚本，熟悉网络TCP/IP/HTTPS等网络协议；
 5、熟悉Jenkins持续集成，了解DevOps；
 6、熟悉金融基金证券相关知识优先。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 5, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 7, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = 'Python开发工程师' LIMIT 1), '泛利科技', 'Python开发工程师', '杭州', '0.8-1.2万/月', NULL, '【岗位职责】
 1、负责运用Python语言进行PCB、封装、IC设计数据处理；
 2、负责主流EDA软件集成工作，能够自主钻研学习新语言；
@@ -14462,8 +11108,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 11、富有责任心，良好的团队协作和沟通能力，善于自我管理和自我驱动。
  
 注：欢迎有EDA软件开发背景的同仁加入。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 9, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = 'Python开发工程师' LIMIT 1), '东方金信', 'Python开发工程师', '全国', '0.6-1.5万/月', NULL, '岗位职责： 
 1、参与 AI 系统功能设计开发；
 2、支持实施部门项目中的缺陷修复；
@@ -14499,9 +11143,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 4、主动自驱，责任心强，具有良好的沟通能力和团队协作能力 
 5、有保险/金融/互联网系统架构开发经验优先，有Agent开发经验优先
 6、熟悉主流Agent框架与产品优先(langgraph、openclaw、hermes等)，熟练使用AI编码工具优先(codex,claude code等)', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 11, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 4, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = 'Python开发工程师' LIMIT 1), 'Agora Space', 'Python Developer 开发人员', '上海', '0.7-1万/月', NULL, '岗位职责
  
 - Write effective, scalable code
@@ -14542,8 +11183,6 @@ requirements and provide technical solutions
 - Cycle & scooter to work scheme
  
 Apply by uploading your CV with a note of your earliest starting date.', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 9, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = 'Python开发工程师' LIMIT 1), 'Flow++', '大数据运维工程师 -校招-Python', '北京', '1.5-2.5万/月', NULL, '岗位职责
  1. 基于ambari的可视化大数据组件部署的开发和优化
 2. 基于openstack/k8s的云体系建设
@@ -14616,8 +11255,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 3、熟悉使用Python/Java之一编写自动化脚本。
 4、深入理解HTTP、TCP/IP协议，熟练使用抓包工具进行深度分析。
 5、了解关系型数据库（如MySQL/PostgreSQL）的基本操作，熟练编写SQL语句，多表关联查询、子查询及常用聚合函数。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 5, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '测试工程师' LIMIT 1), '货拉拉', '汽车软件测试工程师', '重庆', NULL, NULL, '【工作职责】
 1、负责软件全生命周期测试工作，覆盖单元层代码白盒测试、模块集成层功能验证，完成代码逻辑走查、单元用例设计与执行，定位并跟进代码层面的缺陷闭环；
 2、主导台架环境下的软件集成测试，搭建测试台架，完成软件的接口通信、功能逻辑等全场景验证，输出台架测试报告；
@@ -14664,8 +11301,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 计算机科学或相关专业硕士及以上学历 
 
 Note： 主要做自动开发跑测试流程，需要懂C++/C#语言， prefer计算机专业背景', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 3, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '测试工程师' LIMIT 1), '阿里巴巴', 'RISC-V软件测试工程师-阿里巴巴2027届应届生', '全国', NULL, NULL, '1、负责 RISC-V 软件生态各层级的测试工作，包括但不限于工具链（编译器/链接器/汇编器）、指令集模拟器、调试器、操作系统内核、AI 推理框架等
 2、开发AI Agent和Skill，组织数字人进行端到端的测试，持续利用AI提升测试质量与效率
 3、针对编译器优化（指令调度、向量化、寄存器分配等）设计正确性验证用例，通过反汇编分析验证代码生成质量
@@ -14689,8 +11324,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 3、在校期间参与过 ACM/ICPC、操作系统/编译相关竞赛或科研项目
 
 我们提供深入参与 RISC-V 全栈软件生态建设，从指令集到 AI 推理端到端覆盖；接触编译器核心优化、模拟器微架构建模、内核适配、AI 部署等前沿技术领域；资深工程师一对一带教，系统化的技术培训与成长体系；参与开源社区协作，有机会向国际顶级开源项目贡献代码；具有竞争力的薪酬福利与清晰的职业发展通道。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 9, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '测试工程师' LIMIT 1), '阿里巴巴', 'AI软件测试开发工程师-阿里巴巴2027届应届生', '全国', NULL, NULL, '1、全栈质量体系建设
 • 面向 GPU 驱动层（CUDA 兼容性）、AI 编译器（MLIR 图优化）、高性能算子库（Conv/GEMM/Attention）、深度学习框架（PyTorch / vLLM 定制后端）、大模型及配套工具链（GPU Operator、Container Toolkit、Device Plugin、Profiling/SMI、GDB Debugger 等），设计并落地统一的质量标准与验证策略。
 2、自动化与工程化能力建设
@@ -14733,12 +11366,6 @@ AI实践：在研发或测试领域有AI技术（如机器学习应用、AIGC工
 
 我们提供：
 加入我们，您可以迅速精通金融科技的核心技术，与风控、AI、大数据、金融等不同背景的团队切磋学习，期待您的加入，一起做更有挑战改变行业的事！', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 3, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 5, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 7, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 4, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 9, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '测试工程师' LIMIT 1), '平安健康险', '测试应届生', '上海', '1-1.5万/月', NULL, '工作职责：
 
 1、参与保险相关产品全链路的质量保障工作，涵盖功能测试、接口测试、自动化测试等环节；
@@ -14754,9 +11381,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 4、熟悉主流测试框架或工具者优先（如 JUnit、TestNG、Pytest、Selenium、Postman、JMeter 等）；
 5、了解常见互联网技术栈，包括 Web 前后端架构、RESTful API、数据库（MySQL）、中间件（如 Redis、Kafka）等基本原理；
 6、对质量保障工作有热情，具备良好的逻辑思维能力、问题分析能力和学习能力。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 5, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 7, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '测试工程师' LIMIT 1), '阿里巴巴', '游戏测试开发工程师-阿里巴巴2027届应届生', '全国', NULL, NULL, '1.主导或参与游戏项目整体质量方案设计，负责游戏项目的测试（黑盒&白盒）；
 2.为游戏研发制定标准和规范，推进产品过程质量不断改进；
 3.负责开发测试工具/自动化脚本提效；
@@ -14816,8 +11440,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 • 具备强烈的质量主人翁意识，对系统稳定性有敬畏心，具备出色的系统性思维，能从全链路视角设计测试防护网；
 • 具备快速学习新技术的能力，并乐于将前沿AI Infra动态转化为质量保障实践；
 • 具备优秀的跨团队沟通与推动力，能在复杂协作中建立质量共识，面对模糊性和高压时，保持务实、冷静、结果导向。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 9, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '测试工程师' LIMIT 1), '阿里巴巴', '测试开发工程师-阿里巴巴2027届应届生', '全国', NULL, NULL, '1. 深入业务场景，参与产品全生命周期质量体系建设，确保复杂业务逻辑的正确性与系统稳定性；
 2. 研发前沿的测试工具与平台，包括自动化测试框架、性能压测平台、故障演练系统及资损防控体系；
 3. 通过代码审计、架构分析、全链路压测等手段，挖掘系统深层次缺陷，为业务的丝滑体验保驾护航；
@@ -14866,8 +11488,6 @@ Job Qualification:
  
 博世集团网上招聘数据处理同意声明 
 个人信息及目的：你的如下个人信息将被处理并用于招聘：姓名、电子邮箱、电话号码、所在地区、经验和教育信息、简历等应聘者自主提交的附件信息、证件号、职位、部门、计划入职日期、劳动合同持续时间、工作地点、月薪、年薪、浮动奖金比例、餐贴、车贴。 博世将依据相关的数据保护法规，在全球范围内对您的数据进行保密。招聘流程中，您的个人信息只有在必须时才会被提供给博世以外的第三方机构(如代理机构)。博世精心挑选了第三方机构并与之签订了保密合同。博世采取了种种保密措施以保护您的数据，确保其不会遭受操纵、丢失、破坏、未经授权的访问或泄漏。我们的安全措施将随着新技术的应用而不断升级。您的本地浏览器和我们的人才招募系统之间的数据传输通过https加密。 特定职位申请：申请博世集团的职位就意味着您将自己的个人信息提供给博世集团旗下相应的法律实体（具体请见博世集团法人清单）。请注意，若有任何文件或资料变更，请在所有申请书里一并变更。人力资源部门的员工可能与您联系，询问您是否同意将您的求职申请转向博世集团内部另一合适职位。如果您申请了特定职位，那么只有在您同意的情况下，博世才会将您的求职申请转向另一职位。 您可以随时撤回求职申请，博世将根据相关法律删除您的个人信息。与您的申请相关的所有资料将被保留至24个月。您的权利：若您希望停止向博世提供您的个人信息，可联系我们或通过博世网上招聘数据隐私声明中的BKMS系统提出申请。您可以在SmartRecruiters平台查阅和修改您的简历。您对您的个人信息的处理享有知情权、决定权，您有权限制或者拒绝我们对您的个人信息进行处理。您还可以更正、补充您的个人信息。 跨境传输：为了实现前述目的，我们所收集的您的个人信息可能会在多个国家或地区间进行跨境转移，例如德国、新加坡。 德国：罗伯特-博世有限公司（德国格宁根市罗伯特博世广场1号（Robert-Bosch-Platz 1, Gerlingen-Schillerhohe, Germany，邮编：70839），用于集团统一招聘管理（博世中国与数据接收方均基于该目的开展数据出境活动； 英国：SmartRecruiters（英国伯克郡温莎亚瑟路圣斯蒂芬大厦 邮政区码: SL4 1RU），用于招聘、后期交流联系及分享职位/活动信息、潜在人才社区邀请。 您可通过上述联系方式依法向境外接收方行使您在个人信息处理活动中的权利。 存储您的个人信息：我们将仅在为实现目的必要的范围内以及法律法规要求的时间内保留您的个人信息。 雇佣：被雇佣后，您提供的数据将被从当前招聘系统转移至职位所属公司的人力资源管理系统。联系方式： 请通过访问博世中国官方主页：博世在中国＞加入博世＞工作机会，在网上招聘数据隐私声明中“9.联系方式” 博世集团法人清单： 请通过访问博世中国官方主页：博世在中国＞加入博世＞工作机会，在网上招聘数据隐私声明中获取现阶段使用网上招聘系统的博世集团法人（第五页）', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 9, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '测试工程师' LIMIT 1), '欧摩威中国', 'ECU测试工程师', '重庆', NULL, NULL, '【岗位职责】
 1. 负责汽车电子控制器（ECU）测试台架的硬件搭建与调试，确保测试环境满足功能验证需求。
 2. 模拟整车CAN通讯网络，实现ECU与上位机的正常通讯，保证ECU在台架环境中无故障运行。
@@ -15004,8 +11624,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 1、本科及以上学历，计算机等相关专业，学生会干部、社团成员优先考虑；
 2、熟悉linux；熟悉MySql，Oracle等数据库；熟悉Java或者Python编程语言；
 3、风险意识强，原则性强，热爱学习，思维严谨，沟通表达良好。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 5, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '测试工程师' LIMIT 1), '明朝万达', '测试工程师', '北京', '0.8-1.3万/月', NULL, '岗位职责：
 1、按照产品架构和业务要求，制定测试策略，设计测试方法，组织并进行产品的系统测试。
 2、制定企业和产品标准，对产品做出客观、公正的评价，并推动产品技术可靠性和用户体验的提升。
@@ -15061,8 +11679,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 5. 宽松的工作氛围；
 6. 工作环境独具特色，年轻的团队，轻松的环境，休闲的着装；
 7. 专业的工作环境，得到自身专业的迅速提升', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 5, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '测试工程师' LIMIT 1), '那一科技', '测试工程师', '上海', '1.3-1.4万/月', NULL, '岗位职责
  
 1. 负责 NaiveSystems Analyze 等产品的质量保证工作，例如编写自动化测试，在开源软件上运行代码分析工具，负责检查结果的分析与追踪，并与上游沟通解决可能出现的问题；
@@ -15082,8 +11698,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 3. 熟悉 Linux 操作系统、日常操作命令；熟悉网络、存储、安全相关技术，能够进行基本的排障操作；熟悉 Docker 日常操作命令，了解容器技术原理；
  
 4. 积极思考，发掘工作中的问题，并提出合理的解决方案； 细致、有耐心、不浮躁，有强烈的责任感，对结果负责。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 4, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '测试工程师' LIMIT 1), '迈科集团', '测试工程师', '上海', '6-8千/月', NULL, '岗位职责：
 1.负责公司、产品功能测试、性能测试。
 2.搭建测试环境，做好测试前的准备工作。
@@ -15147,8 +11761,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 3、编程语言：熟悉至少一门语言（Java/Python优先），能写自动化脚本或测试工具；
 4、工具框架：了解主流测试框架、压测工具或接口测试工具者优先；
 5、计算机基础：数据结构与算法扎实。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 4, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '测试工程师' LIMIT 1), '深圳市正浩创新科技股份有限公司', '自动化测试开发工程师(A129071)', '深圳', NULL, NULL, '职责描述：
 1、参与方案设计与开发落地：负责项目自动化需求分析及方案设计，主导自动化脚本的开发与实现，确保方案高效地；
 2、完成平台功能开发与调试：独立承担自动化平台功能模块与测试脚本的开发、调试及验证工作，保障交付质量；
@@ -15203,9 +11815,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 5.熟悉性能测试优先；
 6.工作中有自我驱动力，有良好的团队合作精神，有责任心；
 7.有AI工具的实践使用。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 5, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 7, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '测试工程师' LIMIT 1), '上海收钱吧互联网科技股份有限公司', '【27届校招】测试工程师(J11454)', '上海', '1.5-2.5万/月', NULL, '岗位职责:
 1.按照公司研发流程规范，负责对接条线业务的质量保障工作；
 2.根据产品PRD编写测试方案、测试用例等；
@@ -15220,9 +11829,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 5.熟悉性能测试优先；
 6.工作中有自我驱动力，有良好的团队合作精神，有责任心；
 7.有AI工具的实践使用。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 5, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 7, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '测试工程师' LIMIT 1), '得物App', '【27届校招】测试开发工程师(A250797)', '上海', '2.5-3.5万/月', NULL, '职责描述：
 1、具备对复杂分布式架构及业务逻辑的深度拆解能力，能够从多维视角识别系统潜在风险点，并制定系统化的质量保障策略。
 2、参与构建下一代 AI-Native 测试平台，利用大模型实现测试用例自动生成、代码变更影响分析，脚本自修复及智能缺陷定位等场景的工业级应用。
@@ -15235,8 +11841,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 3、熟悉 Linux 开发环境，了解 Docker/Kubernetes 等容器化技术者优先。
 4、了解常见大模型，对ClaudeCode 、cursor等AICoding工具有一定掌握和实践
 5、优秀的逻辑思维能力，对未知领域充满好奇，能够从海量数据或复杂现象中敏锐发现潜藏的风险。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 4, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '测试工程师' LIMIT 1), '平安人寿', 'NS管培生（测试）', '深圳', '1-1.5万/月', NULL, '工作职责
 1、深度参与产品研发项目，协同产品经理、业务研发、用户反馈团队优质交付产品；
 2、参与质量体系规划、建设；
@@ -15248,8 +11852,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 3、认可快速发展阶段的移动互联网公司及文化；
 4、具备优秀的产品意识，对市场上典型 App 有自己的想法和改进方案；
 5、具备良好的沟通能力、快速适应能力、学习能力，热爱质量效率工作。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 5, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '数据分析师' LIMIT 1), '派兰数据', '数据分析', '上海', '1-1.5万/月', NULL, '岗位职责
  
 1. 根据项目研究背景或方向，结合项目方案，进行数据挖掘、数据分析；
@@ -15280,8 +11882,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 工作地点：福州、南京', 'open', NULL);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '数据分析师' LIMIT 1), 'AST', '数据分析工程师', '重庆', '0.8-1.5万/月', NULL, '岗位职责:1、通过努力学习，获得岗位初级技能，熟悉公司产品架构和管理体系，遵守公司管理制度；2、通过培养期阶段性考核，比如培训考核、转正考核等；3、能积极配合团队管理者开展工作，并完成管理者分配的相关工作事宜；4、向管理人员和技术人员方向培养，收获广阔的职业空间和良好的薪酬回报任职资格:任职资格；
 1、2022年应届毕业生，硕士及以上学历；2、专业：数学，统计学等相关专业在校成绩优异者优先；3、熟悉各类编程语言,熟悉编程，熟悉 MySQL、SQLsever、.net等软件的使用4、对信息化平台建设有独特见解，有相关项目经验5、勤恳踏实、吃苦耐劳、团队意识、积极、创新。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 5, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '数据分析师' LIMIT 1), 'NIO蔚来', '校招-数据分析(A246899)', '上海', '1.3-2万/月', NULL, '职责描述：
 1. 为售后多业务场景提供数据服务，包括不限于构建自动化、可视化模型报表/看板，支持总部&区域公司业务数据化运营；
 2. 基于NIO数据平台建立数据模型，包括业务底层数据建模、开发&指标可视化；
@@ -15292,8 +11892,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 3. 了解大模型基础架构，能够利用大模型+RAG/智能体实现一些业务智能化应用；
 4. 熟练应用SQL、Hive、Python等工具，具备扎实的算法和数据结构功底；
 5. 业务理解和责任心强，乐于并擅长内外部沟通、协调。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 4, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '数据分析师' LIMIT 1), '平安人寿', 'NS管培生（数据分析）', '深圳', '1-1.5万/月', NULL, '工作职责
 1、需求分析：快速了解业务流程，成为业务与开发的沟通桥梁，充分理解业务需求，协助完善需求，梳理数据源，将业务需求转化为合理的数据解决方案；
 2、完善指标与标签体系：基于业务理解，主动规划设计指标与标签体系并推动落地；梳理和维护历史指标与标签的元数据，保障数据定义与质量；
@@ -15554,8 +12152,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 1、2027届（应届）本科及以上学历，数据分析、经营分析、战略咨询实习经验优先，了解AI原理及应用优先；
 2、统计学、数学、计算机等相关专业背景优先，了解至少一种数据库操作，如Hive/Mysql等，了解常用的数据分析方法；
 3、对数据敏感，对数据类工作有高度热情，沟通协调能力强、学习能力强、主动性强。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 5, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '数据分析师' LIMIT 1), '明朝万达', '网络协议分析研究员（研发中心）', '北京', '1-1.5万/月', NULL, '工作职责：
 1、负责网络协议识别和检测引擎的研发、维护和优化工作；
 2、跟踪、研究并分析各种网络应用的背景、通信过程和识别方法，对研究的成果进行测试，形成详细规范的文档；
@@ -15607,8 +12203,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 3、熟练使用Excel、t-SQL，熟练使用Stata、R或Python统计模块等工具；
 4、掌握金融与财务知识者优先考虑；
 5、对数据分析与规律挖掘抱有热情，有较强的学习能力、分析问题和解决问题能力，有较强的沟通能力，能够快速理解且能够有效表达。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 9, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '数据分析师' LIMIT 1), '新智领道', '数据咨询顾问', '北京', '0.8-1.2万/月', NULL, '岗位职责
 1.根据战略咨询项目的要求，完成数据收集与清洗的工作；
 2.与团队合作进行数据建模，分析、挖掘内外部数据；
@@ -15720,8 +12314,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 4、具备良好的业务敏感度和逻辑思维能力，善于沟通对接，能够快速理解业务需求，结合技术能力推动业务数据化落地；
 5、积极主动、责任心强，具备良好的学习能力和团队协作意识，愿意深耕大数据领域，接受团队指导并快速迭代成长；
 6、优先条件：有大数据开发、数据仓库搭建相关实习经历、项目实战经验；熟悉海量数据处理、实时/离线数据开发流程者优先。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 5, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '大数据开发工程师' LIMIT 1), '品联科技', '大数据开发工程师', '成都', '0.9-1.5万/月', NULL, '岗位职责：
 1、参与完成大数据相关项目及整体平台解决方案的产品化输出；
 2、参与完成大数据分析系统、实时流计算系统、BI系统的设计和开发；
@@ -15744,8 +12336,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 1、本科及以上学历，计算机等相关专业，学生会干部、社团成员优先考虑；
 2、熟悉基本的数据结构和常用算法；
 3、热爱学习，沟通表达良好，思维严谨，良好的团队合作精神和积极主动的沟通意识。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 4, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '大数据开发工程师' LIMIT 1), '迈科集团', '大数据开发工程师', '上海', '0.7-1万/月', NULL, '岗位职责：
 1.掌握数据库方面开发技能，熟练进行SQL编程；
 2.掌握BI软件开发，熟悉Tableau、cognus等BI产品；
@@ -15848,8 +12438,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 1. 有AI应用或Agent实际落地经验，参与过智能编程等相关项目；
 2. 了解深度学习框架（TensorFlow/PyTorch），有计算机视觉/NLP项目经历；
 3. 有开源大数据项目贡献经历，或在大数据工程、数据治理领域有深入实践。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 4, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '大数据开发工程师' LIMIT 1), '慕可生物', '大客户代表', '杭州', '1.3-1.8万/月', NULL, '【岗位职责】
 1、负责区域内化妆品门店的拓展工作，发展与构建客户网络；
 2、及时跟进潜在客户，协助上级制定计划，开展有效的市场拓展活动；
@@ -15973,8 +12561,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
  
 工作地点：福州、南京、北京、海口、成都
  银川、乌鲁木齐', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 5, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '大数据开发工程师' LIMIT 1), '新智领道', '数据咨询顾问', '北京', '0.8-1.2万/月', NULL, '岗位职责
 1.根据战略咨询项目的要求，完成数据收集与清洗的工作；
 2.与团队合作进行数据建模，分析、挖掘内外部数据；
@@ -16044,9 +12630,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 4、对大数据技术栈有一些了解，至少熟悉某个领域的原理与设计（HDFS、OLAP、YARN、Flink、Spark、Kafka等）；
 5、积极主动、乐于沟通、喜爱技术研发；
 6、执行与推动力强，思维敏捷，具备系统思维，良好的人际理解能力，沟通协调能力强。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 3, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 4, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '大数据开发工程师' LIMIT 1), '知乎', '实时数仓开发工程师', '北京', NULL, NULL, '要求：实习转正
 岗位职责：
 1、负责知乎业务离线数据仓库建设与优化和实时数据仓库建设与维护；
@@ -16063,8 +12646,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 1、有互联网实时数据研发、海量数据处理分析、OLAP项目开发相关经验者优先;
 2、有大型实时项目架构相关经验者优先；
 3、有数据仓库架构经验优先。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 7, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '大数据开发工程师' LIMIT 1), '百草味', '【27届校招】数据产品', '杭州', '6-8千/月', NULL, '【岗位职责】
  
 1.深入理解全公司业务场景，全面掌握各业务线的运行逻辑与核心诉求，建立完整的业务认知体系。
@@ -16198,8 +12779,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
  
 
  6、具备良好的信息安全意识和服务意识。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 5, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '运维工程师/DevOps' LIMIT 1), '亘美', '运维工程师', '嘉兴', '6-8千/月', NULL, '岗位职责
 1.保障产品稳定运行，在此期间对出现的各种问题可以快速定位并解决；
 2.在日常工作中不断优化系统架构和部署的合理性，以提升系统服务的稳定性。
@@ -16252,9 +12831,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 1、有SRE运维、云原生、DevOps相关实习经历、课程项目、个人实战项目者优先；
 2、具备微服务架构、公有云基础设施搭建、可观测体系建设相关经验者优先；
 3、熟悉自动化运维、CI/CD流水线搭建、故障演练落地实操者优先。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 7, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 9, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '运维工程师/DevOps' LIMIT 1), '快手', '服务器运维工程师', '北京', NULL, NULL, '1、参与超大规模服务器（包括通用服务器和AI算力服务器）的交付、运行维护及资源退役，保障服务器稳定与高效运行；
 2、协助定位和修复服务器故障，提升服务器的故障响应速度和问题闭环能力；
 3、与研发、网络、数据中心等多方团队紧密协作，支持算力基础设施的稳定可靠运行；
@@ -16275,8 +12851,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 3. 了解 Docker、Kubernetes、Nginx、MySQL 等常用组件者优先；
 4. 有云平台（阿里云 / 腾讯云）使用、运维实习经历者优先；
 5. 责任心强，具备良好的问题定位和抗压能力。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 5, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '运维工程师/DevOps' LIMIT 1), '凯馨科技', '交付运维实施工程师', '上海', '0.8-1万/月', NULL, '我们需要您负责以下工作： 、
 1、面向客户，了解需求，沟通产品方案，解答客户的技术疑问； 
 2、参与招投标工作，撰写投标方案、技术应答、配合现场讲标；
@@ -16368,11 +12942,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 2. 熟悉HTTP协议，在校期间有相关的项目经验；
 3. 熟练掌握K8S并有大规模应用经验；
 4. 喜欢钻研，如有在某个技术领域有深入的研究，对该领域的的技术现状、问题和未来发展有自己的理解和实践。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 11, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 5, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 7, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 4, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '运维工程师/DevOps' LIMIT 1), '燧浦智能科技有限公司', '运维开发工程师（全职，不接受实习）', '上海', '0.9-1.2万/月', NULL, '岗位职责：
 1、负责公司服务器、网络设备及基础环境的日常巡检、监控和故障处理；
 2、协助搭建和维护测试环境、预发布环境及生产环境，保障业务稳定运行；
@@ -16386,15 +12955,7 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 3、了解Shell/Python脚本语言，能编写简单的运维自动化脚本；
 4、了解Nginx、MySQL、Redis等常见中间件的基本安装与配置；
 5、了解TCP/IP网络基础，能进行简单的网络连通性排查。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 5, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 7, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '运维工程师/DevOps' LIMIT 1), 'BIGO', '【2027届校园招聘】Java开发工程师（运维开发方向）', '广州', NULL, NULL, '岗位职责： 1. 参与公司 DevOps 平台的研发与优化，建设发布部署、运维编排、任务调度、监控告警、资源管理等平台能力。 2. 参与运维工具和自动化流程开发，将重复性运维工作标准化、自动化，提升研发与运维效率。 3. 参与监控、告警、发布、CMDB等系统的集成，探索告警诊断、异常分析和故障自愈等智能运维场景。 4. 参与系统功能设计、代码开发、测试及日常维护，在实践中不断提升工程能力和系统稳定性。 5. 关注 DevOps、云原生及 AI 技术发展，探索新技术在运维场景中的应用。 任职要求 1. 本科及以上学历，计算机相关专业 2. 具备良好的计算机基础，熟悉数据结构、操作系统、计算机网络和数据库基本知识。 3. 熟悉 Java、Go、Python 中至少一门编程语言。 4. 了解 MySQL、Redis、Kafka 等常用组件中的一种或多种，能够完成基本的开发和使用。 5. 了解 Spring Boot 等后端开发技术，或对微服务架构有基本认识。 6. 了解 Linux 操作系统和常用命令，对自动化运维、后端开发或平台工程有兴趣。 7. 具备良好的逻辑思维、问题分析和动手实践能力，愿意主动学习并解决实际问题。 8. 具备良好的沟通协作意识、责任心及代码和技术文档编写习惯。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 6, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 5, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 7, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 4, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '运维工程师/DevOps' LIMIT 1), '阿里巴巴', '数据中心技术运维工程师-阿里巴巴2027届应届生', '全国', NULL, NULL, '1.围绕阿里超大规模IDC数据中心，制定体系化和标准化的基础设施（设施、IT、资产、安全）运营管理标准与流程，探索数字化、自动化、智能化的先进运维管理技术； 
 2.负责数据中心现场事件、问题、变更、风险、维护、人员管理等运营管理标准执行和指标达成，联通内外部沟通协作，优化资源利用，以业务为导向，满足客户SLA要求，确保数据中心安全、稳定、高效运行；
 3.参与阿里超大规模IDC数据中心基础设施（能源、建筑、电力、暖通、监控、网络、服务器等设备）的技术研发、规划定位、方案设计、建设交付等工作；
@@ -16431,8 +12992,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 · 拥有良好的沟通能力与团队协作精神 
 
 Note：需要懂C++/C#语言 或者Java', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 3, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '运维工程师/DevOps' LIMIT 1), '聚联数通', '宽带运维专员', '沈阳', '4-6千/月', NULL, '岗位职责：
 负责宽带网络及相关设备调试、安装、维护和推广。
 任职要求：
@@ -16478,8 +13037,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 2、技术基础：熟悉Windows、Linux系统及Shell/Python脚本，了解TCP/IP协议及网络抓包工具（Wireshark/tcpdump），了解数据库基础知识；
 3、游戏素养：至少深度体验过1款以上网络游戏&semi;
 4、需提前实习，可长期实习者优先。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 5, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '运维工程师/DevOps' LIMIT 1), '泰康金融', '计算机网络运维/技术支持', '济南', '4-6千/月', NULL, '岗位职责：
 1.负责机房、网络的例检和监控，随时发现并排查故障，对系统故障第一时间响应；
 2.负责公司硬件设备、桌面终端系统的维护，确保软硬件系统正常；
@@ -16621,8 +13178,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 1. 开发过LLM Agent、对于MCP相关理念有实践经验；
 2. 参与过github开源项目；
 3. 在课程设计、竞赛或科研中应用AI解决实际工程问题的经历。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 9, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '网络安全工程师' LIMIT 1), '明朝万达', '高级网络安全研究员（安元实验室-北京）', '北京', '1-1.5万/月', NULL, '工作职责：
 1、负责跟踪和分析国内外安全事件、发展趋势和解决方案；
 2、承担或参与创新型课题研究 ；
@@ -16797,8 +13352,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 3. 深刻理解各类Web、客户端、移动、IoT、操作系统、大模型及其应用、云漏洞之一的成因及渗透测试方法；熟悉常见网络协议（TCP/IP）及安全防护机制；
 4. 具备将AI能力融入攻防实战的思维，有AI技术在安全场景中的应用经验者优先；
 5. 良好的沟通能力和团队协作精神，工作积极主动，自驱力强，具备较强的抗压能力。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 4, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '网络安全工程师' LIMIT 1), '深圳市正浩创新科技股份有限公司', '安全开发工程师', '深圳', '1.2-1.7万/月', NULL, '职责描述：
 1、参与公司SOC平台的二次开发与功能迭代，包括告警推送、日志检索、可视化大屏等模块；
 2、负责内部安全工具与自动化平台的开发，如漏洞扫描编排系统、资产测绘平台、安全合规检查引擎等；
@@ -16937,8 +13490,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 2. 深度参与过知名AI安全类开源项目的源码级研究；\\
 3. 有知名大厂或机构的实习经验者\\
 4. GitHub / 个人博客 / 技术分享能体现长期、有品味的技术轨迹。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 9, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '网络安全工程师' LIMIT 1), '深南电路', '安全岗-27届秋招(J16264)—深圳', '深圳', '0.8-1.5万/月', NULL, '岗位职责:
 1、组织或参与公司安全生产、职业卫生管理制度制定、实施及监督执行，确保符合国家及地方法规标准；
 2、组织参与危险源辨识及管控措施制定，开展现场安全检查，识别潜在安全隐患，并提出改进建议推动整改闭环，预防事故发生；
@@ -17021,8 +13572,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 3. 深刻理解各类Web、客户端、移动、IoT、操作系统、大模型及其应用、云漏洞之一的成因及渗透测试方法；熟悉常见网络协议（TCP/IP）及安全防护机制；
 4. 具备将AI能力融入攻防实战的思维，有AI技术在安全场景中的应用经验者优先；
 5. 良好的沟通能力和团队协作精神，工作积极主动，自驱力强，具备较强的抗压能力。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 4, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '网络安全工程师' LIMIT 1), '得物App', '【27届校招】数据安全工程师(A44405)', '上海', '2.5-3.5万/月', NULL, '职责描述：
 1、数据安全应用各场景的风险梳理和加固从攻防视角赋能数据安全；
 2、深入了解评估公司内各项信息数据交互业务场景，开展风险评估，识别数据安全与隐私风险，设计合理管控方案，确保在安全合规的基础上支撑业务需求；
@@ -17072,8 +13621,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 ●有开源贡献，或主导过安全大模型 / 安全 Agent / 风控算法的实际项目。
 ●有大模型领域适配（SFT/DPO/RLHF/LoRA）、Agent 推理与规划算法、RAG、安全对齐与红队评测、对抗机器学习等任一方向的研究或实战经验。
 ●熟悉多模态大模型（文本+代码+图+流量+图像/音视频）在安全场景下的应用。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 4, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '网络安全工程师' LIMIT 1), '阿里巴巴', 'AI安全研发工程师-阿里巴巴2027届应届生', '全国', NULL, NULL, '方向一：Security for AI —— 守护 AI & Agent 安全运行，针对大模型与 Agent 系统面临的新型安全风险，设计并构建 AI 原生的安全防护体系。
 你将参与的工作（包括但不限于）：
 - 设计 Agent 系统的权限控制、行为审计与安全沙箱机制，确保自主式 AI 系统在可控范围内运行；
@@ -17102,8 +13649,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 4. 有 ACM、超算、CTF 等编程或安全类竞赛获奖经历；
 5. 参与过开源项目，或熟悉云场景与相关中间件（如阿里云 ECS、OSS、VPC 等）；
 6. 发现过真实场景的安全问题，或在工业界/学术会议上发表过相关研究成果。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 4, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '网络安全工程师' LIMIT 1), '阿里巴巴', 'AI安全技术工程师-阿里巴巴2027届应届生', '全国', NULL, NULL, '我们正在建设面向下一代安全智能体与安全大模型能力，目标是把漏洞挖掘、代码审计、威胁研判、告警处置、攻防评测等工作沉淀为可运行、可评测、可持续迭代的工程系统。你将与安全研究、算法、平台工程和产品团队合作，从真实攻防问题出发，构建安全智能体、训练与评测数据管道，并将模型能力落到真实业务场景中。
 
 你将参与以下一个或多个方向：
@@ -17139,8 +13684,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 ● 有高质量开源项目、CVE/漏洞致谢、CTF/安全竞赛成绩、顶会论文或技术文章。
 ● 熟悉云原生安全、供应链安全、二进制/内核漏洞、SOC/SIEM/EDR/XDR、MCP/Tool 安全、Agent 身份与权限治理。
 ● 熟悉 PyTorch、TensorFlow、Hugging Face、LangChain、LlamaIndex、LangGraph、Kubernetes、Spark/Flink/Kafka 等技术栈者优先。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 4, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '网络安全工程师' LIMIT 1), '得物App', '【27届校招】应用安全开发工程师(A81244)', '上海', '2.5-3.5万/月', NULL, '职责描述：
 1. 负责应用安全产品运营，包括DAST/SAST/IAST漏洞运营及推修；
 2. 负责SDLC安全开发生命周期的实施，包括安全代码审计、黑盒测试、安全评估等；
@@ -17166,15 +13709,11 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 3. 计算机科学、网络安全或信息安全相关专业，有国家级数学建模竞赛 或 信息安全竞赛 或 程序设计竞赛 经验者 优先；
 4. 具备良好的逻辑思维能力和学习能力、风险敏锐度，能够快速理解新业务特性发现风险问题，愿意接受挑战并在实践中不断提升自我。', 'open', NULL);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '算法/机器学习工程师' LIMIT 1), '货拉拉', '算法工程师', '上海', NULL, NULL, '地图搜索推荐AI大模型算法工程师（2027届校招）岗位职责参与地图 LBS 搜索、地点推荐的算法研发，负责相关模型的设计、算法优化与业务落地。参与搜索推荐核心算法建设，包括但不限于：NLP分析，召回和排序，生成式搜推及Agent技术等核心算法技术研究跟进搜索、推荐、自然语言处理及大模型领域的前沿技术，结合真实业务问题完成算法验证、效果评估和工程化落地岗位要求2027届毕业生，硕士及以上学历，计算机、软件工程、人工智能、数学、统计学等相关专业。具有较强的求知欲、独立思考能力、学习能力和自驱力。具备良好的问题分析与实验能力具备扎实的计算机基础，熟悉常用数据结构与算法，对深度学习，大模型的基本原理有较深入的理解。熟悉至少一种深度学习框架，如 PyTorch、TensorFlow 等，能够熟练使用 Codex、Cursor 等 AI 工具辅助研发有大模型持续预训练（CPT）、监督微调（SFT）、偏好对齐、强化学习或推理优化相关经验者优先；有OneRec、OneSearch等生成式搜推相关实践经验优先具备较强的科研能力，在 KDD、SIGIR、等相关领域高水平会议或期刊发表过论文者优先，在相关算法竞赛、开源项目或科研项目中取得突出成果者优先', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 4, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '算法/机器学习工程师' LIMIT 1), '货拉拉', '算法工程师', '深圳', NULL, NULL, '工作职责 负责国际化AI项目，参与AI相关能力开发与优化 与海外业务、产品、研发团队共同完成AI产品研发和海外业务落地 持续关注AI领域最新技术，并推动业务创新 按需支持国内相关业务系统能力的迭代和建设 优化系统性能与稳定性，保障服务可用性 - 任职要求 本科及以上学历，计算机、软件工程、人工智能等相关专业，英语口语流利 熟悉Java/Python语言 了解机器学习、深度学习基本概念，熟悉常见算法流程 对LLM（Transformer、RAG、Embedding、Fine-tuning等）有一定了解 熟练使用主流AI编码工具（codex、cursor、Qoder等） 有良好的稳定性意识 - 加分项 对AI有浓厚的兴趣，喜欢研究AI前沿技术 有过AI应用开发、智能助手、聊天机器人等项目经验', 'open', NULL);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '算法/机器学习工程师' LIMIT 1), '货拉拉', '算法工程师', '深圳', NULL, NULL, 'CV算法工程师 工作职责： 负责图像检测、分割、识别等算法任务的模型训练和服务部署 探索基于视频行为检测的算法研究、业务落地和效果优化 跟踪前沿的视觉算法理论 ，并将优秀的算法应用到业务场景中，提升业务效果 任职要求： 计算机、自动化、图像处理、模式识别等相关专业，具有强烈的责任心，积极主动，有较强的学习能力 熟悉CV领域的相关主流算法模型，对前沿技术有一定的探索热情 了解NLP、音频领域算法技术，或有多模态大模型应用经验更佳 编程基础扎实，熟悉C++/Python等编程语言，熟练使用PyTorch/TensorFlow等深度学习框架 会用Triton、Flask等服务框架，了解基础的Web服务原理 良好的表达能力和逻辑思维能力', 'open', NULL);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '算法/机器学习工程师' LIMIT 1), '货拉拉', '算法工程师', '上海', NULL, NULL, '工作职责 负责国际化AI项目，参与AI相关能力开发与优化 与海外业务、产品、研发团队共同完成AI产品研发和海外业务落地 持续关注AI领域最新技术，并推动业务创新 按需支持国内相关业务系统能力的迭代和建设 优化系统性能与稳定性，保障服务可用性 - 任职要求 本科及以上学历，计算机、软件工程、人工智能等相关专业，英语口语流利 熟悉Java/Python语言 了解机器学习、深度学习基本概念，熟悉常见算法流程 对LLM（Transformer、RAG、Embedding、Fine-tuning等）有一定了解 熟练使用主流AI编码工具（codex、cursor、Qoder等） 有良好的稳定性意识 - 加分项 对AI有浓厚的兴趣，喜欢研究AI前沿技术 有过AI应用开发、智能助手、聊天机器人等项目经验', 'open', NULL);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '算法/机器学习工程师' LIMIT 1), '货拉拉', '算法工程师', '上海', NULL, NULL, '岗位职责 1. 参与货运场景下（如智能调度、动态调价等）算法的设计、实现与优化，支持各类业务场景的智能化需求； 2. 协助进行业务数据分析，参与数据建模与算法研发工作； 3. 参与算法效果与性能调优，提升模型准确性、运行效率及系统兼容性； 4. 协同工程团队完成算法的集成、测试与上线落地； 5. 跟进前沿技术动态，探索新技术在业务场景中的应用价值。 任职要求 1. 本科及以上学历，计算机、数学、统计学、运筹学等相关专业毕业生； 2. 扎实的机器学习 / 深度学习理论基础，熟悉分类、回归、聚类等核心算法原理； 3. 熟练掌握 Python，熟悉 PyTorch / TensorFlow / Scikit-learn 等至少一种主流框架，有模型开发经验； 4. 了解 Hadoop、Spark、Flink 等大数据处理框架，或有相关项目实践经验优先； 5. 具备良好的特征工程意识与实践能力，能从复杂业务数据中提取有效特征； 6. 有算法相关实习经历、完整项目经验（模型设计→开发→上线全流程）者优先； 7. 有较强的业务理解能力和逻辑思维能力，善于将实际问题转化为数学模型，具备良好的沟通协作能力和快速学习能力。', 'open', NULL);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '算法/机器学习工程师' LIMIT 1), '货拉拉', '算法工程师', '北京', NULL, NULL, '岗位名称：算法工程师（校招） 工作内容： 参与物流场景下的算法设计与研发，覆盖智能判责、智能广告、安全防控、AI助手等方向，下通过算法迭代驱动业务长期增长； 学习并运用因果推断、机器学习、深度学习等算法，参与构建针对性策略方案，助力提升智能营销转化； 参与基于 LLM 及多模态大模型的应用探索，学习微调、指令构建及演化技术，参与 Agent 及多 Agent 协作架构设计，将前沿技术有效融入业务链路，赋能核心业务场景。 任职要求： 数学、统计、运筹优化、计算机等相关专业硕士及以上学历，2027 届应届毕业生； 数据结构、机器学习、运筹优化算法基础扎实，了解树模型、因果推断、强化学习等常用算法原理； 对大模型应用开发有浓厚兴趣，了解模型微调、Agent 相关技术，有相关课程项目或实践经历者优先； 熟悉 Python/SQL，了解 Hadoop/Hive/Spark 等大数据处理工具者优先。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 4, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '算法/机器学习工程师' LIMIT 1), 'TCL实业', '算法工程师', '深圳', NULL, NULL, '岗位职责:
 1. 负责智能穿戴运动、健康算法开发和迭代调优，包含 IMU 姿态解算、计步、睡眠、行为识别算法调试，解决业务异常问题；
 2. 负责轻量化端侧LLM大模型微调、模型压缩、量化优化，适配穿戴低算力、低内存硬件约束；
@@ -17277,8 +13816,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 4. 了解大模型智能体基础架构模式，对智能问答机器人、知识图谱、任务调度、AI落地场景有认知或项目实践、课程设计、竞赛经历者优先；
 5. 极强的自主学习能力，对AI新技术、新框架抱有浓厚兴趣，能够主动钻研、快速适配技术迭代，愿意接受技术落地实战挑战。
 6. 具备良好的团队协作意识与沟通表达能力，工作认真负责、主动性强，有良好的问题分析和解决思维，能抗压、自驱成长，适配团队协同开发节奏。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 4, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '算法/机器学习工程师' LIMIT 1), '搜狐', '【2027】算法工程师', '天津', NULL, NULL, '岗位职责：
 1、围绕搜狐视频，将前沿的大模型与生成式AI技术，转化为解决实际业务问题、不断提升用户体验；
 2、参与LLM训练、微调、Agent架构设计、性能调优与项目部署落地；
@@ -17291,8 +13828,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 3、具备扎实的算法与数据结构基础，熟练使用Python/C++/Go中至少一门编程语言；
 4、熟悉基本的Agent开发、上下文工程、RAG、Skill等技术，了解至少一种深度学习框架（PyTorch、VLLM、Langchain等）；
 5、工作认真负责、工作态度积极，良好的沟通能力，具备良好的学习能力。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 4, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '算法/机器学习工程师' LIMIT 1), '百融智能', '算法工程师-机器学习', '北京', '1.5-2.5万/月', NULL, '岗位职责
 1、参与金融场景的大规模用户行为分析与建模；
 2、参与个性化推荐场景算法工作，包括数据、算法和工程的全链路落地。
@@ -17306,8 +13841,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 加分项：
 1、有数学建模、程序设计等相关竞赛经验；
 2、有实际成果并发表在会议、期刊，担当一作/并列/二作。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 4, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '算法/机器学习工程师' LIMIT 1), '北京衔远有限公司', 'NLP算法工程师', '北京', '2-3.5万/月', NULL, '岗位职责
  
 1、 负责对海量文本数据进行抽取、分析与整合，并从中挖掘出有价值的信息。
@@ -17399,8 +13932,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 培养体系：导师制辅导 传帮带结对编程 内部技术分享会
 薪酬激励：ESOP员工股权激励制度 薪酬补贴 项目奖金 年度奖金 安家补贴
 福利待遇：周末双休 五险一金 人才公寓 定期团建 带薪年假 定期体检 年度旅游', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 3, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '算法/机器学习工程师' LIMIT 1), '农夫山泉', '算法工程师', '杭州', NULL, NULL, '团队介绍：
 基于公司数字化系统产生的海量内部数据，结合行业、天气、经济等外部数据，用运筹优化、机器学习等算法手段，解决从生产到终端、从运营到环保的实际业务问题，并真正落地到业务系统中产生可量化的价值。
 去工厂、去终端门店，在业务发生的第一现场，用算法视角翻译业务痛点，主动定义算法课题、论证可行性。
@@ -17466,8 +13997,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 ● 学习力：对AI有热情、对前沿技术与产品好奇，对未知开放，能举一反三。
 ● 动手能力：积极主动体验市场中先进的模型和产品，独立阅读论文/技术报告等并快速复现，快速主动尝试落地先进开源项目，对主流AI开源项目有贡献者优先。
 ● 技术审美：对新技术有近乎本能的渴望，能区分“能跑”与“优雅”，追求简洁、可维护、可扩展；在模型/框架/工具选型上保持高信噪比决策。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 9, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '算法/机器学习工程师' LIMIT 1), '淘宝闪购', '算法工程师-生成式方向', '上海', NULL, NULL, '招聘对象：海内外2027届应届毕业生（毕业时间：2026.11-2027.10）
 *中国大陆（内地）以毕业证为准，中国港澳台及海外地区以学位证为准
 
@@ -17626,401 +14155,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 3、负责海量数据的分析和挖掘工作，构建用户画像模型，提升CTR、CVR；
 4、对机器学习尤其是深度学习前沿问题进行探索与研究；
 5、对推荐系统、自然语言处理、图像处理等领域提供模型支持。', 'open', NULL);
-INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '产品经理' LIMIT 1), '快手', '用户产品经理', '北京', NULL, NULL, '1、负责各端产品从规划、设计、制作、开发、测试到最终上线整个产品周期，并对产品数据负责；
-2、负责产品需求文档的撰写及产品原型绘制，协助开发团队理解和掌握需求，对产品需求方向和易用性负责；
-3、负责项目周期和进度把控，确保项目进度，快速、高效推进功能上线；
-4、与运营、市场等团队紧密配合，完成产品目标的达成，在产品层面对合作类项目予以支持。', 'open', NULL);
-INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '产品经理' LIMIT 1), '淘宝闪购', 'AI产品经理', '上海', NULL, NULL, '招聘对象：海内外2027届应届毕业生（毕业时间：2026.11-2027.10）
-*中国大陆（内地）以毕业证为准，中国港澳台及海外地区以学位证为准
-
-工作地点：上海、杭州、北京
-
-岗位职责：
-1. 深入理解业务场景，通过用户调研、行业分析及研究挖掘AI落地的创新机会；
-2. 负责AI应用/平台的方案设计，包括核心功能定义、工作流（Workflow）编排及Prompt设计，输出高质量的产品路线图；
-3. 与算法工程师、后端开发紧密协作，将大模型能力（LLM、多模态、Agent、RAG等）转化为可规模化的产品功能；
-4. 建立产品评估体系，利用数据工具（SQL/Python）监控指标波动，根据数据反馈和用户原声持续优化算法表现与用户体验。
-
-任职要求：
-1. 本科及以上学历，计算机、人工智能、电子通信、数学、心理学、统计学等相关专业优先；
-2. 了解AIGC相关知识，包括但不限于文本生成、图像/视频生成、提示词工程；
-3. 具备基础的数据处理能力，熟悉SQL/Python或数据分析工具者优先；
-4. 具备优秀的抽象思维和问题拆解能力； 对新技术有强烈渴望，始终保持对事物本质的探究心。', 'open', NULL);
-INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '产品经理' LIMIT 1), '快手', '策略产品经理', '北京', NULL, NULL, '1、根据不同应用场景（推荐、增长裂变、热点功能等）提出产品策略方案，推动具体策略的迭代升级及产品化功能落地，提升用户此功能的使用体验；
-2、深入了解业务场景，通过用户调研、数据分析挖掘用户需求，基于用户反馈和数据分析，进行效果评估并提出产品改进点，不断迭代产品功能；
-3、收集内外部需求，跟踪行业竞品动态，挖掘新的策略优化点并提出切实可行的产品方案；
-4、通过用户调研、竞品分析、数据分析，学习和了解业界最新动态，发现产品机会点。', 'open', NULL);
-INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '产品经理' LIMIT 1), '快手', '海外产品经理', '北京', NULL, NULL, '1、负责快手国际化短视频产品的功能方向或用户增长、裂变等方向的产品策略设计工作，达成增长目标；
-2、配合公司发展方向，根据不同应用场景提出产品解决策略，推动具体策略的迭代升级及产品化功能落地 ，进行效果评估并总结；
-3、负责社区整体内容策略的制定及跟进，同时负责对应后台工具产品的设计；
-4、跟进策略需求开发及上线，对进度和最终效果负责。', 'open', NULL);
-INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '产品经理' LIMIT 1), '灵尘科技', 'AI产品经理', '北京', '1.5-2.7万/月', NULL, '1、进行市场调研、用户需求分析，收集和整理相关数据，为产品规划和优化提供支持；
-2、参与产品的策划和设计工作，包括绘制产品原型、撰写需求文档、跟进开发进度等，确保产品按时高质量上线；
-3、负责与研发、设计、测试、运营等团队紧密合作，协调各方资源，推动产品的持续迭代和优化；
-4、关注行业动态和产品情况，分析产品优势和不足，提出创新性的产品改进建议；
-5、协助进行产品的推广和运营工作，收集用户反馈，分析用户行为数据，提升产品的用户体验和市场占有率。
-任职要求
-1、25-26届获得本科及以上学历；
-2、熟悉 AI 技术和互联网产业的同学优先；
-3、具备较强的逻辑思维能力、沟通能力、团队协作能力，能够快速学习和适应新环境；
-4、有创新意识，对于新鲜事物敏感，有观点有想法；性格乐观，看待问题积极，对工作有激情；
-5、对互联网产品有浓厚的兴趣和热情，有相关实习经验或项目经验者优先。', 'open', NULL);
-INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '产品经理' LIMIT 1), '深圳市正浩创新科技股份有限公司', '产品经理', '深圳', '1.4-1.7万/月', NULL, '职责描述：
-1、负责电商平台某一方向（商家端/营销工具/C端导购/物流履约/增长等）的产品设计与迭代；
-2、深入理解用户/商家需求，输出产品方案并推动落地；
-3、通过数据分析发现业务问题，持续优化产品体验与效率；
-4、协同运营、研发、设计等团队，确保项目高效推进。
-任职要求：
-1、2027届获得本科及以上学历，专业不限（计算机、数据、经管相关优先）；
-2、逻辑清晰，有数据敏感度；善于沟通，能跨团队协作推动项目；
-3、有用户同理心，自驱力强，能适应快节奏；
-4、加分项：有电商实习/开店/自媒体经历，或对AI技术有兴趣有研究。', 'open', NULL);
-INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '产品经理' LIMIT 1), '货拉拉', '产品经理', '深圳', NULL, NULL, '地图选址/碰面业务产品设计
-工作内容
-地图选址/碰面业务产品调研、方案设计、组织实现、效果验收、复盘迭代
-工作要求
-1、27届应届生，本科及以上学历，有相关一线互联网公司或产品实习经验优先
-2、具备较强的逻辑思维能力，思路清晰，执行力强
-3、出色的沟通协调能力，责任心强', 'open', NULL);
-INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '产品经理' LIMIT 1), 'TCL实业', '产品经理', '深圳', NULL, NULL, '岗位职责:
-1. 参与全球智能电视及智能手机系统的软件规划及策划工作，定期输出产品路线图及相关产品文档；
-2. 负责系统软件的某一主线场景、应用或模块，挖掘智能电视和手机的软件卖点，参与市场洞察和用户调研，定义目标评估价值，输出路标及方案，打造使人愉悦的场景及极致软件体验；
-3. 与市场、设计、技术、测试等多部门进行业务合作及沟通，保证进度及落地。
-任职要求:
-1. 本科及以上学历，具有软件应用/战略规划、消费电子、智能硬件业务相关经验者优先；
-2. 对用户体验有极致追求，逻辑思维清晰，善于沟通与表达；
-3. 有热情，追求极致，有较强的自驱力，敢于承担，敢于突破。', 'open', NULL);
-INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '产品经理' LIMIT 1), '添可智能', '产品经理', '苏州', '7-8千/月', NULL, '开展产品定义、MRD生成、产品状态决策与全生命周期管理，确保产品定位精准高效，合理调配智能体及研发资源，实现卓越的用户价值与市场价值。
-1、用户价值洞察与产品定义：基于市场与用户洞察（“五看”），识别用户价值缺口，形成具备核心价值主张的产品定义与策略。
-2、产品状态决策与MRD管理：负责产品开发阶段的市场需求文档（MRD）符合性评审，确保产品开发与市场需求对齐。
-3、产品生命周期管理：主导产品上市后的迭代、变更管理、升级规划及退市决策，实现产品全周期有序推进。
-4、具备AI智能体思维：对AI有基本的需求和了解，能够运营AI生成内容进行质量把关，识别潜在问题并提出优化建议，提升输出物质量。
-5、跨部门协同推进：与研发团队、GTM等部门高效协作，建立闭环反馈机制，保障产品持续具备市场竞争力。', 'open', NULL);
-INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '产品经理' LIMIT 1), '小熊博望', '产品经理', '西安', '1-1.5万/月', NULL, '岗位职责:
-1.设计和优化初级产品，确保符合市场需求和用户体验；
-2.参与产品开发过程，确保产品功能和设计满足目标用户的需求；
-3.对产品进行持续跟踪和改进，提高用户满意度；
-4.与团队成员紧密合作，确保产品按时完成并上线。
-
-任职要求：
-1.具备良好的沟通能力和团队合作精神；
-2.能够独立思考和解决问题；
-3.对产品设计和用户体验有深刻理解；
-4.能够快速适应变化，对新技术和新业务模式持开放态度。', 'open', NULL);
-INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '产品经理' LIMIT 1), '天联信息', '产品经理', '福州', '1-1.8万/月', NULL, '工作职责：1、进行需求调研，编写调研提纲、调研计划。2、进行需求分析，编写需求规格说明书，进行需求原型设计，组织人员进行评审，协调推动产品按时完成、高质量上线。3、开发过程中根据需求功能矩阵，跟进需求完成情况，保证产品功能与客户需求一致性。4、收集客户使用过程中反馈问题及客户体验，作为产品版本迭代需求来源。5、参与竞品分析，输出竞品分析报告。6、负责体系文档标准化及版本管理。任职要求：1、双一流及以上学历，管理相关专业。2、具有优秀的沟通能力和团队合作精神。3、有意向往互联网产品经理方向发展。4、经验不限，资深产品导师带教，欢迎应届或往届毕业生。', 'open', NULL);
-INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '产品经理' LIMIT 1), '博智信息', '产品经理', '成都', '0.5-1.2万/月', NULL, '工作职责：
-- 负责产品的详细规划和设计，设计包括功能定位、产品结构设计；
-- 负责对客户需求、市场需求和业务需求进行调研分析，不断优化产品，提升客户体验；
--负责功能需求设计，提交到开发进行开发，跟踪确定这一生命周期管理；
-- 关注竞品动态和行业情况，并分析总结，将成果运用于产品中。
-任职要求：
-- 本科及以上学历，专业不限；
-- 善于学习，具备一定的归纳总结和数据分析能力；
-- 具有良好的逻辑思维、沟通表达能力；
-- 能够吃苦耐劳，渴望开阔视野，丰富阅历，可以接受出差；
-- 热爱互联网IT行业，对产品岗位感兴趣。
-岗位优势：
-- 多元化的晋升通道：
-产品实施→产品经理→高级产品经理→产品专家→产品总监→事业部总经理→公司合伙人
-产品实施→产品经理→高级产品经理→项目经理→交付总监→事业部总经理→公司合伙人
-- 配套的通关秘籍：从理论知识到项目实操，从产品经理的全方位技能到系统化的行业知识，量身定做高于行业标准的产品人才培养体系，定制化的职业规划成长路径，导师各阶段全力助攻！
-- 高含金量的项目经验：以管理层思维为起点，解决行业管理难题业务瓶颈，完整的大型项目经验助力个人市场竞争力激升，强大的项目背书为你的履历增光添彩！
- 
-薪资福利
-- 转正薪资5～12k，五险一金。
-- 弹性打卡，周末双休，扁平化管理。
-- 午餐补贴，各类节日福利，带薪年假，各种法定节假日。
-- 每年体检、项目结束旅游基金。
-- 关注您的专业成长：提供内部培训机会，针对职场小白，从0到1，定制全方位培养体系，定制核心业务及职场生存能力，助你完成校园小白向优秀职场人的蜕变。
-- 导师赋能：培训课程7.0版本全面升级，充满大牛的团队，配备培训导师、业务mentor，HR全程跟踪成长路径，全方位多维度关注定制化职业发展。
-- 持续不断的激励：您的每个贡献都会被记录下来，我们用证书和奖金表达敬意和祝贺，持续多频的晋升调薪机会，专业工作需要成就感！
-- 团队氛围：公司提供每月一次的娱乐活动、聚餐活动等（CS、剧本杀、主题轰趴、私人影院、BBQ等等）。
-- 下午茶＆咖啡＆零食。', 'open', NULL);
-INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '产品经理' LIMIT 1), '中国平安人寿', '产品经理', '成都', '0.8-1.2万/月', NULL, '产品经理职责是：
- 
-1、通过新媒体营销各平台、企业微信、95511客服电话的日常运营、维护及推广工作；
- 
-2、负责app、网络、微信、95511客服平台等平台线上线下活动策划，吸引粉丝，提升粉丝量，转换业务
- 
-3、协助公司其他渠道进行互动营销策划与执行转换业务
- 
-4、开发、建立、维护 客户服务，多种社会化媒体渠道；
- 
-5、定期对营销和推广效果进行跟踪反馈，详细了解市场需求；
- 
-6、对各类新媒体平台进行深入研究，从而为产品宣传找到新的突破口
- 
-任职要求：
-1、思维开阔，表达能力强，语言具有感染力
-2、具备 文案 、话术编辑能力和一部分的文学功底
-3、具有一定的数据分析能力，提取数据报表，分析推广效果并优化；', 'open', NULL);
-INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '产品经理' LIMIT 1), '东方金信', '产品经理', '北京', '0.6-1.5万/月', NULL, '岗位职责：
-1、参与大数据BI工具、数据资产平台，大数据工具类产品设计；
-2、根据需求进行产品创新规划，设计产品结构、功能和流程；
-3、参与产品规划、设计和项目执行，合理的进行开发功能迭代。
- 
-任职要求：
-1、本科及以上学历，有相关实习经验优先考虑；
-2、熟练使用Axure、Visio、墨刀、XMind等设计、建模、界面定义相关软件；
-4、有耐心、责任心、上进心，思维严谨，良好的团队合作精神和积极主动的沟通意识。', 'open', NULL);
-INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '产品经理' LIMIT 1), '欧尔孚特', '产品经理', '常州', '0.5-1万/月', NULL, '稳定期薪资：10-20k ； 实习期薪资5-6k（含房补饭补）
-岗位描述：
-1. 学习公司新品开发思路，定期完成新品开发方案，打造具有市场潜力及综合竞争力的产品；
-2. 关注品类市场动态，评估市场容量，分析竞争机会，明确市场定位，开发优质供应链，精细化开发新品；
-3. 对产品开发展开的后续各项过程能够较准确的预估及防控风险；
-3. 发掘优质供应商，搭建并优化供应商体系，建立与供应商的合作发展关系；
-4. 整理开发相关信息资料，市场调查数据整理和分析，成本利润核算及销售初期市场预测；
-5.及时完成领导交办的其他事项；
- 
-任职要求：
-1. 本科及以上学历，理工类专业优先；
-2. 掌握谈判技巧，有良好的沟通能力、团队合作精神、学习力与执行力，责任心强，对电子商务有激情；
-3. 具备极强的学习思考，创新变化的能力以及用户体验思维。
- 
-其他福利：五险一金、住房补贴、员工宿舍、餐补、年终奖金（十三薪）、周末双休、法定节假日、节日福利、生日聚会、定期团建、带薪年假', 'open', NULL);
-INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '产品经理' LIMIT 1), '挚信资本', '产品经理', '深圳', NULL, NULL, '岗位描述
-1．参与产品设计和项目管理工作；
-2．负责产品规划．功能设计．业务流程设计．使用流程设计．产品优化等工作；
-3．制定产品需求计划，撰写用户需求说明书，负责需求的跟踪和控制；
-4．协助进行技术可行性分析和概要设计。
-5．制定产品业务规范，整理．完善产品文档，业务流程及相关内容。
-任职要求
-1．国家统招本科及以上学历，理工科类专业优先；
-2．了解产品实施过程，包括市场分析．需求分析．产品功能设计．业务流程设计．界面设计．用户研究和可用性测试羊：
-3．具有较强的沟通能力．逻辑能力和产品设计能力，对数据敏感，具备较强分析加工能力；
-4．对新鲜事物充满好奇心，热爱体验尝试各种新兴及热门的互联网产品，能对这些产品有个人独到体验心得分听：
-5．在互联网公司有相关实习经历，或在实验室或校园团队有互联网产品项目相关经历者优先。', 'open', NULL);
-INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '产品经理' LIMIT 1), '快手', '平台产品经理-商业产品', '北京', NULL, NULL, '1、负责商业化变现业务的场景拓展及策略优化落地；
-2、针对不同类型App的商业化流量进行梳理和规划，推动相关策略落地及效率提升；
-3、深入挖掘投放全链路中的潜在机会点，优化投放效率；
-4、通过竞品调研、客户调研及数据分析深入了解需求并设计产品方案，通过AB实验确保迭代方案的有效性。', 'open', NULL);
-INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '产品经理' LIMIT 1), '快手', '平台产品经理-电商产品', '杭州', NULL, NULL, '1、负责快手电商核心产品体验与迭代，提升流量效率与核心交易效率，包括但不局限于首页、售前、售后等模块；
-2、结合快手产品用户特征，与内容导购业务模式，探索创新方案；
-3、撰写产品需求、功能定义、用户界面、交互设计等详细文档，高效项目推动，高质量交付；
-4、持续关注产品效果数据，优秀的业务sense，并从数据中探寻产品的优化方向。', 'open', NULL);
-INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '产品经理' LIMIT 1), '快手', '海外电商产品经理', '北京', NULL, NULL, '1、负责国际电商平台和商家营销工具C端全链路表达和体验，设计营销工具C端，提升工具体验和效率，带来消费者使用率的提升，带动成交效率提升；
-2、协同C端各场景资源和排期（包括但不限于推荐，搜索，商品，交易等），推进营销表达在C端场景的迭代落地；
-3、设计分人群营销策略，通过权益激励用户首单成交/复购/裂变等行为，提升整体月活跃消费者；
-4、设计平台积分的领取/使用/ 管理产品，提升积分价值对用户的价值感，带来用户更多的活跃和复购，进而提升平台整体月活跃消费者。', 'open', NULL);
-INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '产品经理' LIMIT 1), '快手', '平台产品经理-增长平台', '北京', NULL, NULL, '1、负责用户增长平台类产品搭建，包括但不限于功能组件、提效工具、管理后端建设、活动开放平台等方向；
-2、能站在整个行业角度，设计通用的中台产品&策略能力并进行沉淀，并支持新业务在活动方向的探索；
-3、能独立负责产品项目的落地，把控风险、跨部门沟通协调，推动项目如期高质地交付。', 'open', NULL);
-INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '产品经理' LIMIT 1), '凯馨科技', '产品助理/产品专员/产品经理', '上海', '0.8-1.3万/月', NULL, '岗位职责：
- 1、熟悉产品从业务调研、需求分析到实现过程、产品发布的整个流程；
- 2、负责新产品的创新和预研，完成新产品的用户需求定义、产品功能/UI/交互的设计；
- 3、负责制定项目开发计划并跟踪进度，确保项目如期完成；
- 4、收集市场反馈与用户行为及需求，提升用户体验；
- 5、撰写详细的产品需求文档及原型设计文档，跟踪产品研发进度；
- 6、负责把控产品推进进度、协调突发问题与质量管理工作。
- 
- 岗位要求：
- 1、本科学历或硕士研究生学历，计算机科学与技术专业、信息管理专业、电子信息工程及其他理工科背景，能够根据需求分析研发实现路径和关联功能模块。
- 2、良好的文字功底，和不同视角看待问题的能力，能站在用户侧看待产品发展。
- 3、熟悉交付流程及迭代优化流程；
- 4、应有耐心和亲和力、清晰的表达能力和良好的逻辑思维能力。
- 5、关注细节，能够敏感把握问题的关键点，提出有建设性的解决思路。
- 6、愿意往B端产品经理方向发展者优先。
- 7、熟悉墨刀、Procession和XMind的使用。
- 
- 岗位交付结果：
- a. 产品需求说明书 b. 需求管理会议纪要 c. 功能延期预警 d. 产品白皮书 e. 产品彩页 f. 招标参数 g. 产品胶片
- 
- 公司网站: http://www.securitidata.com/
- 
- 您加入凯馨的理由：
- 1. 蓬勃发展的数据安全行业，核心算法技术前沿，广阔的企业发展前景；
- 2. 有竞争力的薪酬，高于当地市场平均水平的年均加薪幅度； 
- 3. 完善的员工福利，五险一金；
- 4. 平衡工作和生活的文化，周一至周五每天八小时工作制； 
- 5. 宽松的工作氛围；
- 6. 工作环境独具特色，年轻的团队，轻松的环境，休闲的着装；
- 7. 专业的工作环境，得到自身专业的迅速提升', 'open', NULL);
-INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '产品经理' LIMIT 1), '货拉拉', '路线策略产品经理', '北京', NULL, NULL, '岗位职责：
-1、日常业务需求对接；
-2、竞品分析，货车路线召回优化；
-3、具体产品方向，包括但不限于前端交互体验、数据策略等
- 
-岗位要求
-1、本科/研究生在读，2027年毕业，理工科背景优先；
-2、对产品工作有极大的热情，有互联网产品经理实习经验者、地图相关实习背景者优先；
-3、自驱，勤奋，严谨、抗压能力强
-4、拥有良好的逻辑能力，思考能力和沟通能力，具备SQL/Excel数据分析能力者优先', 'open', NULL);
-INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '产品经理' LIMIT 1), '儒意电影', '产品经理(J10676)', '北京', '1.2-1.3万/月', NULL, '岗位职责:
-1. 参与公司 C 端产品（APP / 会员 / 用户增长方向）的需求调研、功能设计与迭代优化；
-2. 协助输出产品需求文档（PRD）、原型设计，跟进开发、测试、上线全流程；
-3. 关注用户行为数据，参与 A/B 测试设计，基于数据提出产品改进方案；
-4. 与运营、设计、研发紧密协作，推动产品功能落地与效果复盘。
-任职要求:
-1. 2027 届本科及以上学历，专业不限，计算机、统计、心理学、设计相关专业优先；
-2. 对互联网产品有热情，有产品实习经历、独立做过产品分析 / 原型作品优先；
-3. 逻辑清晰，具备良好的用户同理心和沟通表达能力；
-4. 熟悉 Axure、Figma、XMind 等产品工具者优先。', 'open', NULL);
-INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '产品经理' LIMIT 1), '深圳市正浩创新科技股份有限公司', 'IT产品经理', '深圳', '1.2-1.7万/月', NULL, '职责描述：
-1、需求转化：对接营销服、供应链、产研、职能等全业务域部门，开展业务调研与用户访谈，梳理业务痛点、线下流程与数字化诉求；将业务需求转化为标准化IT产品需求，输出调研纪要、需求规格说明，维护需求池，保障需求精准传递；
-2、产品设计与文档管理：配合完成企业级IT系统设计，输出业务流程模型、功能架构、Axure原型、Visio流程图/架构图；协助编写PRD，明确功能逻辑、交互规则、数据逻辑与接口需求；负责产品文档、操作手册的校对归档与动态更新；
-3、项目协同推进：跟进系统从需求到上线的全生命周期，对接研发、测试、运维团队，跟进开发排期、测试进度与上线计划；输出项目周报、里程碑进展与风险台账，跟进评审决议落地闭环，同步需求变更与问题反馈，保障项目按期高质量交付；
-4、迭代与运营支撑：收集系统上线后的用户反馈、功能问题与优化诉求，整理问题台账与优化清单；参与产品迭代规划与方案讨论，跟进迭代功能的开发、测试与上线验证；配合运维做好日常支撑，持续提升系统适配性与用户体验；
-5、日常事务管理：统一归档产品全生命周期的文档、需求台账、迭代记录与项目资料；支撑用户培训材料准备与内部推广，配合完成流程梳理、基础数据分析、内外部资源对接等工作。
-任职要求：
-1、2027届获得本科及以上学历，计算机、信管、供应链、工商管理等相关专业优先；
-2、对企业IT数字化建设有清晰认知，有志于深耕企业级IT产品领域，具备基础业务敏感度与IT逻辑思维；
-3、了解软件开发与系统建设基本流程，学习能力强，可快速掌握多业务域系统知识；
-4、熟练使用Axure、Visio、Xmind及Office办公软件，具备良好的逻辑梳理与文档输出能力；
-5、跨团队沟通顺畅，执行力强，严谨细致、积极主动，责任心强，具备闭环意识；
-6、有问题解决意识与团队协作精神。', 'open', NULL);
-INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '产品经理' LIMIT 1), '搜狐', '【2027】产品经理', '北京', NULL, NULL, '岗位职责：
-1、负责产品的整体规划，包括市场调研、需求分析、产品定位、功能设计等。
-2、收集和分析用户需求，制定产品需求文档（PRD），并持续优化产品功能。
-3、协调跨部门团队（如研发、设计、测试、运营等），确保产品按时、按质、按量完成开发和上线。
-4、关注用户体验，通过用户反馈和数据分析，不断优化产品界面和功能。
-5、利用数据分析工具，监控产品关键指标，评估产品表现，为产品优化提供数据支持。
-6、定期进行竞品分析，了解市场动态，为产品策略调整提供参考。
- 
-任职要求：
-1. 本科及以上学历，认真负责、学习能力强，有互联网产品实习经验；
-2. 具有较强的产品设计、规划能力，能够准确把握业务需求；
-3. 具备良好的逻辑思维以及业务抽象能力，对内容行业有一定了解；
-4. 沟通与团队协作能力较强，富有开拓精神，能将想法快速落地并拿到业务结果。', 'open', NULL);
-INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '产品经理' LIMIT 1), '对对科技', '海外产品经理', '深圳', '1-2万/月', NULL, '工作职责
-1、通过市场分析、客户调研、竞品分析等方式搜集整理产品需求；
-2、负责产品原型设计，包含功能、流程、交互等方面；
-3、协调设计，研发，测试等团队，跟进产品设计、开发、测试、上线全过程；
-4、跟踪并反馈产品迭代表现，根据数据不断优化产品细节，提升产品转化和用户体验。
-任职要求：
-1、具有海外留学工作经验，做过0-1的产品，有项目工作经验，有社交、游戏类产品经验优先
-2、了解产品策划相关工具的使用，如Axure，Xmind ；
-3、逻辑缜密，思维活跃，能敏锐地抓住问题关键点，结果导向，能很好的将计划执行落地；
-4、良好的团队协作和沟通能力。', 'open', NULL);
-INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '产品经理' LIMIT 1), '乐信集团', '产品经理（校招）', '深圳', '1-1.5万/月', NULL, '岗位职责：
-1.负责 C 端互联网金融产品的业务增长机会点挖掘及用户体验设计；
-2.负责产品的功能设计，建设并抽象产品模块能力，设计通用化的产品解决方案，并独立负责整体产品规划；
-3.与数据团队、风险团队、技术团队紧密合作，协调内外部资源，推动产品的开发、测试和上线工作；
-4.实时了解行业动态、市场需求和用户调研，评估同业产品的市场表现，优化产品策略。
-
-任职要求：
-1.2026优秀毕业生，本科及以上学历，金融、计算机、经济、数学类等专业优先；
-2.具备产品管理、交互设计、产品设计或用户体验设计经验者优先考虑；
-3.在互联网公司有相关实习经历。在实验室或校园技术团队有互联网产品项目者优先；
-4.熟练使用主流的原型设计工具，例如 Axure RP、墨刀、Sketch 等；
-5.有创新思维和良好的自驱力以及学习能力。
-
-加分项：
-1. 有互金/信贷/银行等金融相关实习经验；
-2. 懂sql，有实际项目运用经验（包括但不限于实习、毕设、学校项目等）。
-
-我们提供：
-1. 与业务深度结合的技术落地场景，助力个人快速成长。
-2. 技术大牛带教，完善的内部培训体系。
-3. 有竞争力的薪资和晋升机制，扁平化管理。', 'open', NULL);
-INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '产品经理' LIMIT 1), '快手', '平台产品经理-直播方向', '北京', NULL, NULL, '1、负责快手直播平台产品模块（包括但不限于主播侧产品、公会侧产品、中台、基础平台等）整体规划和产品方案设计；
-2、能够结合市场竞争态势和发展情况设定目标，并拆解为可执行的产品路径，能与团队较高效地拿到阶段性结果；
-3、可以通过商业判断、数据分析、需求挖掘、构建并完善运营效率等关键指标，持续提升助力业务增长；
-4、探索业务突破方向，挖掘潜在需求与场景，激进尝试努力成为行业标杆。', 'open', NULL);
-INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '产品经理' LIMIT 1), '快手', '平台产品经理-企业效能', '北京', NULL, NULL, '1、参与内部协同办公、AI 创新、研发效能、财务&HR相关产品领域革新，通过云、大数据、机器学习等基础设施，追求极致化效率与体验，并带来管理数字化变革；
-2、输出高质量的产品文档，协调设计、研发、QA资源，确保产品的高质量交付；
-3、不断优化产品，探索标准化、模块化的交互场景方案，并进行定期更新和维护；
-4、与业务、运营团队紧密配合，收集产品数据、用户反馈，建立产品评价体系，推进持续迭代；
-5、参与业务拓展，根据业务特点制定解决方案，为业务赋能提效。', 'open', NULL);
-INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '产品经理' LIMIT 1), '快手', '策略产品经理-社区治理', '北京', NULL, NULL, '1. 协助进行快手社区内容的治理工作（分为安全或生态两个方向），从问题发现、识别处置到效果监控的全流程治理；
-2. 深入了解快手的社区内容场景（包括不限于短视频/直播/评论/搜索等），基于内外部反馈和业务数据，设计合理有效的治理策略方案，并对策略效果进行持续评估；
-3. 与算法、平台产品等上下游团队完善治理运营平台系统，对风控策略体系进持续迭代。', 'open', NULL);
-INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '产品经理' LIMIT 1), '快手', '策略产品经理-社区治理', '北京', NULL, NULL, '1. 协助进行快手社区内容的治理工作（分为安全或生态两个方向），从问题发现、识别处置到效果监控的全流程治理；
-2. 深入了解快手的社区内容场景（包括不限于短视频/直播/评论/搜索等），基于内外部反馈和业务数据，设计合理有效的治理策略方案，并对策略效果进行持续评估；
-3. 与算法、平台产品等上下游团队完善治理运营平台系统，对风控策略体系进持续迭代。', 'open', NULL);
-INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '产品经理' LIMIT 1), '快手', '平台产品经理-AI平台', '北京', NULL, NULL, '1、与算法团队紧密配合，跟进推动项目按时上线和迭代；
-2、完善优化AI类平台或效能工具；
-3、对线上产品进行数据分析，从中发现产品问题、挖掘用户需求；
-4、探索视觉类技术落地场景，可通过指导完成视觉类产品的调研、规划工作，产出高质量文档。', 'open', NULL);
-INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '产品经理' LIMIT 1), '泰豪软件', '人工智能-产品经理-南京(J10621)', '南京', '1-1.5万/月', NULL, '岗位职责:
-1、理解Al技术，主动发掘AI应用场景、包括且限于需求收集，需求分析、功能策划。以解决问题为目的，结果导向。
-2、负责AI产品的整体规划。基于电力行业特征，公司战略进行规划，包括不限于竞品调研及市场需求分析、策划相关产品方案、产品落地执行和迭代优化。
-3、协调产品、研发、算法、设计等内外部资源，推动目的达成&semi;
-任职要求:
-1、本科及以上学历，1-3年及以上AI产品相关工作经验。
-2、对Al产品感兴趣，有语音交互、图像识别产品经验者优先。
-3、有较强的组织协调能力和推动力，能适应多线程工作。
-4、工作积极主动，沟通及团队合作能力强，且能承担较强工作压力。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 11, 'dict', TRUE);
-INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '产品经理' LIMIT 1), '知乎', '用户产品经理（27届）', '北京', NULL, NULL, '岗位职责： 1、负责知乎 C 端核心业务场景的使用体验，根据反馈及数据，进行需求分析、产品设计、落地； 2、深入理解社区生态，理解用户使用场景，对用户体验和业务目标负责，并基于目标建设相应的产品能力； 3、推动跨团队合作，确保重点项目进度的顺利落地，保障预期效果和目标的实现。 任职要求： 1、本科或研究生在读，有社区/内容相关经验优先； 2、有较强的用户洞察能力，能理解并发现用户原始需求，通过快速落地验证，将其转化为业务输入； 3、逻辑思维出众，具备较强的数据分析能力； 4、目标导向，有出众的执行力和团队协作精神，有项目推进能力和抗压能力。', 'open', NULL);
-INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '产品经理' LIMIT 1), '得物App', '【27届校招】用户产品经理(A240992)', '上海', '1.4-2.8万/月', NULL, '职责描述：
-1. 负责得物App用户端核心产品功能的设计与迭代，持续提升用户体验与转化；
-2. 深入洞察年轻用户的需求与行为，通过用户调研、数据分析、竞品分析等方式发现产品机会与体验优化点；
-3. 撰写高质量产品需求文档（PRD），协同设计、研发、测试等团队推进功能落地，并对上线效果负责；
-4. 跟踪核心产品指标（留存、转化、使用时长、满意度等），以数据驱动产品决策与迭代；
-5. 关注行业趋势与年轻用户消费习惯变化，探索创新的产品形态与互动方式。
-任职要求：
-1. 2027届毕业生，本科及以上学历，专业不限，计算机、心理学、工业设计、市场营销等相关专业优先；
-2. 互联网产品的重度用户，对电商或社区类产品有深入理解和个人思考，有产品实习经验者优先；
-3. 具备较强的逻辑思维和数据分析能力，能用数据支撑产品决策；
-4. 具备优秀的用户同理心，能从年轻用户视角思考问题，注重体验细节；
-5. 具备较强的自驱力、沟通协调能力和项目推动力，能在快节奏环境中高效协作。', 'open', NULL);
-INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '产品经理' LIMIT 1), 'TCL实业', 'AI智能产品经理', '中山', NULL, NULL, '岗位职责:
-1. 参与空调智能化及 AI 产品规划，探索大模型、语音交互、多模态等技术在智能家居场景中的应用。
-2. 洞察用户需求及行业趋势，开展用户研究和竞品分析，挖掘产品创新机会。
-3. 参与产品功能及交互设计，输出产品原型、需求文档，并协同研发、设计、测试团队推进产品落地。
-4. 跟踪产品上线后的用户反馈和数据表现，参与产品优化与迭代。
-任职要求:
-1. 本科及以上学历，计算机、人工智能、电子信息、自动化、物联网等相关专业优先。
-2. 对 AI 产品及智能家居行业有热情，了解大模型、智能体、语音交互或多模态技术的基本概念和应用。
-3. 具备良好的用户洞察、逻辑分析、沟通表达及团队协作能力。
-4. 学习能力和自驱力强，善于发现问题，能够将技术能力转化为产品方案。
-5. 有 AI 产品、智能硬件或智能家居相关实习、课程项目、竞赛作品及个人项目经验者优先。', 'open', NULL);
-INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '产品经理' LIMIT 1), '深圳市正浩创新科技股份有限公司', '软件产品经理(A121814)', '深圳', NULL, NULL, '职责描述：
-1、负责包括App、Web等智能终端产品的产品策划，根据公司战略和业务发展，对行业、用户进行调研和分析，定位用户需求，形成产品方案；
-2、准确把握项目目标和周期，确认优先级，制定产品实施计划，完成原型设计和需求文档撰写，与设计、开发、测试协同，推进产品落地；
-3、关注用户反馈和数据驱动，持续优化用户体验，提升产品价值，构建产品核心竞争力。
-
-任职要求：
-1、2027届获得硕士学位，计算机科学、软件工程、心理学、交互设计、自动化专业优先，英语听说读写熟练或海外留学背景更佳；
-2、具备优秀的洞察力、逻辑思维能力、自我驱动力；
-3、对新能源有一定了解，致力于在新能源领域发展；
-4、具备互联网公司或智能硬件公司实习经历优先。', 'open', NULL);
-INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '产品经理' LIMIT 1), '东北证券', 'AI产品经理(J13975)', '上海', '0.8-1万/月', NULL, '岗位职责:
-1、AI产品规划与设计：参与AI产品的需求调研、分析和规划，协助制定产品策略和路线图；独立负责细分功能模块的需求文档（PRD）撰写和原型设计，推进AI项目从需求到落地的完整闭环。
-2、业务需求转化：对接业务部门，深入理解业务需求，将业务需求转化为产品功能，并推动产品功能的实现；跟踪产品使用数据和用户反馈，持续优化产品体验和效果。
-3、AI场景赋能：通过AI平台的编排能力为业务部门提供AI场景解决方案。
-4、AI应用推广与赋能：组织AI工具培训和分享活动，提升全员AI工具使用能力，推广全员使用AI。
-5、行业与技术跟踪：持续关注AI产品和技术前沿动态，定期输出竞品分析和行业洞察，为产品决策提供参考。
-任职要求:
-基本要求：
-1、硕士及以上学历，计算机、人工智能、数据科学、软件工程等相关专业优先；
-2、对AI技术有热情和扎实的基础认知，了解大模型、RAG、智能体（Agent）等核心技术原理与应用场景；有深度使用AI工具的实践经验。
-3、具备产品思维和用户视角，能敏锐洞察需求、定义问题；逻辑清晰，具备良好的需求分析、文档撰写和原型设计能力（会使用Axure/Figma/墨刀等原型工具者优先）。
-4、具备强烈的自驱力与学习能力，能独立推进AI应用的快速验证、测试与迭代；沟通表达能力强，善于跨部门协作和推动项目。
-5、认同行业及公司文化，认同公司经营理念，不属于公司规定的亲属回避的对象。
-加分项：
-1. 有AI产品实习经历，独立负责过需求调研、PRD撰写或原型设计；
-2. 有个人AI产品作品（如基于大模型的工具、应用、小程序等），或在AI相关竞赛中获奖；
-3. 有金融行业实习经历，或对证券业务有基本了解；
-4. 有数据分析能力，能使用SQL/Python进行产品数据跟踪和分析。
-你将获得：
-1. 参与金融AI产品从0到1的打造过程，深度理解AI技术如何在真实业务中创造价值；
-2. 接触证券行业核心业务场景，积累金融科技领域产品经验；
-3. 团队经理1v1带教，与技术、业务团队紧密协作，快速提升产品设计、项目管理和跨部门沟通能力；
-4. 开放的技术分享氛围，与团队共同探索AI前沿应用。', 'open', NULL);
-INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '产品经理' LIMIT 1), 'TCL实业', '数字化产品经理（研发）', '深圳', NULL, NULL, '岗位职责:
-1. 深入学习并掌握营销、供应链、研发、财务、大数据等其中一个领域的业务逻辑，开展需求调研，参与产品整体规划，面向内部用户提供数字化产品解决方案；
-2. 负责产品需求分析、流程设计和 PRD 撰写，协调开发组及项目组，确保产品质量、用户体验和开发进度符合预期；
-3. 跟踪产品上线后的运营情况，收集用户反馈，分析使用数据，持续调整和优化产品功能，提升客户满意度；
-4. 负责产品与业务系统的集成对接，推动产品在业务场景中的落地使用和价值兑现；
-5. 持续优化产品管理流程和工具，提升产品交付效率和质量；
-6. 与 AI 产品经理协作，将 AI 能力（智能问答、智能体、流程自动化等）嵌入数字化产品的业务流程中，负责 AI 功能的产品化落地和用户体验设计。
-任职要求:
-1. 硕士及以上学历，专业不限，计算机、信息管理、工业工程、供应链、财务等复合背景优先；
-2. 具备产品基本功：能独立完成需求调研、流程梳理、原型设计和 PRD 撰写，有产品实习或完整项目经验者优先；
-3. 逻辑清晰，具备较强的业务理解能力和抽象思维，能快速学习新业务领域；
-4. 具备良好的跨团队沟通协调能力，能推动开发、测试、业务多方达成目标；
-5. 数据敏感，能通过数据分析发现问题、验证产品效果；
-6. 了解大模型 / AI 应用的基本概念和产品形态，有 AI 产品使用经验者优先（不要求技术实现能力）；
-7. 有 To B / 企业数字化产品、ERP/SCM/CRM 等系统经验者优先。', 'open', NULL);
-INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '产品经理' LIMIT 1), '深圳创维智慧科技有限公司', '医疗行业产品经理', '深圳', '1-1.5万/月', NULL, '岗位职责
-1、协助医疗大数据业产品的市场调研、用户调研、需求分析、应用场景设计，并完成产品功能规划；
- 
-任职要求
-1、医学统计，临床医学，公共卫生，病案统计，电子信息计算机等相关专业，本科以上学历；
-2、具备良好的表达能力，对数据平台在业务使用场景、用户体验等有一定研究和心得。
-3、熟知医院评级、评审的需求。', 'open', NULL);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '数据库管理员' LIMIT 1), '明朝万达', '数据库高级研究员（研发中心）', '北京', '1-1.5万/月', NULL, '工作职责：负责数据库内核的研发路线规划、架构设计、关键技术问题攻关及数据库内核性能优化，与团队一起打造高性能数据库存储引擎架构。
 任职资格：
 1、计算机、通信、电子相关专业研究生及以上学历，博士优先；
@@ -18031,10 +14165,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 6、至少有一种数据库的存储、分布式计算、执行计划、算子、存储过程、函数、事务或数据库安全的设计和开发经验；
 7、了解数据库同步模块优化，包括数据库之间的多线程同步、传输协议优化、断点续传同步。
 8、热爱钻研技术，具备良好的沟通表达能力及团队合作精神。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 11, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 5, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 4, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '数据库管理员' LIMIT 1), '博安实业', 'DBA数据库工程师（应届生）', '上海', '6-7千/月', NULL, '岗位职责：
 1、协助对数据库进行管理，负责数据库应用系统的运营及监控;
 2、协助业务系统数据库的定期维护和异常处理;
@@ -18047,8 +14177,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 4、熟悉Linux运行机制、常用命令和工具、性能分析方法, 了解linux网络/IO/调度等基本原理
 5、至少精通一门服务器脚本语言：shell、python、php、perl ；
 6、有强烈的自我驱动力，乐于学习和分享，具备良好的团队合作，沟通协调能力。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 5, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '数据库管理员' LIMIT 1), '得物App', '【27届校招】DBA(数据库工程师)(A19528)', '上海', '2.5-3.5万/月', NULL, '职责描述：
 得物目前在线的数据库服务包含了 MySQL、Redis、TiDB、MongoDB、KV 存储、Starrocks、Clickhouse、Nebula Graph 等多种类型，涵盖了 OLTP、OLAP、SQL、NoSQL 等分类。数据库团队结合公有云 PAAS+自建数据库的方式，构建了多元化的数据存储解决方案，为业务快速迭代带来了更多更合适的选择。欢迎对数据库领域有兴趣的同学加入我们。
 岗位职责：
@@ -18063,9 +14191,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 1、2027届毕业生，本科以上学历，计算机类、软件类、通信类等相关专业优先；
 2、扎实的编程基础，至少掌握一门开发语言，熟悉Golang, python优先；
 3、对主流开源数据库有基础知识的功底。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 5, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 7, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '数据库管理员' LIMIT 1), '墨奇科技', '软件工程师 - 数据库内核开发 - 北京', '北京', NULL, NULL, '墨奇数据库团队专注于做业界领先的 OLAP 数据库， 让 AI，复杂类型数据和新硬件带给传统数据库新的生命力
  
 我们需要你
@@ -18079,9 +14204,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 熟悉一种 OLAP/OLTP/HTAP 数据库及其生态，例如 ClickHouse、TiDB、PostgreSQL、MySQL 等
 熟悉数据库基本理论或者选修过《数据库系统概论》或者《Database System Concepts》或者《Database System Implementation》
 具备良好的团队协作意识，自我驱动，热爱学习，能够在压力下高效工作', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 5, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 4, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '数据库管理员' LIMIT 1), '墨奇科技', '软件工程师 - 数据库内核开发 - 上海', '上海', NULL, NULL, '墨奇数据库团队专注于做业界领先的 OLAP 数据库， 让 AI，复杂类型数据和新硬件带给传统数据库新的生命力
  
 我们需要你
@@ -18095,9 +14217,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 熟悉一种 OLAP/OLTP/HTAP 数据库及其生态，例如 ClickHouse、TiDB、PostgreSQL、MySQL 等
 熟悉数据库基本理论或者选修过《数据库系统概论》或者《Database System Concepts》或者《Database System Implementation》
 具备良好的团队协作意识，自我驱动，热爱学习，能够在压力下高效工作', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 5, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 4, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '数据库管理员' LIMIT 1), '陕鼓集团', '管理类', '西安', NULL, NULL, '需求专业：企业管理、工商管理、统计学、公共关系管理、国际贸易、市场营销、营销管理、档案学、信息资源管理、英语等。
 
  基本条件
@@ -18371,8 +14490,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 2. 掌握C++/Java等编程语言，对面向过程或面向对象软件开发有一定认识；
 3. 数理逻辑性强，对软件设计有兴趣，有软件小项目开发经验优先；
 4. 沟通良好，学习能力优秀，具备较强的问题解决能力。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 3, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '移动开发工程师' LIMIT 1), 'iDaily·每日科技', 'Android开发工程师', '上海', '0.8-1.5万/月', NULL, 'iDaily 每日科技是全球获得苹果推荐次数最多的开发商，旗下多款 App 获得苹果年度最佳，拥有 倒数日、iDaily、iMuseum、iCity、灵感笔记等知名 App 作品，累计用户超过4亿。
 
 公司重视技术积累及迭代，坚持多平台原生开发，致力于打造坚实可靠的底层代码库，服务于亿级用户的高并发高可用后端。
@@ -18407,9 +14524,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 6.无限量饮料必不可少；
 7.办理工作居住证；
 8.小黑屋电竞馆尽享员工优惠，同事也是你的最强队友......', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 3, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 4, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '移动开发工程师' LIMIT 1), '迅雷网络', '【2027校招】客户端开发-Android', '深圳', NULL, NULL, '岗位职责
 1、负责工具类App及相关产品的产品迭代和新产品研发；
 2、参与客户端App性能、体验优化及相关评估体系建设；
@@ -18438,10 +14552,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 2. 除Android之外，具备其它方面开发经验者优先，如具有前端技能或脚本技能者优先；
 3. 在校园内或互联网公司有相关实习或项目经历。', 'open', NULL);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '移动开发工程师' LIMIT 1), 'BIGO', '【2027届校招】客户端开发工程师（Android/iOS）', '广州', NULL, NULL, '岗位职责： 1、参与 Android 或 iOS 客户端产品的设计、开发、测试与持续优化； 2、根据产品需求完成业务功能开发，保障代码质量、性能和稳定性； 3、参与技术方案讨论、代码评审以及客户端基础能力建设； 4、持续关注移动端新技术，并探索 AI 工具在研发流程中的应用。 任职要求： 1、计算机、软件工程、电子信息等相关专业，本科及以上学历； 2、具备良好的计算机基础，熟悉数据结构、算法、操作系统和计算机网络； 3、至少熟悉一个移动端技术方向： Android：熟悉 Java 或 Kotlin，了解 Android SDK、常用组件及应用开发流程； iOS：熟悉 Swift 或 Objective-C，了解 UIKit、常用组件及应用开发流程； 4、具备良好的编码习惯，了解面向对象设计、Git 版本管理和基本的软件工程实践； 5、有较强的学习能力、问题分析能力和团队协作意识； 6、对移动端开发有热情，有课程项目、个人作品、开源贡献或相关实习经历者优先。 加分项： 1、了解大语言模型、提示词工程、Agent、RAG、MCP 等 AI 应用或工作流概念； 2、使用过 Copilot、Cursor、Codex 等 AI 编程工具，并能将其用于需求分析、编码、测试或问题排查； 3、有搭建 AI 自动化工作流、开发 AI 应用或接入大模型 API 的实践经历； 4、熟悉跨平台开发技术，如 Flutter、React Native 等； 5、在技术竞赛、开源社区或相关项目中有突出成果。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 3, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 4, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 9, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '移动开发工程师' LIMIT 1), '四维时代', 'iOS开发', '珠海', '0.8-1.2万/月', NULL, '岗位职责：
 1、负责原有项目上架维护，更新
 2、负责编写Unity,UE4等引擎插件,负责SDK开发
@@ -18501,9 +14611,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 4.周三尖叫之夜，大家一起开黑、桌游、switch......
 5.办理工作居住证；
 6.小黑屋电竞馆尽享员工优惠，同事也是你的最强队友。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 3, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 11, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '移动开发工程师' LIMIT 1), '迅雷网络', '【2027校招】客户端开发-iOS', '深圳', NULL, NULL, '岗位职责
 1、负责工具类App及相关产品的产品迭代和新产品研发；
 2、参与客户端App性能、体验优化及相关评估体系建设；
@@ -18520,8 +14627,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 岗位要求：1、2027年应届毕业生，本科及以上学历，计算机相关专业优先；
 2、熟悉数据结构，逻辑思维清晰，至少熟练使用一门编程语言，包括但不限于： Swift、Objective-C；
 3、学习能力佳，关注用户体验，有兴趣深入钻研问题。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 4, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '移动开发工程师' LIMIT 1), '阿里巴巴', '客户端开发工程师iOS-阿里巴巴2027届应届生', '全国', NULL, NULL, '1. 深度参与超大规模业务的功能研发，支撑亿级活跃用户的极致购物体验；
 2. 负责跨平台 Native 中间件、网络库、以及 H5/Native 核心容器的开发与维护，构建稳定、高效的底层平台能力；
 3. 参与 iOS系统的整体架构设计与升级，负责运行期性能调优（启动速度、流畅度、功耗等），设计并落地动态化、可扩展的组件化框架；
@@ -18532,9 +14637,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 2. 具备扎实的数据结构、算法、操作系统、计算机网络等核心理论基础；代码功底深厚，追求高质量的代码实现；
 3. 深入理解 iOS平台底层原理及机制，熟悉常见的异步/同步、多线程编程、进程间通信、组件化及容器化设计方法；
 4. 具备初步的软件架构设计能力，能够独立进行功能模块的设计与实现，并有志于在客户端性能优化领域深钻。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 11, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 4, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '移动开发工程师' LIMIT 1), '阿里巴巴', '客户端开发工程师鸿蒙-阿里巴巴2027届应届生', '全国', NULL, NULL, '1. 负责鸿蒙端业务功能模块的设计与开发；
 2. 结合数据指标驱动和分析，不断深化无线客户端/PC技术产品，优化客户端应用的性能以及提升客户端体验； 
 3. 独立负责平台相关的 鸿蒙各设备，机型的适配和优化；
@@ -18546,8 +14648,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 3. 具备良好的逻辑思维能力和问题解决能力，善于自主学习和探索新知识； 
 4. 有HarmonyOS NEXT，Android 基础或项目经验者优先；
 5. 对最新的 AI 技术有一定的学习和理解，有 AI 相关研发经验优先。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 4, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '移动开发工程师' LIMIT 1), 'APUS', '浏览器内核研发', '北京', NULL, NULL, '岗位职责：
 1.参与公司移动端浏览器内核研发工作；
 
@@ -18558,10 +14658,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 4.善于沟通协作，具备专业文档英语读写能力，英语流利者优先；
 5.热爱浏览器研发工作，有意愿深入学习；
 6.熟悉广告拦截技术，有广告拦截相关经验者优先。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 3, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 11, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 4, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '移动开发工程师' LIMIT 1), '阿里巴巴', '移动端逆向工程师-阿里巴巴2027届应届生', '全国', NULL, NULL, '1. 负责移动端应用（Android/iOS）的逆向分析、漏洞挖掘及安全评估工作；
 2. 使用逆向分析工具对目标应用进行静态分析、动态调试及代码跟踪，分析其运行逻辑和安全机制；
 3. 研究并突破常见的软件保护技术（如加固、混淆、加密等），掌握脱壳、反混淆等技术；
@@ -18599,8 +14695,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 - 有AWS相关经验；
 - 有数字货币和区块链工作经验，了解智能合约、以太坊EVM、Solidity；
 - 有Serverless服务使用经验；', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 4, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '软件开发工程师（通用）' LIMIT 1), '革格科技', '软件开发', '上海', '1-2万/月', NULL, '岗位职责： 
 1、参与人工智能驱动的全栈应用系统设计与开发，支持前后端功能实现； 
 2、算力平台相关； 
@@ -18640,10 +14734,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 具备较强的逻辑思维能力、问题分析与解决能力，能通过搜索引擎、技术文档等独立排查简单问题。
 具备良好的沟通表达能力与团队协作精神，责任心强。
 热爱软件开发，具备持续学习的意愿和钻研精神，能够适应一定的工作压力。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 3, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 5, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 9, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '软件开发工程师（通用）' LIMIT 1), '睿维视', '软件开发', '南京', '0.7-1万/月', NULL, '岗位职责：
  
 1. 协助Android软件开发，以及核心Android应用开发维护；
@@ -18674,11 +14764,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 2.了解达梦、0racle、MongoDB等数据库;
 3.掌握 Linux 基础操作命令，了解 Redis、Kafka、Elasticsearch 基础概念，有简单项目部署经验;
 4.在校有课程大作业、科创竞赛、实验室项目、开源项目或自主实战项目经历。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 6, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 7, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 4, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 9, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '软件开发工程师（通用）' LIMIT 1), 'Xinova', '软件开发工程师', '深圳', '1-2万/月', NULL, '岗位职责：
 
 1. 参与公司软件产品的需求分析、模块设计、代码开发与单元测试工作。
@@ -18716,10 +14801,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 2.分析公司信息化需求，完成系统的设计、开发、扩展或代码重构；
 3. 设计和规划所辖系统的整体架构和技术规范，并在日常开发实践中贯彻执行；
 4. 负责技术难点的攻关和关键系统的设计和编码；', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 10, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 5, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 7, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '软件开发工程师（通用）' LIMIT 1), '智拓视界', '软件开发C++', '北京', NULL, NULL, '薪资平台有规则限制
 
  12k-35k 15薪
@@ -18755,8 +14836,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
  环境舒适：北京市海淀区知春路9号坤讯大厦1005-1008室福利：博士后工作站+大牛带队+前沿技术交流+大厦食堂
 
  公司现处于快速发展期，诚邀三维、视觉、结构光算法、AI、软件开发等英才加入智拓视界！欢迎各种形式的咨询、自荐、他荐！', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 9, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '软件开发工程师（通用）' LIMIT 1), 'CCN', '软件开发工程师', '上海', '6-8千/月', NULL, '岗位职责：
 1. 根据开发进度和任务分配， 在更高级别的带领下完成对应模块的设计、开发、编程、单元测试，及交付工作；
 2. 能独立编写系统模块设计文档；
@@ -18767,9 +14846,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 4. 良好的文档撰写习惯，良好的文字表达能力；
 5. 熟练掌握面向对象设计开发，熟悉UML和软件工程；
 6. 热爱开发工作，具有良好的沟通能力、理解能力及团队精神，责任心强，能承受较大的工作压力；', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 3, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 5, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '软件开发工程师（通用）' LIMIT 1), '华信智创科技', '软件开发工程师', '重庆', '6-8千/月', NULL, '岗位详情：
 -岗位内容：负责企业及政府级应用平台相关系统研发工作。
 -需要你有：软件开发基础知识，熟悉主流数据库和常用技术栈，本科及以上学历。
@@ -18811,9 +14887,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 培养体系：导师制辅导 传帮带结对编程 内部技术分享会
 薪酬激励：ESOP员工股权激励制度 薪酬补贴 项目奖金 年度奖金 安家补贴
 福利待遇：周末双休 五险一金 人才公寓 定期团建 带薪年假 定期体检 年度旅游', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 3, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 9, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '软件开发工程师（通用）' LIMIT 1), '此芯科技', '驱动软件开发工程师', '苏州', '1.8-2.5万/月', NULL, '工作职责
 · 芯片底层驱动软件开发和调试
 · 技术文档编写及客制化软件开发和调试
@@ -18826,8 +14899,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 · 熟悉Linux下常见的性能测试、剖析工具及优化方法
 · 熟悉常规的系统内外部总线，外设相关规范或协议者优先，例如：I2C/I3C, I2S, SPI, AXI4/5/ACE/Chi, GPIO, PWM, MIPI DSI/CSI, HDMI, DP, UFS, EMMC, NVME, PCIE, Timer等
 · 熟悉Linux 及内核驱动框架，熟悉内核锁、中断使用、同步机制、内存申请、驱动调试手段等内核基本概念者优先', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 4, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '软件开发工程师（通用）' LIMIT 1), '此芯科技', '驱动软件开发工程师', '上海', '2-2.5万/月', NULL, '工作职责
 · 芯片底层驱动软件开发和调试
 · 技术文档编写及客制化软件开发和调试
@@ -18840,8 +14911,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 · 熟悉Linux下常见的性能测试、剖析工具及优化方法
 · 熟悉常规的系统内外部总线，外设相关规范或协议者优先，例如：I2C/I3C, I2S, SPI, AXI4/5/ACE/Chi, GPIO, PWM, MIPI DSI/CSI, HDMI, DP, UFS, EMMC, NVME, PCIE, Timer等
 · 熟悉Linux 及内核驱动框架，熟悉内核锁、中断使用、同步机制、内存申请、驱动调试手段等内核基本概念者优先', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 4, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '软件开发工程师（通用）' LIMIT 1), '山维科技', 'C++软件开发工程师', '北京', '0.8-1.5万/月', NULL, '测绘地理信息软件与项目开发：
 1、按时完成软件设计、开发、单元测试等任务；
 2、较强的逻辑思维能力，熟练进行技术分析，发现问题、解决问题；
@@ -18854,8 +14923,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 3、掌握基本软件开发技术，如掌握使用C++、 C#、JAVA、HTML5、CSS、XML， JQurey、HTML5等任一技术（熟悉C++者优先）；
 4、逻辑观念强，具备规范的编码习惯和技术文档编写能力；
 5、 具有较好的沟通能力、团结协作精神，认真负责的工作态度及较强的学习能力。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 5, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '软件开发工程师（通用）' LIMIT 1), '成都奥卡思', 'C++软件开发工程师', '成都', '1.2-2万/月', NULL, '任职要求：
 1.熟悉C/C++语言开发，了解Makefile, 了解python
 2.熟悉常用的软件调试工具
@@ -18868,8 +14935,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 2.根据公司内部的需求或者客户需求，设计软件实现方案，提供设计文档
 3.设计测试用例及测试计划，完成软件测试(单元测试,集成测试)，并提供测试文档
 4.解决公司内部测试及客户测试发现的软件产品Bug', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 4, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '软件开发工程师（通用）' LIMIT 1), '此芯科技', '驱动软件开发工程师', '武汉', '1.8-2.5万/月', NULL, '工作职责
  
 
@@ -18901,8 +14966,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
  
 
  · 熟悉Linux 及内核驱动框架，熟悉内核锁、中断使用、同步机制、内存申请、驱动调试手段等内核基本概念者优先', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 4, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '软件开发工程师（通用）' LIMIT 1), '航天科工微电院', '软件工程师（Qt/C++软件开发方向）', '成都', '0.8-1.5万/月', NULL, '岗位职责：
 1、负责项目用户应用界面软件方向系统需求收集，及开发文档的编写；
 2、参与项目用户界面软件系统需求分析、软件架构、软件流程及功能设计工作；
@@ -18947,10 +15010,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 3. 了解常用设计模式，有良好的代码风格和文档习惯；
 4. 熟悉Mysql,Sqlite等数据库的开发；
 5. 有OpenCV等使用经验，了解图像处理常用算法。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 3, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 11, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 5, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '软件开发工程师（通用）' LIMIT 1), '英特尔', 'AI 软件开发工程师', '上海', '2.9-4万/月', NULL, '关于我们
 
 Intel CAIGC 致力于推动 AI 从云端走向终端，打造原生端侧智能计算。我们联动全球研发团队与头部模型厂商，打通 LLM/VLM、AI 
@@ -19002,8 +15061,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 3、了解使用至少一种数据库，如MySQL或Oracle，拥有较好的数据库设计能力；
 4、有Java后台服务接口开发，及性能调优经验者优先；
 5、学习能力强，有较好的沟通能力和团队意识。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 5, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '软件开发工程师（通用）' LIMIT 1), '溢信科技', 'c/c++软件开发工程师', '长沙', '0.8-1.5万/月', NULL, '岗位职责
 1.参加基于Windows、Linux、IOS等平台C/C++技术的信息安全产品应用开发；
 2.参与系统分析与设计，根据开发规范与流程完成模块的设计、编码、单元测试以及相关文档。
@@ -19055,8 +15112,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 4、工作严谨、认真负责，有强烈的进取心，具有较强的抗压能力；
  
 5、具有团队合作精神及良好的沟通能力。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 4, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '软件开发工程师（通用）' LIMIT 1), '云联接', 'C/C++软件开发工程师', '上海', '1-1.5万/月', NULL, '岗位职责：
 1、负责网络安全、基础架构产品的软件开发，系统设计和技术文档的编制；
 2、参与公司各种应用软件的编码、开发工作；
@@ -19066,9 +15121,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 1、计算机或相关专业本科及以上学历；
 2、熟悉Linux开发环境，熟悉常用数据结构、算法，熟悉SOCKET与多线程开发；
 3、编程基本功扎实，熟练掌握C/C++语言及常用算法和数据结构。', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 11, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 4, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '软件开发工程师（通用）' LIMIT 1), '宝时得', '2027应届生-MCU软件开发工程师', '苏州', '1-2万/月', NULL, '岗位职责:
 1、负责智能割草机器人 MCU 单片机嵌入式软件编码开发，落地整机基础控制业务逻辑；
 2、全程参与需求梳理、系统方案设计、接口定义、单元测试全开发流程；
@@ -19093,8 +15145,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 熟悉 Kubernetes 和 Docker
 理解 AI 相关理论，了解 TensorFlow、PyTorch 等常见机器学习框架
 具备良好的团队协作意识，自我驱动，热爱学习，能够在压力下高效工作', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 4, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '软件开发工程师（通用）' LIMIT 1), '品联科技', '软件开发工程师（10人，成都）', '成都', '0.7-1.2万/月', NULL, '岗位职责：
 1、参与能源管理系统模块的设计、完成系统编码、调试、测试等工作；
 2、参与相关的质量活动，确保设计、实现、测试相关工作能按时按质完成；
@@ -19106,9 +15156,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 5、熟悉linux操作系统，了解shell脚本；
 6、熟练使用eclipse idea等一种开发工具
 7、有校园实践经验或校外同岗位实习经验者优先；', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 10, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 7, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '软件开发工程师（通用）' LIMIT 1), '墨奇科技', '软件工程师 - C++ 开发', '北京', NULL, NULL, '在墨奇，我们打造一个新型 AI 知识数据库，用 SQL 语言统一的对文本、语音、图像、视频等非结构化数据进行处理
  
 我们需要你
@@ -19120,8 +15167,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 熟悉 Linux 系统，熟练掌握 C++ 开发，熟练掌握常用的算法和数据结构
 熟悉计算机操作系统、体系结构和原理
 具备良好的团队协作意识，自我驱动，热爱学习，能够在压力下高效工作', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 4, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '软件开发工程师（通用）' LIMIT 1), '博世中国', '悬架软件开发工程师(27届校招)_BCSC', '无锡', NULL, NULL, 'Job Description:
 参与电控悬架系统需求分析，协助完成传感器信号采集（加速度、高度、压力等）及执行器驱动（电磁阀/电机）的软件实现；
 负责悬架控制策略的开发，涵盖车身高度调节、阻尼力连续调节、刚度切换逻辑及车身姿态控制（抗俯仰/抗侧倾） 等算法的实现与验证；
@@ -19154,8 +15199,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 熟悉常用算法和数据结构
 优秀的分析和解决问题能力
 英语流利', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 4, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '软件开发工程师（通用）' LIMIT 1), '墨奇科技', '软件工程师 - 后端开发 - 上海', '上海', NULL, NULL, '在墨奇，我们打造一个复杂数据管理和人工智能平台
  
 我们需要你
@@ -19170,8 +15213,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 熟悉 Kubernetes 和 Docker
 理解 AI 相关理论，了解 TensorFlow、PyTorch 等常见机器学习框架
 具备良好的团队协作意识，自我驱动，热爱学习，能够在压力下高效工作', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 4, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '软件开发工程师（通用）' LIMIT 1), '墨奇科技', '软件工程师 - 数据库内核开发 - 北京', '北京', NULL, NULL, '墨奇数据库团队专注于做业界领先的 OLAP 数据库， 让 AI，复杂类型数据和新硬件带给传统数据库新的生命力
  
 我们需要你
@@ -19185,9 +15226,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 熟悉一种 OLAP/OLTP/HTAP 数据库及其生态，例如 ClickHouse、TiDB、PostgreSQL、MySQL 等
 熟悉数据库基本理论或者选修过《数据库系统概论》或者《Database System Concepts》或者《Database System Implementation》
 具备良好的团队协作意识，自我驱动，热爱学习，能够在压力下高效工作', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 5, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 4, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '软件开发工程师（通用）' LIMIT 1), '墨奇科技', '软件工程师 - 数据库内核开发 - 上海', '上海', NULL, NULL, '墨奇数据库团队专注于做业界领先的 OLAP 数据库， 让 AI，复杂类型数据和新硬件带给传统数据库新的生命力
  
 我们需要你
@@ -19201,9 +15239,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 熟悉一种 OLAP/OLTP/HTAP 数据库及其生态，例如 ClickHouse、TiDB、PostgreSQL、MySQL 等
 熟悉数据库基本理论或者选修过《数据库系统概论》或者《Database System Concepts》或者《Database System Implementation》
 具备良好的团队协作意识，自我驱动，热爱学习，能够在压力下高效工作', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 5, 'dict', TRUE);
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 4, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '软件开发工程师（通用）' LIMIT 1), '心寰科技', '软件工程师', '深圳', '0.7-1.5万/月', NULL, '岗位职责：
 1. 参与医疗超声产品系统设计，参与超声图像三维显示软件开发；
 2. 主导或参与软件系统的架构设计，负责软件模块的详细设计，编码和单元测试及软件BUG的解决；
@@ -19260,8 +15295,6 @@ INSERT INTO job_postings (category_id, company_name, title, location, salary_tex
 5、英文良好者优先；
 6、具有良好的职业化精神和素养，团队合作沟通良好。
 7。欢迎应届优秀本科毕业生，研究生', 'open', NULL);
-SET @pid := LAST_INSERT_ID();
-INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) VALUES (@pid, 3, 'dict', TRUE);
 INSERT INTO job_postings (category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) VALUES ((SELECT id FROM job_categories WHERE name = '软件开发工程师（通用）' LIMIT 1), '御芯微科技', '软件工程师', '重庆', '0.8-1.5万/月', NULL, '岗位职责
  
 1、参与研发御芯微敏捷芯片设计平台

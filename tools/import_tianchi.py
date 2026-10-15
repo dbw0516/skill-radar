@@ -4,11 +4,14 @@
 产出：database/seed_real_postings.sql
   - INSERT INTO job_categories：数据集里出现的全部岗位类别
   - INSERT INTO job_postings：每条真实招聘信息（公司/岗位/地点/薪资/原文JD）
-  - INSERT INTO posting_skills：仅对「已匹配技能」列里、且能在当前 skills 表
-    （seed.sql 里那 10 个 Java 后端技能）对上号的技能生效——其他类别的技能
-    词典还没建，这批 posting 先只有岗位数据，技能关联留空，等词典扩了再补一次即可。
 
-跳过：JD 正文短于 MIN_JD_LEN 的行（大概率是空壳/占位数据，不是真实描述）。
+每条 JD 要哪些技能（posting_skills）不在这里生成：由 tools/extract_posting_skills.py
+从 JD 原文抽取，写到 database/seed_posting_skills.sql。数据集自带的「已匹配技能」列
+是按一个只有十来个 Java 后端技能的旧词典匹配的，不再使用。
+
+跳过：
+  - JD 正文短于 MIN_JD_LEN 的行（大概率是空壳/占位数据，不是真实描述）
+  - EXCLUDED_CATEGORIES 里的类别（整类不导入，原因见那里的注释）
 
 用法：python tools/import_tianchi.py
 """
@@ -25,13 +28,9 @@ OUT = ROOT / "database" / "seed_real_postings.sql"
 
 MIN_JD_LEN = 20  # 短于这个长度的原文 JD 视为空壳数据，跳过
 
-# 当前 seed.sql 里已经存在的技能标准名（id 1~10，按 seed.sql 里的插入顺序）
-# 「已匹配技能」列里的名字如果不在这个集合里，说明技能词典还没覆盖，先不建关联。
-EXISTING_SKILLS = {
-    "HTML/CSS": 1, "Java基础": 2, "面向对象": 3, "数据结构": 4, "MySQL": 5,
-    "Spring Boot": 6, "Redis": 7, "Linux基础": 8, "Git": 9, "MyBatis": 10,
-    "Java并发": 11, "多线程": 11, "并发编程": 11,  # 常见别名，直接映射到同一个技能
-}
+# 不导入的岗位类别。产品经理：技能词典里没有任何产品方向的技能，140 条 JD 里 113 条一个技术技能都抽不出来，
+# 差距分析/学习路径/测评对它都给不出东西，已从系统里删掉（已有库见 database/migrate_remove_product_manager.sql）
+EXCLUDED_CATEGORIES = {"产品经理"}
 
 
 def esc(s):
@@ -49,23 +48,44 @@ def clean_jd(text: str) -> str:
     return text.strip()
 
 
-def main():
+def load_rows():
+    """数据集「岗位数据」表除表头外的全部行。
+    列：岗位类别, 公司名称, 岗位名称, 工作地点, 薪资, 发布日期(月-日), 原文JD, 已匹配技能"""
     wb = openpyxl.load_workbook(SRC, read_only=True, data_only=True)
     ws = wb["岗位数据"]
-    rows = list(ws.iter_rows(values_only=True))
-    header, data = rows[0], rows[1:]
-    # header: 岗位类别, 公司名称, 岗位名称, 工作地点, 薪资, 发布日期(月-日), 原文JD, 已匹配技能
+    # 不用 iter_rows(values_only=True)：openpyxl 2.6 之前没有这个参数（Anaconda 自带的是 2.5）
+    return [tuple(cell.value for cell in row) for row in ws.iter_rows()][1:]
+
+
+def iter_postings(data):
+    """会导入成 job_postings 的行（跳过空壳 JD 和不导入的类别），字段清理成跟入库时一模一样——
+    tools/extract_posting_skills.py 靠 JD 原文的哈希 + 标题在库里找回这些岗位，两边必须一致。"""
+    for r in data:
+        cat, company, title, location, salary, _posted_md, jd, _matched = (list(r) + [None] * 8)[:8]
+        jd = (jd or "").strip()
+        cat = (cat or "").strip()
+        if len(jd) < MIN_JD_LEN or cat in EXCLUDED_CATEGORIES:
+            continue
+        yield {
+            "category": cat,
+            "company": (company or "未知公司").strip(),
+            "title": (title or "未知岗位").strip(),
+            "location": location,
+            "salary": salary,
+            "raw_text": clean_jd(jd),
+        }
+
+
+def main():
+    data = load_rows()
 
     categories = []
     seen_cat = set()
     for r in data:
         cat = (r[0] or "").strip()
-        if cat and cat not in seen_cat:
+        if cat and cat not in seen_cat and cat not in EXCLUDED_CATEGORIES:
             seen_cat.add(cat)
             categories.append(cat)
-
-    skipped_short = 0
-    skill_hits, skill_misses = 0, set()
 
     lines = [
         "-- ============================================================",
@@ -91,60 +111,25 @@ def main():
     lines.append("-- （在同一个事务/脚本里执行即可保证下面的子查询能查到上面刚插入的行）")
     lines.append("")
 
-    lines.append("-- 具体招聘信息 + 技能关联（用 LAST_INSERT_ID() 精确对应刚插入的那一条，不靠内容反查，避免同名/重复 JD 关联错行）")
-    posting_idx = 0
-    for r in data:
-        cat, company, title, location, salary, posted_md, jd, matched = (list(r) + [None] * 8)[:8]
-        jd = (jd or "").strip()
-        if len(jd) < MIN_JD_LEN:
-            skipped_short += 1
-            continue
-        posting_idx += 1
-        cat = (cat or "").strip()
-        company = (company or "未知公司").strip()
-        title = (title or "未知岗位").strip()
-        jd_clean = clean_jd(jd)
-
+    lines.append("-- 具体招聘信息（每条要哪些技能见 seed_posting_skills.sql，由 tools/extract_posting_skills.py 生成）")
+    postings = list(iter_postings(data))
+    for p in postings:
         lines.append(
             "INSERT INTO job_postings "
             "(category_id, company_name, title, location, salary_text, source_url, raw_text, status, posted_at) "
             "VALUES ("
-            f"(SELECT id FROM job_categories WHERE name = {esc(cat)} LIMIT 1), "
-            f"{esc(company)}, {esc(title)}, {esc(location)}, {esc(salary)}, NULL, "
-            f"{esc(jd_clean)}, 'open', NULL);"
+            f"(SELECT id FROM job_categories WHERE name = {esc(p['category'])} LIMIT 1), "
+            f"{esc(p['company'])}, {esc(p['title'])}, {esc(p['location'])}, {esc(p['salary'])}, NULL, "
+            f"{esc(p['raw_text'])}, 'open', NULL);"
         )
-
-        matched_ids = []
-        if matched:
-            seen_ids = set()
-            for name in (s.strip() for s in str(matched).split(",") if s.strip()):
-                skill_id = EXISTING_SKILLS.get(name)
-                if skill_id is None:
-                    skill_misses.add(name)
-                elif skill_id not in seen_ids:  # 不同别名映射到同一个技能时去重，避免 posting_skills 主键冲突
-                    seen_ids.add(skill_id)
-                    matched_ids.append(skill_id)
-
-        if matched_ids:
-            lines.append("SET @pid := LAST_INSERT_ID();")
-            for skill_id in matched_ids:
-                skill_hits += 1
-                lines.append(
-                    f"INSERT INTO posting_skills (posting_id, skill_id, source, confirmed) "
-                    f"VALUES (@pid, {skill_id}, 'dict', TRUE);"
-                )
 
     OUT.write_text("\n".join(lines), encoding="utf-8")
 
     print(f"共 {len(data)} 行原始数据")
-    print(f"跳过过短/空壳 JD：{skipped_short} 行")
-    print(f"实际生成 job_postings：{posting_idx} 条")
-    print(f"生成 posting_skills 关联：{skill_hits} 条")
-    print(f"「已匹配技能」里出现、但当前 skills 表还没有的技能名（待词典扩充后处理），"
-          f"共 {len(skill_misses)} 种：")
-    for name in sorted(skill_misses):
-        print("  -", name)
+    print(f"跳过过短/空壳 JD、不导入的类别：{len(data) - len(postings)} 行")
+    print(f"实际生成 job_postings：{len(postings)} 条")
     print(f"\n已写入 {OUT}")
+    print("技能关联要再跑一次 python tools/extract_posting_skills.py")
 
 
 if __name__ == "__main__":
